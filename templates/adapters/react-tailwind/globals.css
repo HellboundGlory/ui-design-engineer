@@ -1,0 +1,126 @@
+/*
+  Reference adapter: Tailwind CSS v4 + OKLCH semantic tokens, React/shadcn stack.
+
+  This is a STARTING POINT, not a finished theme. The oklch(...) values below are
+  placeholders in a neutral grey-scale so the file is usable out of the box —
+  replace them with the actual values decided in the project's DESIGN.md section 5
+  before shipping. Do not ship this file with placeholder greys as if they were a
+  real visual identity; that itself is a form of AI-slop-by-default.
+
+  Token names and roles here match references/design-system-tokens.md and the
+  DESIGN.md template exactly — keep them in sync if you add or rename a token.
+*/
+
+@import "tailwindcss";
+
+@theme {
+  /* Radius — derive related sizes from one token (design-system-tokens.md) */
+  --radius: 0.5rem;
+  --radius-sm: calc(var(--radius) - 0.25rem);
+  --radius-md: calc(var(--radius) - 0.125rem);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 0.25rem);
+
+  /* Map Tailwind's color utilities to the semantic CSS variables below,
+     so `bg-primary`, `text-foreground`, `border-border`, etc. resolve correctly. */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-status-success: var(--status-success);
+  --color-status-warning: var(--status-warning);
+  --color-status-error: var(--status-error);
+  --color-status-info: var(--status-info);
+
+  /* Typography — replace with the project's DESIGN.md §6 choices */
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+:root {
+  /* Placeholder neutral scale — replace with DESIGN.md §5 OKLCH values */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --border: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --status-success: oklch(0.6 0.15 145);
+  --status-warning: oklch(0.75 0.15 80);
+  --status-error: oklch(0.58 0.22 27);
+  --status-info: oklch(0.6 0.15 250);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --border: oklch(1 0 0 / 12%);
+  --ring: oklch(0.556 0 0);
+  --status-success: oklch(0.65 0.15 145);
+  --status-warning: oklch(0.78 0.15 80);
+  --status-error: oklch(0.65 0.22 27);
+  --status-info: oklch(0.65 0.15 250);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+    outline-color: var(--color-ring);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-body);
+  }
+
+  /* Focus visibility invariant — do not remove without an equally visible
+     replacement. See references/accessibility-wcag.md. */
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  /* Tabular numerals for anything numeric/tabular — opt in via className="tabular-nums"
+     or apply globally to table/metric contexts. See design-system-tokens.md. */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Reduced motion invariant — see references/motion-microinteractions.md.
+     JS-driven motion libraries (Motion/Framer Motion) still need their own
+     useReducedMotion() branching; this covers CSS transitions/animations. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
