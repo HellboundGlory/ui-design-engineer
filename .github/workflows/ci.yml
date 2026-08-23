@@ -24,7 +24,7 @@ jobs:
 
       - name: Script syntax check
         run: |
-          for f in scripts/*.js scripts/lib/*.js tests/*.js tests/fixtures/*/*.js; do
+          for f in skills/ui-design-engineer/scripts/*.js skills/ui-design-engineer/scripts/lib/*.js tests/*.js tests/fixtures/*/*.js; do
             echo "node --check $f"
             node --check "$f"
           done

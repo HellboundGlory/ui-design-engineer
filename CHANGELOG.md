@@ -1,5 +1,19 @@
 # Changelog
 
+## V1.2 — Plugin marketplace packaging
+
+Pure repackaging release — no change to the skill's design philosophy, architecture, references, templates, scripts' behavior, checklists, or Tests A–L. Everything here is about *how the skill is distributed*, not what it does.
+
+- **The skill's content now lives under `skills/ui-design-engineer/`** (`SKILL.md`, `references/`, `templates/`, `scripts/`, `checklists/`), instead of at the repository root. This is the layout Claude Code expects inside an installable plugin — a skill's files live at `skills/<skill-name>/` relative to the plugin root. `tests/` and `evals/` stay at the repo root, since they're this repository's own testing/documentation, not part of what gets installed.
+- **Added `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`**, so this repository can be added directly as a Claude Code plugin marketplace:
+  ```
+  /plugin marketplace add HellboundGlory/ui-design-engineer
+  /plugin install ui-design-engineer@ui-design-engineer-marketplace
+  ```
+  The manual-copy installation method (`cp -r .../skills/ui-design-engineer ...`) documented in `README.md` still works as an alternative — nothing about how the skill itself is discovered or used by an agent changed, only where its files live in this source repository.
+- **Updated all internal and documentation cross-references** to the new layout: `tests/validate-repo.js`'s link-integrity checker now understands two path bases (skill-internal mentions resolve relative to `skills/ui-design-engineer/`; root-level doc mentions resolve relative to the repo root) and recognizes literal `node scripts/...` command examples as intentionally skill-relative rather than repo-root-relative. `README.md`'s doc-navigation mentions gained the `skills/ui-design-engineer/` prefix; its actual copy-paste command examples were deliberately left bare, matching how `SKILL.md` itself refers to its own bundled scripts. `CHANGELOG.md`'s historical entries (V1.1, V1.1.1 below) were deliberately left unchanged, since they correctly described paths as they were at the time each was written.
+- **No functional changes** to any script, reference, template, or checklist. `tests/run-fixtures.js` (33 assertions) and `tests/run-playwright-integration.js` (21 assertions) both pass unchanged in substance, just pointed at the new location.
+
 ## V1.1.1 — Correctness patch
 
 Small, narrow patch over V1.1 — same architecture, philosophy, references, templates, checklists, and Tests A–L. No new archetypes, libraries, or MCP integrations.

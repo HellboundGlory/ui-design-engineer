@@ -32,6 +32,7 @@ const http = require("http");
 const { execFileSync, spawn } = require("child_process");
 
 const ROOT = path.resolve(__dirname, "..");
+const SKILL_ROOT = path.join(ROOT, "skills/ui-design-engineer");
 const OUT = fs.mkdtempSync(path.join(os.tmpdir(), "ui-design-engineer-pw-"));
 const PORT = 4173;
 
@@ -79,7 +80,7 @@ function assert(label, condition, detail) {
 
 function run(args) {
   try {
-    const stdout = execFileSync("node", [path.join(ROOT, "scripts/visual-qa.js"), ...args], {
+    const stdout = execFileSync("node", [path.join(SKILL_ROOT, "scripts/visual-qa.js"), ...args], {
       encoding: "utf8",
       stdio: "pipe",
       timeout: 45000,

@@ -1,0 +1,14 @@
+{
+  "name": "ui-design-engineer-marketplace",
+  "owner": {
+    "name": "HellboundGlory",
+    "url": "https://github.com/HellboundGlory"
+  },
+  "plugins": [
+    {
+      "name": "ui-design-engineer",
+      "source": "./",
+      "description": "Design-system-aware UI/UX design engineering skill: builds and modifies frontend interfaces with product-design reasoning, resists generic AI-slop output, preserves existing design systems, and closes the loop with rendered visual QA and WCAG 2.2 AA accessibility auditing."
+    }
+  ]
+}

@@ -21,7 +21,11 @@ const { execFileSync } = require("child_process");
 
 const ROOT = path.resolve(__dirname, "..");
 const FIXTURES = path.join(__dirname, "fixtures");
-const SCRIPTS = path.join(ROOT, "scripts");
+// The skill's actual content lives under skills/ui-design-engineer/ (a plugin-
+// marketplace-compatible layout — see .claude-plugin/) — tests/ and evals/ stay at the
+// repo root since they're this repo's own testing/CI concern, not part of the skill.
+const SKILL_ROOT = path.join(ROOT, "skills/ui-design-engineer");
+const SCRIPTS = path.join(SKILL_ROOT, "scripts");
 
 let failures = 0;
 let total = 0;
@@ -174,17 +178,17 @@ function assert(label, condition, detail) {
 {
   const lenient = run("validate-design-tokens.js", [
     "--design-md",
-    path.join(ROOT, "templates/DESIGN.md"),
+    path.join(SKILL_ROOT, "templates/DESIGN.md"),
     "--css",
-    path.join(ROOT, "templates/adapters/react-tailwind/globals.css"),
+    path.join(SKILL_ROOT, "templates/adapters/react-tailwind/globals.css"),
   ]);
   assert("validate-design-tokens.js: default (lenient) mode passes on the reference template/adapter pair", lenient.code === 0, lenient.stdout);
 
   const strict = run("validate-design-tokens.js", [
     "--design-md",
-    path.join(ROOT, "templates/DESIGN.md"),
+    path.join(SKILL_ROOT, "templates/DESIGN.md"),
     "--css",
-    path.join(ROOT, "templates/adapters/react-tailwind/globals.css"),
+    path.join(SKILL_ROOT, "templates/adapters/react-tailwind/globals.css"),
     "--strict",
   ]);
   assert(
