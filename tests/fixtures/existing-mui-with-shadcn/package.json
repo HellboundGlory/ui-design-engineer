@@ -1,0 +1,9 @@
+{
+  "name": "fixture-existing-mui-with-shadcn",
+  "private": true,
+  "dependencies": {
+    "react": "^19.0.0",
+    "@mui/material": "^5.15.0",
+    "@radix-ui/react-popover": "^1.0.0"
+  }
+}

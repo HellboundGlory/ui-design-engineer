@@ -9,9 +9,14 @@
  * For each viewport, it:
  *   - navigates to the given URL and waits for a configurable readiness signal
  *   - captures a full-page PNG screenshot
- *   - runs a set of cheap, deterministic structural checks (overflow, clipped/zero-size
- *     interactive elements, broken images, missing alt text, undersized hit targets,
- *     focus-obscured controls)
+ *   - runs a set of cheap, deterministic structural checks: overflow, broken images,
+ *     missing alt text, zero-size interactive elements, and focus-obscured controls are
+ *     HARD findings; undersized (<24px) hit targets are a REVIEW/advisory finding, since
+ *     WCAG 2.2's target-size criterion has exceptions a DOM-size heuristic can't fully
+ *     evaluate. If the structural-check step itself throws, that's reported as an
+ *     INCOMPLETE pass (never as "no defects found")
+ *   - surfaces uncaught page runtime errors as a hard finding (console errors, which are
+ *     often noisy third-party noise, stay a softer non-failing category)
  *   - runs an axe-core automated accessibility scan against the rendered DOM
  * and writes a JSON report plus the screenshots to --out.
  *
@@ -55,9 +60,9 @@ if (wantsHelp(args)) {
     name: "visual-qa.js",
     summary:
       "Renders a running app at multiple viewports (Playwright), captures screenshots, runs deterministic\n" +
-      "structural checks (overflow, clipped/zero-size controls, broken images, missing alt text, small hit\n" +
-      "targets, focus-obscured elements), and runs an axe-core automated accessibility scan. Requires the\n" +
-      "target app's dev server to already be running — this script does not start one.",
+      "structural checks (hard: overflow, broken images, missing alt, zero-size/focus-obscured controls,\n" +
+      "page runtime errors; advisory REVIEW: undersized <24px hit targets), and runs an axe-core automated\n" +
+      "accessibility scan. Requires the target app's dev server to already be running.",
     usage: "node scripts/visual-qa.js --url <http://localhost:PORT/route> [options]",
     options: [
       { flag: "--url <url>", desc: "URL to visit (required)" },
@@ -69,8 +74,8 @@ if (wantsHelp(args)) {
       { flag: "--help, -h", desc: "Show this help" },
     ],
     exitCodes: [
-      { code: "0", meaning: "All viewports rendered; no overflow, structural defects, or axe violations found" },
-      { code: "1", meaning: "Rendered successfully, but overflow, a structural defect, or an axe violation was found" },
+      { code: "0", meaning: "All viewports rendered; no hard structural defects, page errors, or axe violations (advisory REVIEW findings don't affect this)" },
+      { code: "1", meaning: "Overflow, a hard structural defect, an uncaught page error, a failed structural-check run, or an axe violation was found" },
       { code: "2", meaning: "Invalid arguments (missing --url, bad --wait-until value, etc.)" },
       { code: "3", meaning: "playwright and/or axe-core are not installed — see the printed fallback instructions" },
       { code: "4", meaning: "Unexpected crash" },
@@ -90,6 +95,11 @@ if (wantsHelp(args)) {
       "The axe-core scan covers a documented subset of WCAG rules (see report.json's `axe` block for exactly",
       "which tags/version ran) — 0 violations is NOT proof of full WCAG 2.2 AA conformance. Always follow up",
       "with checklists/accessibility-audit.md.",
+      "",
+      "Undersized (<24px) hit targets are reported as REVIEW, not a hard failure — they alone never cause a",
+      "non-zero exit. A structural-check run that itself throws is reported as an INCOMPLETE pass (exit 1),",
+      "never silently treated as \"no defects found\". Uncaught page runtime errors (report.json's",
+      "`pageErrors`) are a hard failure; console errors stay a softer, non-failing category.",
     ],
   });
   process.exit(0);
@@ -207,7 +217,12 @@ const AXE_DISCLAIMER =
 // boundary matters.
 const STRUCTURAL_CHECKS_SRC = `
 (function () {
-  const MIN_TARGET_PX = 24; // WCAG 2.2 2.5.8 minimum; 44px is the "preferred" mobile threshold, not the floor.
+  // WCAG 2.2 2.5.8's 24px floor (44px is the "preferred" mobile threshold, not the floor)
+  // — but the full criterion has exceptions (inline targets, equivalent target nearby,
+  // essential/legally-required sizing, user-agent-controlled controls) that a DOM-size
+  // heuristic can't reliably evaluate. Findings from this check are reported as
+  // advisory (REVIEW), not a guaranteed violation — see the Node-side reporting below.
+  const MIN_TARGET_PX = 24;
   const vw = document.documentElement.clientWidth;
   const vh = document.documentElement.clientHeight;
 
@@ -244,7 +259,14 @@ const STRUCTURAL_CHECKS_SRC = `
       zeroSizeVisible.push({ selector: describe(el), text: (el.textContent || "").trim().slice(0, 60) });
       continue;
     }
-    if (rendered && rect.width > 0 && rect.height > 0 && (rect.width < MIN_TARGET_PX || rect.height < MIN_TARGET_PX)) {
+    // WCAG 2.2's target-size criterion (2.5.8) has a documented exception for a target
+    // that's inline within a sentence/block of text (e.g. a plain link inside a
+    // paragraph) — its size is governed by the surrounding text, not a fixed minimum.
+    // Cheaply exclude the common case (an <a> still at its default inline display,
+    // i.e. not styled to look like a button) rather than trying to fully implement the
+    // spec's exception logic here.
+    const isInlineProseLink = el.tagName === "A" && style.display === "inline";
+    if (rendered && !isInlineProseLink && rect.width > 0 && rect.height > 0 && (rect.width < MIN_TARGET_PX || rect.height < MIN_TARGET_PX)) {
       undersizedTargets.push({
         selector: describe(el),
         text: (el.textContent || "").trim().slice(0, 60),
@@ -357,9 +379,13 @@ async function main() {
         }));
 
         try {
-          structural = await page.evaluate(STRUCTURAL_CHECKS_SRC);
+          const result = await page.evaluate(STRUCTURAL_CHECKS_SRC);
+          structural = { status: "ok", ...result };
         } catch (err) {
-          structural = { error: String(err) };
+          // The detector itself failed to run — this is NOT "no defects found". Whatever
+          // structural issues might be on this page are simply unknown. Never let this
+          // collapse into a clean/passing report; see the reporting logic below.
+          structural = { status: "failed", error: String(err) };
         }
 
         await page.evaluate(axeSource);
@@ -426,23 +452,39 @@ async function main() {
     }
 
     const s = vp.structural;
-    if (s && !s.error) {
-      const structuralIssueCount =
-        s.brokenImages.length + s.missingAlt.length + s.zeroSizeVisibleInteractive.length + s.undersizedInteractiveTargets.length + s.focusObscured.length;
-      if (structuralIssueCount > 0) {
+    if (s && s.status === "ok") {
+      const hardIssueCount = s.brokenImages.length + s.missingAlt.length + s.zeroSizeVisibleInteractive.length + s.focusObscured.length;
+      if (hardIssueCount > 0) {
         anyFailure = true;
-        console.log(`    structural findings: ${structuralIssueCount}`);
+        console.log(`    structural findings (hard): ${hardIssueCount}`);
         if (s.brokenImages.length) console.log(`      broken images: ${s.brokenImages.length}`);
         if (s.missingAlt.length) console.log(`      images missing alt: ${s.missingAlt.length}`);
         if (s.zeroSizeVisibleInteractive.length) console.log(`      zero-size visible interactive elements: ${s.zeroSizeVisibleInteractive.length}`);
-        if (s.undersizedInteractiveTargets.length) console.log(`      undersized hit targets (<24px): ${s.undersizedInteractiveTargets.length}`);
         if (s.focusObscured.length) console.log(`      focus-obscured controls (WCAG 2.4.11): ${s.focusObscured.length}`);
       }
-    } else if (s && s.error) {
-      console.log(`    structural checks failed to run: ${s.error}`);
+      // Undersized hit targets are advisory, not a hard failure — WCAG 2.2's 2.5.8 has
+      // exceptions (inline targets, equivalent nearby targets, essential sizing) this
+      // DOM-size heuristic can't fully evaluate. Reported for review either way.
+      if (s.undersizedInteractiveTargets.length > 0) {
+        console.log(`    REVIEW: potentially undersized interactive target(s) (<24px, advisory — see checklists/accessibility-audit.md): ${s.undersizedInteractiveTargets.length}`);
+      }
+    } else if (s && s.status === "failed") {
+      // The detector couldn't run at all — treat this as an INCOMPLETE QA pass, not a
+      // clean one. Hard structural defects on this viewport cannot be ruled out.
+      anyFailure = true;
+      console.log(`    STRUCTURAL CHECKS FAILED TO RUN (QA incomplete for this viewport): ${s.error}`);
+    }
+
+    if (vp.pageErrors && vp.pageErrors.length > 0) {
+      anyFailure = true;
+      console.log(`    page runtime errors (uncaught exceptions): ${vp.pageErrors.length}`);
+      vp.pageErrors.slice(0, 3).forEach((e) => console.log(`      - ${String(e).slice(0, 200)}`));
+      if (vp.pageErrors.length > 3) console.log(`      ... and ${vp.pageErrors.length - 3} more (see report.json)`);
     }
 
     if (vp.consoleErrors.length > 0) {
+      // Softer category, deliberately non-failing: many apps emit noisy third-party
+      // console errors (analytics, ad blockers, etc.) unrelated to the app's own defects.
       console.log(`    console errors: ${vp.consoleErrors.length}`);
     }
   }

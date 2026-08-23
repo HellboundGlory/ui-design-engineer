@@ -7,9 +7,11 @@ on:
     branches: [main]
 
 jobs:
-  # Fast job: no network installs beyond `npm ci` for tooling that ships in devDependencies
-  # for testing purposes only (see package.json) — validates the skill's own documentation,
-  # cross-references, and deterministic scripts. Runs on every push/PR.
+  # Fast job: no npm install at all. Every script it exercises (inspect-project.js,
+  # check-ui-dependencies.js, audit-hardcoded-colors.js, validate-design-tokens.js, and
+  # visual-qa.js's argument handling) runs on Node's standard library alone — the
+  # package.json devDependencies (playwright/axe-core) are only needed by the separate
+  # playwright-integration job below. Runs on every push/PR.
   validate:
     name: Validate skill (fast)
     runs-on: ubuntu-latest
@@ -22,7 +24,7 @@ jobs:
 
       - name: Script syntax check
         run: |
-          for f in scripts/*.js scripts/lib/*.js tests/*.js; do
+          for f in scripts/*.js scripts/lib/*.js tests/*.js tests/fixtures/*/*.js; do
             echo "node --check $f"
             node --check "$f"
           done
@@ -47,8 +49,8 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Install test dependencies
-        run: npm install --no-audit --no-fund
+      - name: Install test dependencies (deterministic — uses package-lock.json)
+        run: npm ci --no-audit --no-fund
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium

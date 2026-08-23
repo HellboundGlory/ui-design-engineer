@@ -40,7 +40,11 @@ if (wantsHelp(args)) {
     ],
     notes: [
       "No dependencies beyond Node's built-in fs/path — runs anywhere Node runs.",
-      "Output is safe to pipe: `node scripts/inspect-project.js --json | jq .componentSystem`",
+      "Output includes both `componentSystem`/`primitiveSystem` (the primary/first match, kept for",
+      "backwards compatibility) and `componentSystems`/`primitiveSystems` (every system detected — always",
+      "check these arrays, not just the singular fields, when judging whether a cross-system conflict",
+      "exists; e.g. a project can show componentSystem \"shadcn\" while componentSystems also lists \"mui\").",
+      "Output is safe to pipe: `node scripts/inspect-project.js --json | jq .componentSystems`",
     ],
   });
   process.exit(0);
@@ -150,31 +154,34 @@ for (const file of cssFiles) {
 }
 
 // --- Component / primitive / registry detection ---
-const primitiveSystem = hasDep("@radix-ui/react-dialog") || Object.keys(deps).some((d) => d.startsWith("@radix-ui/"))
-  ? "radix"
-  : hasDep("@base-ui-components/react")
-  ? "base-ui"
-  : hasDep("react-aria") || hasDep("react-aria-components")
-  ? "react-aria"
-  : hasDep("@headlessui/react")
-  ? "headlessui"
-  : null;
+// A project can legitimately (or accidentally) have MORE THAN ONE of these present at
+// once — that's exactly the situation check-ui-dependencies.js needs to flag as a
+// cross-system conflict (e.g. an existing MUI app that picked up shadcn + Radix along
+// the way). Report every system detected, not just the first ternary match, so an
+// agent (or check-ui-dependencies.js) can actually see the full picture. The singular
+// `componentSystem`/`primitiveSystem` fields are kept for backwards compatibility and
+// represent the PRIMARY (first-priority) match only — always prefer the arrays below
+// when reasoning about whether a conflict exists.
+const PRIMITIVE_SYSTEM_CHECKS = [
+  { id: "radix", present: () => Object.keys(deps).some((d) => d.startsWith("@radix-ui/")) },
+  { id: "base-ui", present: () => hasDep("@base-ui-components/react") },
+  { id: "react-aria", present: () => hasDep("react-aria") || hasDep("react-aria-components") },
+  { id: "headlessui", present: () => hasDep("@headlessui/react") },
+];
+const primitiveSystems = PRIMITIVE_SYSTEM_CHECKS.filter((c) => c.present()).map((c) => c.id);
+const primitiveSystem = primitiveSystems[0] || null;
 
-const componentSystem = exists("components.json")
-  ? "shadcn"
-  : hasDep("@mantine/core")
-  ? "mantine"
-  : hasDep("@chakra-ui/react")
-  ? "chakra"
-  : hasDep("@mui/material")
-  ? "mui"
-  : hasDep("@fluentui/react-components")
-  ? "fluent"
-  : hasDep("@primer/react")
-  ? "primer"
-  : hasDep("antd")
-  ? "antd"
-  : null;
+const COMPONENT_SYSTEM_CHECKS = [
+  { id: "shadcn", present: () => exists("components.json") },
+  { id: "mantine", present: () => hasDep("@mantine/core") },
+  { id: "chakra", present: () => hasDep("@chakra-ui/react") },
+  { id: "mui", present: () => hasDep("@mui/material") },
+  { id: "fluent", present: () => hasDep("@fluentui/react-components") },
+  { id: "primer", present: () => hasDep("@primer/react") },
+  { id: "antd", present: () => hasDep("antd") },
+];
+const componentSystems = COMPONENT_SYSTEM_CHECKS.filter((c) => c.present()).map((c) => c.id);
+const componentSystem = componentSystems[0] || null;
 
 const icons = hasDep("lucide-react")
   ? "lucide"
@@ -252,7 +259,9 @@ const summary = {
   cssCustomPropertyCount,
   sampleTokenFile,
   primitiveSystem,
+  primitiveSystems,
   componentSystem,
+  componentSystems,
   icons,
   animation,
   charts,
@@ -278,6 +287,13 @@ if (jsonOnly) {
   if (componentSystem && componentSystem !== "shadcn") {
     console.log(
       `Detected an existing component system ("${componentSystem}"). Per references/component-selection.md, prefer this system over introducing shadcn/Tailwind-first primitives.`
+    );
+  }
+  if (componentSystems.length > 1 || (componentSystem && componentSystem !== "shadcn" && primitiveSystems.length > 0)) {
+    console.log(
+      `Multiple component/primitive systems detected (componentSystems: ${JSON.stringify(componentSystems)}, primitiveSystems: ${JSON.stringify(
+        primitiveSystems
+      )}) — this may be an unintentional second design system. Run node scripts/check-ui-dependencies.js to check for a cross-system conflict.`
     );
   }
   if (!pkg) {

@@ -67,6 +67,33 @@ function assert(label, condition, detail) {
   assert("inspect-project.js detects charts=recharts", summary && summary.charts === "recharts", JSON.stringify(summary));
 }
 
+// --- inspect-project.js: multi-system detection (cross-system fixture) ---
+{
+  const { code, stdout } = run("inspect-project.js", ["--dir", path.join(FIXTURES, "existing-mui-with-shadcn"), "--json"]);
+  let summary = null;
+  try {
+    summary = JSON.parse(stdout);
+  } catch {
+    /* leave null */
+  }
+  assert("inspect-project.js exits 0 on the mui+shadcn+radix fixture", code === 0, `exit code ${code}`);
+  assert(
+    "inspect-project.js detects BOTH mui and shadcn in componentSystems",
+    summary && Array.isArray(summary.componentSystems) && summary.componentSystems.includes("mui") && summary.componentSystems.includes("shadcn"),
+    JSON.stringify(summary)
+  );
+  assert(
+    "inspect-project.js detects radix in primitiveSystems",
+    summary && Array.isArray(summary.primitiveSystems) && summary.primitiveSystems.includes("radix"),
+    JSON.stringify(summary)
+  );
+  assert(
+    "inspect-project.js's backwards-compatible singular componentSystem is one of the detected systems",
+    summary && summary.componentSystems.includes(summary.componentSystem),
+    JSON.stringify(summary)
+  );
+}
+
 // --- check-ui-dependencies.js fixtures ---
 {
   const clean = run("check-ui-dependencies.js", ["--dir", path.join(FIXTURES, "dependency-clean")]);
@@ -87,6 +114,48 @@ function assert(label, condition, detail) {
     "check-ui-dependencies.js: fully-allowed exception (config file) exits 0 even with --strict",
     allowedStrict.code === 0 && /ALLOWED EXCEPTION/.test(allowedStrict.stdout),
     allowedStrict.stdout
+  );
+
+  // --- Cross-system conflict: existing MUI project that also picked up shadcn + Radix ---
+  // (each side has only ONE package, so this would be invisible to the same-category
+  // ">1 package" checks above — it's the specific gap V1.1.1 closes. See Test K.)
+  const crossDefault = run("check-ui-dependencies.js", ["--dir", path.join(FIXTURES, "existing-mui-with-shadcn")]);
+  assert(
+    "check-ui-dependencies.js: mui+shadcn+radix reports BOTH cross-system conflicts, non-blocking without --strict",
+    crossDefault.code === 0 &&
+      /CONFLICT: cross-system pairing "shadcn .* \+ "mui/.test(crossDefault.stdout) &&
+      /CONFLICT: cross-system pairing "mui .* \+ "radix/.test(crossDefault.stdout),
+    crossDefault.stdout
+  );
+  assert(
+    "check-ui-dependencies.js: shadcn+radix alone (the expected shadcn pairing) never appears as a conflict",
+    !/pairing "shadcn[^"]*" \+ "radix/.test(crossDefault.stdout) && !/pairing "radix[^"]*" \+ "shadcn/.test(crossDefault.stdout),
+    crossDefault.stdout
+  );
+
+  const crossStrict = run("check-ui-dependencies.js", ["--dir", path.join(FIXTURES, "existing-mui-with-shadcn"), "--strict"]);
+  assert("check-ui-dependencies.js: mui+shadcn+radix with --strict exits 1 (unresolved cross-system conflict)", crossStrict.code === 1, crossStrict.stdout);
+
+  const crossAllowed = run("check-ui-dependencies.js", [
+    "--dir",
+    path.join(FIXTURES, "existing-mui-with-shadcn"),
+    "--strict",
+    "--allow",
+    "mui",
+  ]);
+  assert(
+    "check-ui-dependencies.js: --allow mui resolves both cross-system findings, exits 0 even with --strict",
+    crossAllowed.code === 0 && /ALLOWED EXCEPTION/.test(crossAllowed.stdout) && !/\bCONFLICT:/.test(crossAllowed.stdout),
+    crossAllowed.stdout
+  );
+
+  // shadcn+radix alone (no monolithic system) must never be flagged — this is the
+  // expected, compatible pairing shadcn is built on.
+  const shadcnRadixOnly = run("check-ui-dependencies.js", ["--dir", path.join(FIXTURES, "inspect-clean-react"), "--strict"]);
+  assert(
+    "check-ui-dependencies.js: shadcn+radix alone (greenfield fixture) exits 0 even with --strict — no false conflict",
+    shadcnRadixOnly.code === 0 && !/CONFLICT/.test(shadcnRadixOnly.stdout),
+    shadcnRadixOnly.stdout
   );
 }
 

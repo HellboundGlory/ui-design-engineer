@@ -134,13 +134,71 @@ async function main() {
     assert("catches the planted broken image", /broken images: 1/.test(loadResult.stdout), loadResult.stdout);
     assert("catches the planted missing-alt image", /images missing alt: \d/.test(loadResult.stdout), loadResult.stdout);
     assert("catches the planted zero-size interactive element", /zero-size visible interactive elements: 1/.test(loadResult.stdout), loadResult.stdout);
-    assert("catches the planted undersized hit target", /undersized hit targets/.test(loadResult.stdout), loadResult.stdout);
+    assert("catches the planted undersized hit target (as an advisory REVIEW, not a hard finding)", /REVIEW: potentially undersized/.test(loadResult.stdout), loadResult.stdout);
     assert("catches the planted focus-obscured control", /focus-obscured controls/.test(loadResult.stdout), loadResult.stdout);
 
     const reportPath = path.join(OUT, "load", "report.json");
     const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
     assert("report.json records axe version + tags + disclaimer", Boolean(report.axe && report.axe.version && report.axe.tags && report.axe.disclaimer), JSON.stringify(report.axe));
     assert("report.json records the readiness config used", report.readiness && report.readiness.waitUntil === "load" && report.readiness.waitForSelector === "#log-list", JSON.stringify(report.readiness));
+
+    console.log("");
+    console.log("=== Scenario 3: /small-target-only — an undersized target ALONE must not cause a hard failure ===");
+    const smallTargetResult = run([
+      "--url",
+      `http://localhost:${PORT}/small-target-only`,
+      "--viewports",
+      "375x812",
+      "--out",
+      path.join(OUT, "small-target"),
+    ]);
+    assert("small-target-only reports the undersized target as REVIEW", /REVIEW: potentially undersized/.test(smallTargetResult.stdout), smallTargetResult.stdout);
+    assert(
+      "small-target-only page (no other defects) exits 0 — advisory finding alone is non-blocking",
+      smallTargetResult.code === 0,
+      smallTargetResult.stdout
+    );
+    assert("small-target-only reports no hard structural findings", !/structural findings \(hard\)/.test(smallTargetResult.stdout), smallTargetResult.stdout);
+
+    console.log("");
+    console.log("=== Scenario 4: /page-error — an uncaught runtime exception must be surfaced and fail QA ===");
+    const pageErrorResult = run([
+      "--url",
+      `http://localhost:${PORT}/page-error`,
+      "--viewports",
+      "375x812",
+      "--out",
+      path.join(OUT, "page-error"),
+    ]);
+    assert("page-error is surfaced in the CLI summary", /page runtime errors \(uncaught exceptions\)/.test(pageErrorResult.stdout), pageErrorResult.stdout);
+    assert("page-error causes a non-zero exit", pageErrorResult.code === 1, pageErrorResult.stdout);
+
+    console.log("");
+    console.log("=== Scenario 5: /broken-structural-checks — a failed structural-check run must be INCOMPLETE, never OK ===");
+    const brokenChecksResult = run([
+      "--url",
+      `http://localhost:${PORT}/broken-structural-checks`,
+      "--viewports",
+      "375x812",
+      "--out",
+      path.join(OUT, "broken-checks"),
+    ]);
+    assert("broken-structural-checks reports the failure explicitly", /STRUCTURAL CHECKS FAILED TO RUN/.test(brokenChecksResult.stdout), brokenChecksResult.stdout);
+    assert("broken-structural-checks causes a non-zero exit (incomplete, not OK)", brokenChecksResult.code === 1, brokenChecksResult.stdout);
+    assert(
+      "broken-structural-checks never prints the clean-pass success message",
+      !/no horizontal overflow, structural defects/.test(brokenChecksResult.stdout),
+      brokenChecksResult.stdout
+    );
+
+    const brokenChecksReport = JSON.parse(fs.readFileSync(path.join(OUT, "broken-checks", "report.json"), "utf8"));
+    assert(
+      "report.json records structural.status = \"failed\" with an error message",
+      brokenChecksReport.viewports[0].structural &&
+        brokenChecksReport.viewports[0].structural.status === "failed" &&
+        typeof brokenChecksReport.viewports[0].structural.error === "string",
+      JSON.stringify(brokenChecksReport.viewports[0].structural)
+    );
   } finally {
     server.kill();
     fs.rmSync(OUT, { recursive: true, force: true });

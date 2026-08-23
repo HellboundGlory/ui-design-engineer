@@ -19,6 +19,15 @@
  * gate that treats an unresolved conflict as a hard failure, and --allow / a project
  * config file to mark a specific conflict as a reviewed, intentional exception.
  *
+ * This also checks CROSS-system pairings, not just duplicates within one category —
+ * e.g. an existing MUI project that has also picked up shadcn (components.json) and/or
+ * Radix packages. MUI/Mantine/Chakra/Fluent/Primer/Ant Design each ship their own
+ * primitive/interaction layer, so pairing one of them with shadcn or with a headless
+ * primitive engine (Radix, Base UI, React Aria, Headless UI) is very likely an
+ * unintended second design system, even though each side only has ONE package and so
+ * would never trip the same-category ">1 package" check on its own. shadcn itself is
+ * built ON TOP of Radix or Base UI, so that specific pairing is expected and not flagged.
+ *
  * This does NOT install packages or inspect node_modules for actual bundle size; it
  * works off known-heavy package names as a heuristic. For real bundle numbers, use the
  * project's own bundler analyzer.
@@ -37,7 +46,8 @@ if (wantsHelp(args)) {
   printHelp({
     name: "check-ui-dependencies.js",
     summary:
-      "Scans package.json for duplicate UI primitive/component engines, category overlap (date, icons,\n" +
+      "Scans package.json for duplicate UI primitive/component engines (including CROSS-system pairings —\n" +
+      "e.g. an existing MUI project that also picked up shadcn/Radix), category overlap (date, icons,\n" +
       "animation, charts, forms), and known-heavy UI-adjacent packages. A component-system or primitive-\n" +
       "engine conflict is reported as CONFLICT but does NOT fail the run by default — legitimate migrations\n" +
       "and isolated legacy modules produce the same shape. Use --strict for a CI gate, and --allow (or a\n" +
@@ -62,9 +72,11 @@ if (wantsHelp(args)) {
     ],
     notes: [
       "Findings are labeled OK / REVIEW / CONFLICT / ALLOWED EXCEPTION. REVIEW (category overlap, heavy",
-      "deps) is always non-blocking. CONFLICT (primitive-engine or component-system overlap) is the one",
-      "category --strict can fail on. Config file shape:",
-      '  { "allowUiDependencies": [{ "name": "@mui/material", "reason": "migrating off MUI, TICKET-123" }] }',
+      "deps) is always non-blocking. CONFLICT (primitive-engine, component-system, or cross-system overlap)",
+      "is the category --strict can fail on. For a cross-system finding, --allow accepts either the package",
+      'name (e.g. "@mui/material") or the short system id (e.g. "mui", "shadcn", "radix") — either resolves',
+      "the pairing. Config file shape:",
+      '  { "allowUiDependencies": [{ "name": "mui", "reason": "migrating off MUI, TICKET-123" }] }',
     ],
   });
   process.exit(0);
@@ -146,6 +158,26 @@ function presentInCategory(category) {
 
 const HARD_CONFLICT_CATEGORIES = new Set(["component-system", "primitive-engine"]);
 
+// --- Cross-system compatibility model ---
+// Short, explicit id per detected package, matching inspect-project.js's system ids —
+// used both for readable output and so --allow/config-file exceptions can name a
+// system ("mui", "shadcn", "radix") rather than requiring an exact package string.
+const MONOLITHIC_SYSTEM_ID = {
+  "@mantine/core": "mantine",
+  "@chakra-ui/react": "chakra",
+  "@mui/material": "mui",
+  "@fluentui/react-components": "fluent",
+  "@primer/react": "primer",
+  antd: "antd",
+};
+function primitiveSystemId(pkg) {
+  if (pkg.startsWith("@radix-ui/")) return "radix";
+  if (pkg === "@base-ui-components/react") return "base-ui";
+  if (pkg === "react-aria-components") return "react-aria";
+  if (pkg === "@headlessui/react") return "headlessui";
+  return pkg;
+}
+
 // Known heavy UI-adjacent single-purpose packages worth flagging as a bundle-budget
 // review trigger. This is a heuristic allowlist, not exhaustive.
 const HEAVY_PACKAGES = new Set([
@@ -195,6 +227,80 @@ for (const [category, def] of Object.entries(CATEGORIES)) {
     console.log(`REVIEW: "${category}" also includes a non-exempted package: ${notAllowed[0]}`);
   }
   console.log("");
+}
+
+// --- Cross-system conflict detection ---
+// The loop above only catches DUPLICATES within one category (two component systems,
+// or two primitive engines). It can't see a project with exactly one component system
+// AND exactly one primitive engine, because each category individually has only one
+// package present. That's precisely the shape of "existing MUI app that also picked up
+// shadcn + Radix" — check it explicitly here instead.
+{
+  const shadcnPresent = fs.existsSync(path.join(ROOT, "components.json"));
+  const monolithicSystems = presentInCategory(CATEGORIES["component-system"]).map((pkg) => ({
+    id: MONOLITHIC_SYSTEM_ID[pkg],
+    pkg,
+  }));
+  const primitiveSystemsPresentMap = new Map();
+  for (const pkg of presentInCategory(CATEGORIES["primitive-engine"])) {
+    const id = primitiveSystemId(pkg);
+    if (!primitiveSystemsPresentMap.has(id)) primitiveSystemsPresentMap.set(id, pkg);
+  }
+  const primitiveSystemsPresent = [...primitiveSystemsPresentMap.entries()].map(([id, pkg]) => ({ id, pkg }));
+
+  function identifiersFor(node) {
+    return node.pkg ? [node.id, node.pkg] : [node.id];
+  }
+  function allowedNode(node) {
+    return identifiersFor(node).find((id) => allowSet.has(id)) || null;
+  }
+
+  const crossPairs = [];
+  // Rule A: shadcn (a component system in its own right) alongside another full
+  // component system — two competing design systems.
+  if (shadcnPresent) {
+    for (const m of monolithicSystems) {
+      crossPairs.push({
+        a: { id: "shadcn", pkg: null, label: "shadcn (components.json)" },
+        b: { ...m, label: `${m.id} (${m.pkg})` },
+        reason: "shadcn is itself a component system — pairing it with another full component system is very likely two competing design systems, not one.",
+      });
+    }
+  }
+  // Rule B: a monolithic component system (which ships its own primitives/interaction
+  // layer) alongside a headless primitive engine (Radix, Base UI, React Aria, Headless
+  // UI) that has no reason to be there unless shadcn (or an equivalent bespoke layer)
+  // is the thing actually using it.
+  for (const m of monolithicSystems) {
+    for (const p of primitiveSystemsPresent) {
+      crossPairs.push({
+        a: { ...m, label: `${m.id} (${m.pkg})` },
+        b: { ...p, label: `${p.id} (${p.pkg})` },
+        reason: `${m.id} ships its own primitives/interaction layer — a headless engine like ${p.id} alongside it is very likely an unintended second system (unless something else, like shadcn, is deliberately using it).`,
+      });
+    }
+  }
+  // shadcn + Radix / shadcn + Base UI is the EXPECTED pairing (shadcn is built on top
+  // of one of them) — deliberately never generated as a finding above.
+
+  for (const pair of crossPairs) {
+    anyFinding = true;
+    const allowedVia = allowedNode(pair.a) || allowedNode(pair.b);
+    if (allowedVia) {
+      console.log(`ALLOWED EXCEPTION: cross-system pairing "${pair.a.label}" + "${pair.b.label}" is marked as reviewed.`);
+      console.log(`  - ${allowedVia}: ${allowReasons[allowedVia]}`);
+    } else {
+      unresolvedConflict = true;
+      console.log(`CONFLICT: cross-system pairing "${pair.a.label}" + "${pair.b.label}" — no documented exception.`);
+      console.log(`  ${pair.reason}`);
+      console.log("  Per references/component-selection.md, prefer a single primitive/component engine per project.");
+      console.log("  Legitimate reasons this can happen: an in-progress migration, an isolated legacy module, or");
+      console.log("  scoped specialist functionality. If intentional, mark it reviewed:");
+      console.log(`    node scripts/check-ui-dependencies.js --allow ${pair.a.id}`);
+      console.log(`  ...or add it to ${path.basename(allowFilePath)} with a reason, and record it in DESIGN.md §19.`);
+    }
+    console.log("");
+  }
 }
 
 const heavyFound = depNames.filter((d) => HEAVY_PACKAGES.has(d));
