@@ -35,3 +35,9 @@ Subjective design quality resists full quantification. Two designs can score ide
 ## Extending the suite
 
 These 12 tests are a starting benchmark, not exhaustive. When adding a new test, follow the existing format (Prompt / Setup / Success conditions / Failure conditions / Scoring areas) and be specific about the failure conditions — a vague "should look good" test doesn't discriminate between skill versions the way a concrete failure condition does.
+
+## Storing real results
+
+`results/` holds actual A/B run output once someone runs these tests for real — see `results/README.md` for the directory convention and `results/score-template.md` for the per-run scorecard (rubric scores, failure conditions triggered, qualitative critique, artifacts). It starts empty: no run has been scored here yet, and nothing elsewhere in this repository should be read as a claim that the skill has been proven better than baseline until real results are recorded there.
+
+This suite and `tests/` (at the repo root) test different things: `tests/` asks "does the deterministic machinery (the scripts) work correctly" — that's a yes/no a script can verify, and it runs in CI. This suite asks "does having the skill available make an agent design better" — that's a judgment call that needs an actual run and a human or careful agent reading the output; no script can grade it for you.

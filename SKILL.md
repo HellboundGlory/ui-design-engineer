@@ -1,6 +1,7 @@
 ---
 name: ui-design-engineer
 description: Universal design-intelligence and UI/UX product-design skill for building or modifying frontend interfaces — dashboards, admin panels, settings screens, landing pages, SaaS products, design systems, AI chat interfaces, forms, and any visual/responsive frontend work. Produces distinctive, accessible (WCAG 2.2 AA), production-ready interfaces that resist generic "AI slop" clichés (purple gradients, card-fatigue, unstyled defaults) and avoid visual drift in existing codebases. First-class support for React/Tailwind/shadcn, with framework-agnostic design reasoning for Vue, Svelte, and vanilla stacks. Use this whenever a request involves creating, redesigning, restyling, or polishing any user-facing UI — including when the user doesn't say "design" explicitly but asks to "build a dashboard," "add a settings page," "make this look better," "add a modal/page/component," or similar. Do not use for backend-only, database, or non-visual infrastructure work.
+license: MIT
 ---
 
 # UI Design Engineer
@@ -29,8 +30,8 @@ Skipping straight to implementation (or straight to component selection) is the 
 7. **Design-system resolution** — read the project's root `DESIGN.md` if one exists. If not, instantiate `templates/DESIGN.md`, fill its slots from the chosen archetype and product decisions (don't leave brackets in place), and run `node scripts/validate-design-tokens.js` once a stylesheet exists.
 8. **Component strategy** — follow the 7-level selection hierarchy in `references/component-selection.md`. Run the normalization pipeline on anything pulled from an external registry before considering it done.
 9. **Implementation** — build using the project's actual detected framework/language/conventions (from step 2), not an assumed default.
-10. **Render & capture** — multi-viewport screenshots via a browser MCP or `node scripts/visual-qa.js --url <dev-server-url>` (375/768/1440/1920).
-11. **Critique** — `checklists/visual-qa-critique.md` for visual quality, `checklists/accessibility-audit.md` + axe results for a11y.
+10. **Render & capture** — multi-viewport screenshots via a browser MCP or `node scripts/visual-qa.js --url <dev-server-url>` (375/768/1440/1920). For an app with WebSockets, SSE, streaming responses, live logs, or polling — where the network never goes idle — do not use the default readiness mode's `networkidle` option; use `--wait-for <selector-marking-real-content>` with a short `--settle-ms` instead, or the load event will hang/time out waiting for network activity that never stops. Run `node scripts/visual-qa.js --help` for the full readiness options.
+11. **Critique** — `checklists/visual-qa-critique.md` for visual quality, `checklists/accessibility-audit.md` + the axe-core results for a11y. Treat the axe results as an automated scan of a documented rule subset, not proof of WCAG 2.2 AA conformance — `report.json`'s `axe` block records exactly what ran; the checklist's manual checks are still required.
 12. **Refine** — fix what critique surfaced, re-render. Cap at ~3 iterations; past the cap, stop and report clearly what remains unresolved rather than claiming success.
 13. **Persist memory** — append new decisions to `DESIGN.md`'s decision log (§21) so the next session builds on this one instead of re-deriving or drifting from it.
 
@@ -61,15 +62,15 @@ Never claim a capability ran when it didn't. Report degradation honestly.
 
 If `scripts/visual-qa.js` reports missing `playwright`/`axe-core`, that is a correct, expected failure mode in a limited environment — follow its printed fallback instructions rather than treating it as blocking. This skill must remain fully usable with zero MCP servers configured.
 
-## Deterministic checks — run, don't skip
+## Deterministic checks — run them as tools, don't read their source
 
 - `scripts/inspect-project.js` — repo/stack inspection (Phase 2, above).
-- `scripts/validate-design-tokens.js` — DESIGN.md token contract vs. actual stylesheet.
-- `scripts/check-ui-dependencies.js` — duplicate primitive engines, category overlap, heavy-dependency review triggers.
-- `scripts/audit-hardcoded-colors.js` — token-bypass scan (raw hex, arbitrary Tailwind color utilities).
-- `scripts/visual-qa.js` — multi-viewport render + axe-core scan.
+- `scripts/validate-design-tokens.js` — DESIGN.md's documented token contract vs. the actual stylesheet. Default mode only checks that DESIGN.md's own tokens are implemented (a mature app's stylesheet legitimately has plenty of CSS variables DESIGN.md never claimed to own — `--sidebar-width`, `--toast-z-index`, and the like aren't drift). Add `--strict` for the exhaustive two-way comparison.
+- `scripts/check-ui-dependencies.js` — duplicate primitive engines/component systems, category overlap, heavy-dependency review triggers. A primitive-engine or component-system conflict prints as `CONFLICT` but doesn't fail the run by default — legitimate migrations and legacy modules look the same as accidental drift from the outside. Add `--strict` to gate on it in CI, and `--allow <package>` (or a `ui-design-engineer.config.json`) to mark a specific conflict as a reviewed exception.
+- `scripts/audit-hardcoded-colors.js` — token-bypass scan (raw hex/rgb/hsl, arbitrary Tailwind color utilities) across component source *and* stylesheets (`.css`/`.scss`, including CSS/Sass modules).
+- `scripts/visual-qa.js` — multi-viewport render, deterministic structural checks (overflow, clipped/zero-size controls, broken images, missing alt text, undersized hit targets, focus-obscured elements), and an axe-core automated scan. It judges structural defects, not design quality — the critique checklist still needs a look.
 
-Each documents its own usage via `--help`-style output when run with no arguments or bad flags. Heavy-dependency and category-overlap findings are review triggers, not automatic rejections — use judgment, and record any deliberate exception in `DESIGN.md` §19.
+Every script accepts `--help` and documents its own flags, exit codes, and examples there — call `node scripts/<name>.js --help` instead of reading the script's source to figure out how to use it. This is deliberate: it's what keeps these usable as black-box tools without pulling their implementation into context. Findings labeled REVIEW are never automatic rejections — use judgment, and record any deliberate exception in `DESIGN.md` §19.
 
 ## The one thing to actively resist
 

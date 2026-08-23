@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # Fast job: no network installs beyond `npm ci` for tooling that ships in devDependencies
+  # for testing purposes only (see package.json) — validates the skill's own documentation,
+  # cross-references, and deterministic scripts. Runs on every push/PR.
+  validate:
+    name: Validate skill (fast)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Script syntax check
+        run: |
+          for f in scripts/*.js scripts/lib/*.js tests/*.js; do
+            echo "node --check $f"
+            node --check "$f"
+          done
+
+      - name: Repository validation (SKILL.md frontmatter, internal links, DESIGN.md/adapter consistency)
+        run: node tests/validate-repo.js
+
+      - name: Deterministic script fixture tests (inspect-project, check-ui-dependencies, audit-hardcoded-colors, validate-design-tokens, visual-qa arg handling)
+        run: node tests/run-fixtures.js
+
+  # Slower job: installs Playwright + a real Chromium binary to exercise visual-qa.js's
+  # actual rendering/readiness/structural-check behavior against a fixture app, including
+  # the streaming-app scenario (see tests/run-playwright-integration.js). Kept separate
+  # from `validate` so the fast job never waits on a browser download.
+  playwright-integration:
+    name: Playwright integration (visual-qa.js)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install test dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run visual-qa.js against the streaming-app fixture
+        run: npm run test:playwright

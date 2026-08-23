@@ -1,0 +1,10 @@
+{
+  "name": "fixture-dependency-clean",
+  "private": true,
+  "dependencies": {
+    "react": "^19.0.0",
+    "@radix-ui/react-dialog": "^1.0.0",
+    "lucide-react": "^0.400.0",
+    "date-fns": "^3.0.0"
+  }
+}

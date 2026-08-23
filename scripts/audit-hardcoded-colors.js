@@ -3,41 +3,88 @@
  * audit-hardcoded-colors.js
  *
  * Scans source files for likely design-token bypasses:
- *   - raw hex colors (#1e293b, #fff) in component source
+ *   - raw hex colors (#1e293b, #fff) in component source or stylesheets
  *   - arbitrary Tailwind color utilities (bg-blue-600, text-red-500, border-[#123456])
  *   - raw rgb()/hsl() color functions outside of token/theme definition files
  *
+ * Scans both component source (.tsx/.ts/.jsx/.js/.vue/.svelte) and stylesheets
+ * (.css/.scss, including .module.css/.module.scss) by default, since this skill's
+ * design-token guidance applies to whichever styling layer a project actually uses —
+ * a Sass-based or plain-CSS project shouldn't get a weaker audit than a Tailwind one.
+ *
  * Deliberately conservative to avoid drowning the agent in false positives:
  *   - skips node_modules, build output, and the project's own token-definition files
- *     (globals.css, tailwind.config.*, theme files) where raw values are expected
- *   - skips comments is NOT attempted (no real CSS/JS parser) — this is a fast
- *     regex-based scan meant to flag likely violations for human/agent review,
- *     not a guaranteed-precise AST audit
+ *     (globals.css, tailwind.config.*, theme/variables/tokens files) where raw values
+ *     are expected and correct
+ *   - this is a fast regex-based scan, not a real CSS/JS/AST parser: it does NOT
+ *     reliably distinguish a color literal inside a comment or a string constant from
+ *     one that's actually applied as a style. Building that would mean bundling a real
+ *     parser (or several, per language) for a marginal precision gain on what's already
+ *     meant to be a "flag for human/agent review" tool, not a silent auto-fixer — so
+ *     that tradeoff is intentionally not made here. Treat findings as leads, not verdicts.
  *
- * Usage: node scripts/audit-hardcoded-colors.js [--dir <path>] [--ext .tsx,.ts,.jsx,.js]
- * Exits non-zero if any likely violation is found.
+ * Usage: node scripts/audit-hardcoded-colors.js [--dir <path>] [--ext .tsx,.ts,...]
  * No dependencies beyond Node's built-in fs/path.
  */
 
 const fs = require("fs");
 const path = require("path");
+const { printHelp, wantsHelp } = require("./lib/cli-help");
 
 const args = process.argv.slice(2);
+
+if (wantsHelp(args)) {
+  printHelp({
+    name: "audit-hardcoded-colors.js",
+    summary:
+      "Regex-scans component source AND stylesheets for hardcoded colors that bypass the project's\n" +
+      "semantic design tokens: raw hex/rgb/hsl values, and arbitrary Tailwind palette utility classes.\n" +
+      "Findings are leads for review, not guaranteed violations — see the Limitations note below.",
+    usage: "node scripts/audit-hardcoded-colors.js [--dir <path>] [--ext <.ext,.ext,...>]",
+    options: [
+      { flag: "--dir <path>", desc: "Project root to scan (default: current directory)" },
+      { flag: "--ext <list>", desc: "Comma-separated extensions to scan (default: tsx,ts,jsx,js,vue,svelte,css,scss)" },
+      { flag: "--help, -h", desc: "Show this help" },
+    ],
+    exitCodes: [
+      { code: "0", meaning: "No likely token bypasses found" },
+      { code: "1", meaning: "One or more likely token bypasses found — review each, not a guaranteed defect" },
+    ],
+    examples: [
+      "node scripts/audit-hardcoded-colors.js",
+      "node scripts/audit-hardcoded-colors.js --ext .tsx,.css,.scss",
+    ],
+    notes: [
+      "Limitations: this is a regex scan, not an AST/CSS parser. It cannot reliably tell a color inside a",
+      "comment or string constant apart from one that's actually applied as a style. It also can't catch",
+      "colors built via string concatenation or CSS-in-JS template interpolation. Use judgment on findings.",
+      "Token/theme definition files (globals.css, tailwind.config.*, *theme*, *tokens*, *variables*,",
+      "*palette*) are always skipped — raw values are expected there.",
+    ],
+  });
+  process.exit(0);
+}
+
 function flagValue(flag, fallback) {
   const i = args.indexOf(flag);
   return i !== -1 ? args[i + 1] : fallback;
 }
 
 const ROOT = flagValue("--dir") ? path.resolve(flagValue("--dir")) : process.cwd();
-const extensions = flagValue("--ext", ".tsx,.ts,.jsx,.js,.vue,.svelte").split(",");
+const extensions = flagValue("--ext", ".tsx,.ts,.jsx,.js,.vue,.svelte,.css,.scss")
+  .split(",")
+  .map((e) => (e.startsWith(".") ? e : `.${e}`));
 
 const SKIP_DIRS = new Set(["node_modules", ".git", ".next", "dist", "build", "out", ".turbo", ".svelte-kit", "coverage"]);
 // Files where raw color values are the expected place they live — never flag these.
 const SKIP_FILE_PATTERNS = [
-  /globals?\.css$/i,
+  /globals?\.(css|scss)$/i,
   /tailwind\.config\.(js|ts|mjs|cjs)$/i,
-  /theme\.(js|ts|css)$/i,
-  /tokens?\.(js|ts|json|css)$/i,
+  /theme\.(js|ts|css|scss)$/i,
+  /tokens?\.(js|ts|json|css|scss)$/i,
+  /variables\.(css|scss)$/i,
+  /_variables\.scss$/i,
+  /palette\.(js|ts|css|scss)$/i,
   /design-tokens/i,
 ];
 
@@ -127,9 +174,9 @@ for (const f of findings) {
 }
 console.log("");
 console.log(
-  "Review each: replace with the project's semantic tokens (bg-primary, text-foreground, border-border, etc.)"
+  "Review each: replace with the project's semantic tokens (bg-primary, text-foreground, border-border, etc.,"
 );
-console.log("per references/design-system-tokens.md. Some matches may be legitimate (e.g. a one-off brand");
-console.log("illustration color, or a value inside a file this scanner doesn't know to skip) — use judgment,");
-console.log("but treat each as a real finding to justify, not to dismiss by default.");
+console.log("or var(--primary) / $primary in CSS/SCSS) per references/design-system-tokens.md. Some matches may");
+console.log("be legitimate (a one-off brand illustration color, a value inside a comment or string this regex");
+console.log("scanner can't distinguish) — use judgment, but treat each as a real finding to justify, not dismiss.");
 process.exit(1);

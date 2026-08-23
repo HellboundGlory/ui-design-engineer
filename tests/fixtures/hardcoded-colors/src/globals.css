@@ -1,0 +1,6 @@
+/* This is a token-definition file and must be SKIPPED by audit-hardcoded-colors.js —
+   raw values here are expected and correct. */
+:root {
+  --primary: #1e293b;
+  --card: #ffffff;
+}

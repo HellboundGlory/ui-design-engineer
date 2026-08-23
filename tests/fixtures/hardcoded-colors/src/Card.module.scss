@@ -1,0 +1,9 @@
+.card {
+  background-color: #1a1a2e;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.goodCard {
+  background-color: var(--card);
+  border-color: var(--border);
+}

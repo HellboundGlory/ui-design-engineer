@@ -1,0 +1,9 @@
+{
+  "name": "fixture-dependency-allowed-exception",
+  "private": true,
+  "dependencies": {
+    "react": "^19.0.0",
+    "@mui/material": "^5.0.0",
+    "@chakra-ui/react": "^2.0.0"
+  }
+}

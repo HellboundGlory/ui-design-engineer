@@ -1,0 +1,6 @@
+{
+  "allowUiDependencies": [
+    { "name": "@mui/material", "reason": "migration target — new code should use this" },
+    { "name": "@chakra-ui/react", "reason": "legacy module pending removal, tracked in TICKET-42" }
+  ]
+}

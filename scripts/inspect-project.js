@@ -16,8 +16,36 @@
 
 const fs = require("fs");
 const path = require("path");
+const { printHelp, wantsHelp } = require("./lib/cli-help");
 
 const args = process.argv.slice(2);
+
+if (wantsHelp(args)) {
+  printHelp({
+    name: "inspect-project.js",
+    summary:
+      "Scans a project for framework, styling architecture, component/primitive systems, and existing\n" +
+      "design memory (DESIGN.md). Run this before proposing any visual direction or component choice —\n" +
+      "it's Phase 2 (Existing-System Inspection) of the ui-design-engineer workflow.",
+    usage: "node scripts/inspect-project.js [--dir <path>] [--json]",
+    options: [
+      { flag: "--dir <path>", desc: "Project root to inspect (default: current directory)" },
+      { flag: "--json", desc: "Print only the JSON summary, no human-readable notes" },
+      { flag: "--help, -h", desc: "Show this help" },
+    ],
+    exitCodes: [{ code: "0", meaning: "Always — this is a read-only report, not a pass/fail gate" }],
+    examples: [
+      "node scripts/inspect-project.js",
+      "node scripts/inspect-project.js --dir ./apps/web --json",
+    ],
+    notes: [
+      "No dependencies beyond Node's built-in fs/path — runs anywhere Node runs.",
+      "Output is safe to pipe: `node scripts/inspect-project.js --json | jq .componentSystem`",
+    ],
+  });
+  process.exit(0);
+}
+
 const dirFlagIndex = args.indexOf("--dir");
 const ROOT = dirFlagIndex !== -1 ? path.resolve(args[dirFlagIndex + 1]) : process.cwd();
 const jsonOnly = args.includes("--json");
