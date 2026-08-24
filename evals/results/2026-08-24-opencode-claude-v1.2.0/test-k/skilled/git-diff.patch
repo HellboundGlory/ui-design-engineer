@@ -1,0 +1,127 @@
+diff --git a/package.json b/package.json
+index b3f7e6e..f54acd4 100644
+--- a/package.json
++++ b/package.json
+@@ -11,9 +11,11 @@
+   },
+   "dependencies": {
+     "@mantine/core": "^9.5.2",
++    "@mantine/dates": "^9.5.2",
+     "@mantine/hooks": "^9.5.2",
+     "@mantine/notifications": "^9.5.2",
+     "@tabler/icons-react": "^3.46.0",
++    "dayjs": "^1.11.23",
+     "react": "^19.2.8",
+     "react-dom": "^19.2.8",
+     "react-router-dom": "^7.18.2"
+diff --git a/src/components/Layout.tsx b/src/components/Layout.tsx
+index 80afe10..5f65825 100644
+--- a/src/components/Layout.tsx
++++ b/src/components/Layout.tsx
+@@ -1,21 +1,38 @@
+-import { AppShell, Group, NavLink as MantineNavLink, Text, Badge } from "@mantine/core";
+-import { IconLayoutDashboard, IconFolders } from "@tabler/icons-react";
++import { AppShell, Burger, Group, NavLink as MantineNavLink, Text, Badge } from "@mantine/core";
++import { useDisclosure } from "@mantine/hooks";
++import { IconLayoutDashboard, IconFolders, IconLayoutKanban } from "@tabler/icons-react";
+ import { NavLink, Outlet, useLocation } from "react-router-dom";
+ 
+ const nav = [
+   { to: "/", label: "Overview", icon: IconLayoutDashboard, end: true },
+   { to: "/projects", label: "Projects", icon: IconFolders },
++  { to: "/board", label: "Board", icon: IconLayoutKanban },
+ ];
+ 
+ export function Layout() {
+   const location = useLocation();
++  const [mobileOpened, { toggle: toggleMobile, close: closeMobile }] = useDisclosure(false);
++
+   return (
+-    <AppShell navbar={{ width: 240, breakpoint: "sm" }} header={{ height: 56 }} padding="lg">
++    <AppShell
++      navbar={{ width: 240, breakpoint: "sm", collapsed: { mobile: !mobileOpened } }}
++      header={{ height: 56 }}
++      padding="lg"
++    >
+       <AppShell.Header>
+         <Group h="100%" px="md" justify="space-between">
+-          <Text fw={700} size="sm">
+-            Meridian
+-          </Text>
++          <Group gap="sm">
++            <Burger
++              opened={mobileOpened}
++              onClick={toggleMobile}
++              hiddenFrom="sm"
++              size="sm"
++              aria-label={mobileOpened ? "Close navigation menu" : "Open navigation menu"}
++            />
++            <Text fw={700} size="sm">
++              Meridian
++            </Text>
++          </Group>
+           <Badge variant="light" color="brand" size="sm">
+             Workspace
+           </Badge>
+@@ -31,6 +48,7 @@ export function Layout() {
+             leftSection={<item.icon size={16} stroke={1.5} />}
+             active={item.end ? location.pathname === "/" : location.pathname.startsWith(item.to)}
+             variant="light"
++            onClick={closeMobile}
+           />
+         ))}
+       </AppShell.Navbar>
+diff --git a/src/main.tsx b/src/main.tsx
+index 81a45a5..4ffdb60 100644
+--- a/src/main.tsx
++++ b/src/main.tsx
+@@ -2,23 +2,29 @@ import { StrictMode } from 'react'
+ import { createRoot } from 'react-dom/client'
+ import { BrowserRouter, Routes, Route } from 'react-router-dom'
+ import { MantineProvider } from '@mantine/core'
++import { DatesProvider } from '@mantine/dates'
+ import '@mantine/core/styles.css'
++import '@mantine/dates/styles.css'
+ import { theme } from './theme'
+ import { Layout } from './components/Layout'
+ import { Overview } from './pages/Overview'
+ import { Projects } from './pages/Projects'
++import { Board } from './pages/Board'
+ 
+ createRoot(document.getElementById('root')!).render(
+   <StrictMode>
+     <MantineProvider theme={theme} defaultColorScheme="light">
+-      <BrowserRouter>
+-        <Routes>
+-          <Route element={<Layout />}>
+-            <Route index element={<Overview />} />
+-            <Route path="projects" element={<Projects />} />
+-          </Route>
+-        </Routes>
+-      </BrowserRouter>
++      <DatesProvider settings={{ firstDayOfWeek: 0 }}>
++        <BrowserRouter>
++          <Routes>
++            <Route element={<Layout />}>
++              <Route index element={<Overview />} />
++              <Route path="projects" element={<Projects />} />
++              <Route path="board" element={<Board />} />
++            </Route>
++          </Routes>
++        </BrowserRouter>
++      </DatesProvider>
+     </MantineProvider>
+   </StrictMode>,
+ )
+diff --git a/src/theme.ts b/src/theme.ts
+index 0d35542..3fdf4b2 100644
+--- a/src/theme.ts
++++ b/src/theme.ts
+@@ -17,6 +17,7 @@ export const theme = createTheme({
+   primaryColor: "brand",
+   colors: { brand },
+   defaultRadius: "md",
++  autoContrast: true,
+   fontFamily: "Source Sans Pro, ui-sans-serif, system-ui, sans-serif",
+   headings: {
+     fontFamily: "Source Sans Pro, ui-sans-serif, system-ui, sans-serif",

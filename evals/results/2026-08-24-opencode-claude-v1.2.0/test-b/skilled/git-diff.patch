@@ -1,0 +1,52 @@
+diff --git a/src/components/Input.tsx b/src/components/Input.tsx
+index cb9d284..db07bfc 100644
+--- a/src/components/Input.tsx
++++ b/src/components/Input.tsx
+@@ -1,8 +1,13 @@
+-import type { InputHTMLAttributes } from "react";
++import type { InputHTMLAttributes, Ref } from "react";
+ 
+-export function Input({ className = "", ...props }: InputHTMLAttributes<HTMLInputElement>) {
++export function Input({
++  className = "",
++  ref,
++  ...props
++}: InputHTMLAttributes<HTMLInputElement> & { ref?: Ref<HTMLInputElement> }) {
+   return (
+     <input
++      ref={ref}
+       className={`h-9 w-full rounded-md border border-border bg-bg-sunken px-3 text-sm text-text placeholder:text-text-faint focus:border-accent ${className}`}
+       {...props}
+     />
+diff --git a/src/components/Layout.tsx b/src/components/Layout.tsx
+index 119b294..4089515 100644
+--- a/src/components/Layout.tsx
++++ b/src/components/Layout.tsx
+@@ -2,6 +2,7 @@ import { NavLink, Outlet } from "react-router-dom";
+ 
+ const nav = [
+   { to: "/", label: "Dashboard", end: true },
++  { to: "/logs", label: "Logs" },
+   { to: "/billing", label: "Billing" },
+ ];
+ 
+diff --git a/src/main.tsx b/src/main.tsx
+index e75f114..c6b2a08 100644
+--- a/src/main.tsx
++++ b/src/main.tsx
+@@ -5,6 +5,7 @@ import './index.css'
+ import { Layout } from './components/Layout'
+ import { Dashboard } from './pages/Dashboard'
+ import { Billing } from './pages/Billing'
++import { Logs } from './pages/Logs'
+ 
+ createRoot(document.getElementById('root')!).render(
+   <StrictMode>
+@@ -12,6 +13,7 @@ createRoot(document.getElementById('root')!).render(
+       <Routes>
+         <Route element={<Layout />}>
+           <Route index element={<Dashboard />} />
++          <Route path="logs" element={<Logs />} />
+           <Route path="billing" element={<Billing />} />
+         </Route>
+       </Routes>

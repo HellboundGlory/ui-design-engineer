@@ -1,0 +1,143 @@
+{
+  "url": "http://localhost:5183/",
+  "generatedAt": "2026-08-24T13:59:12.472Z",
+  "readiness": {
+    "waitUntil": "load",
+    "waitForSelector": "main",
+    "settleMs": 500
+  },
+  "axe": {
+    "version": "4.13.0",
+    "tags": [
+      "wcag2a",
+      "wcag2aa",
+      "wcag21a",
+      "wcag21aa",
+      "wcag22aa"
+    ],
+    "disclaimer": "Automated axe-core scan covering a documented subset of WCAG 2.x A/AA rules (see `tags`). This is NOT a full WCAG 2.2 AA conformance test — axe-core's own documentation estimates automated tools catch roughly 30-40% of real accessibility issues. Zero violations means zero AUTOMATED violations found, not full conformance. Complete checklists/accessibility-audit.md for keyboard, focus order, and manual structural review."
+  },
+  "viewports": [
+    {
+      "viewport": "375x812",
+      "navigationError": null,
+      "screenshot": ".eval/visual-qa-report/375x812.png",
+      "overflow": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "hasHorizontalOverflow": false
+      },
+      "structural": {
+        "status": "ok",
+        "brokenImages": [],
+        "missingAlt": [],
+        "zeroSizeVisibleInteractive": [
+          {
+            "selector": "button.rounded-sm.px-2.5",
+            "text": "15m"
+          },
+          {
+            "selector": "button.rounded-sm.px-2.5",
+            "text": "1h"
+          },
+          {
+            "selector": "button.rounded-sm.px-2.5",
+            "text": "6h"
+          },
+          {
+            "selector": "button.rounded-sm.px-2.5",
+            "text": "24h"
+          },
+          {
+            "selector": "button.inline-flex.h-6",
+            "text": "Req/min"
+          },
+          {
+            "selector": "button.inline-flex.h-6",
+            "text": "Error rate"
+          },
+          {
+            "selector": "button.inline-flex.h-6",
+            "text": "p95 latency"
+          }
+        ],
+        "undersizedInteractiveTargets": [],
+        "focusObscured": [],
+        "focusableSampleSize": 7,
+        "focusableTotalCount": 14
+      },
+      "axeViolations": [],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": "768x1024",
+      "navigationError": null,
+      "screenshot": ".eval/visual-qa-report/768x1024.png",
+      "overflow": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "hasHorizontalOverflow": false
+      },
+      "structural": {
+        "status": "ok",
+        "brokenImages": [],
+        "missingAlt": [],
+        "zeroSizeVisibleInteractive": [],
+        "undersizedInteractiveTargets": [],
+        "focusObscured": [],
+        "focusableSampleSize": 13,
+        "focusableTotalCount": 14
+      },
+      "axeViolations": [],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": "1440x900",
+      "navigationError": null,
+      "screenshot": ".eval/visual-qa-report/1440x900.png",
+      "overflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "hasHorizontalOverflow": false
+      },
+      "structural": {
+        "status": "ok",
+        "brokenImages": [],
+        "missingAlt": [],
+        "zeroSizeVisibleInteractive": [],
+        "undersizedInteractiveTargets": [],
+        "focusObscured": [],
+        "focusableSampleSize": 13,
+        "focusableTotalCount": 14
+      },
+      "axeViolations": [],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": "1920x1080",
+      "navigationError": null,
+      "screenshot": ".eval/visual-qa-report/1920x1080.png",
+      "overflow": {
+        "scrollWidth": 1920,
+        "clientWidth": 1920,
+        "hasHorizontalOverflow": false
+      },
+      "structural": {
+        "status": "ok",
+        "brokenImages": [],
+        "missingAlt": [],
+        "zeroSizeVisibleInteractive": [],
+        "undersizedInteractiveTargets": [],
+        "focusObscured": [],
+        "focusableSampleSize": 13,
+        "focusableTotalCount": 14
+      },
+      "axeViolations": [],
+      "consoleErrors": [],
+      "pageErrors": []
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+ src/components/Layout.tsx | 3 ++-
+ src/main.tsx              | 2 ++
+ 2 files changed, 4 insertions(+), 1 deletion(-)

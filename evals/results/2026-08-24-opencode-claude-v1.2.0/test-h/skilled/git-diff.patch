@@ -1,0 +1,173 @@
+diff --git a/src/components/Modal.tsx b/src/components/Modal.tsx
+index 04cb45c..7c9beb3 100644
+--- a/src/components/Modal.tsx
++++ b/src/components/Modal.tsx
+@@ -1,26 +1,67 @@
+-import { useEffect, type ReactNode } from "react";
++import { useEffect, useRef, type ReactNode } from "react";
+ import { createPortal } from "react-dom";
+ 
++const widths = {
++  md: "max-w-md",
++  lg: "max-w-lg",
++};
++
++const FOCUSABLE_SELECTOR =
++  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
++
+ export function Modal({
+   open,
+   onClose,
+   title,
+   children,
+   footer,
++  size = "md",
+ }: {
+   open: boolean;
+   onClose: () => void;
+   title: string;
+   children: ReactNode;
+   footer?: ReactNode;
++  size?: keyof typeof widths;
+ }) {
++  const dialogRef = useRef<HTMLDivElement>(null);
++
+   useEffect(() => {
+     if (!open) return;
++
++    const previouslyFocused = document.activeElement as HTMLElement | null;
++    const dialog = dialogRef.current;
++    const firstFocusable = dialog?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
++    firstFocusable?.focus();
++
+     const onKey = (e: KeyboardEvent) => {
+-      if (e.key === "Escape") onClose();
++      if (e.key === "Escape") {
++        onClose();
++        return;
++      }
++      if (e.key !== "Tab" || !dialog) return;
++
++      const focusable = Array.from(
++        dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
++      );
++      if (focusable.length === 0) return;
++
++      const first = focusable[0];
++      const last = focusable[focusable.length - 1];
++
++      if (e.shiftKey && document.activeElement === first) {
++        e.preventDefault();
++        last.focus();
++      } else if (!e.shiftKey && document.activeElement === last) {
++        e.preventDefault();
++        first.focus();
++      }
+     };
+     document.addEventListener("keydown", onKey);
+-    return () => document.removeEventListener("keydown", onKey);
++    return () => {
++      document.removeEventListener("keydown", onKey);
++      previouslyFocused?.focus();
++    };
+   }, [open, onClose]);
+ 
+   if (!open) return null;
+@@ -33,10 +74,11 @@ export function Modal({
+         aria-hidden="true"
+       />
+       <div
++        ref={dialogRef}
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="modal-title"
+-        className="relative w-full max-w-md rounded-lg border border-border-strong bg-bg-raised shadow-xl"
++        className={`relative w-full ${widths[size]} rounded-lg border border-border-strong bg-bg-raised shadow-xl`}
+       >
+         <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
+           <h2 id="modal-title" className="text-sm font-medium text-text">
+diff --git a/src/pages/Billing.tsx b/src/pages/Billing.tsx
+index f12684b..83dc8c2 100644
+--- a/src/pages/Billing.tsx
++++ b/src/pages/Billing.tsx
+@@ -1,6 +1,8 @@
++import { useState } from "react";
+ import { Card, CardHeader, CardBody } from "../components/Card";
+ import { Button } from "../components/Button";
+ import { Badge } from "../components/Badge";
++import { WebhookConfigModal, type WebhookEventId } from "../components/WebhookConfigModal";
+ 
+ const invoices = [
+   { id: "INV-2091", date: "2026-08-01", amount: "$249.00", status: "paid" as const },
+@@ -8,7 +10,14 @@ const invoices = [
+   { id: "INV-2064", date: "2026-06-01", amount: "$249.00", status: "paid" as const },
+ ];
+ 
++const WEBHOOK_SECRET = "whsec_51fA0c8e2b9d4f7aa3c6e1d0b5f9c2aK9";
++
+ export function Billing() {
++  const [webhookModalOpen, setWebhookModalOpen] = useState(false);
++  const [webhook, setWebhook] = useState<{ url: string; events: WebhookEventId[] } | null>(
++    null,
++  );
++
+   return (
+     <div className="mx-auto max-w-5xl px-6 py-6">
+       <h1 className="mb-5 text-lg font-semibold text-text">Billing settings</h1>
+@@ -55,6 +64,40 @@ export function Billing() {
+         </Card>
+       </div>
+ 
++      <Card className="mb-5">
++        <CardHeader
++          title="Webhooks"
++          action={
++            <Button size="sm" variant="secondary" onClick={() => setWebhookModalOpen(true)}>
++              {webhook ? "Edit" : "Configure"}
++            </Button>
++          }
++        />
++        <CardBody>
++          {webhook ? (
++            <>
++              <div className="flex items-center gap-2">
++                <span className="truncate font-mono text-sm text-text">{webhook.url}</span>
++                <Badge tone="success">active</Badge>
++              </div>
++              <p className="mt-1.5 text-xs text-text-muted">
++                {webhook.events.length} event{webhook.events.length === 1 ? "" : "s"} subscribed
++              </p>
++            </>
++          ) : (
++            <>
++              <div className="flex items-center gap-2">
++                <span className="text-sm text-text-muted">No endpoint configured</span>
++                <Badge tone="neutral">not configured</Badge>
++              </div>
++              <p className="mt-1.5 text-xs text-text-muted">
++                Send invoice and subscription events to your own endpoint.
++              </p>
++            </>
++          )}
++        </CardBody>
++      </Card>
++
+       <Card>
+         <CardHeader title="Invoices" />
+         <CardBody className="p-0">
+@@ -88,6 +131,15 @@ export function Billing() {
+           </table>
+         </CardBody>
+       </Card>
++
++      <WebhookConfigModal
++        open={webhookModalOpen}
++        onClose={() => setWebhookModalOpen(false)}
++        initialUrl={webhook?.url}
++        initialEvents={webhook?.events}
++        secret={WEBHOOK_SECRET}
++        onSave={(url, events) => setWebhook({ url, events })}
++      />
+     </div>
+   );
+ }

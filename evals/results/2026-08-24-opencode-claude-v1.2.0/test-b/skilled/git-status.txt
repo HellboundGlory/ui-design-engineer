@@ -1,0 +1,9 @@
+ M src/components/Input.tsx
+ M src/components/Layout.tsx
+ M src/main.tsx
+?? .eval/
+?? DESIGN.md
+?? src/components/JsonViewer.tsx
+?? src/components/icons.tsx
+?? src/lib/
+?? src/pages/Logs.tsx

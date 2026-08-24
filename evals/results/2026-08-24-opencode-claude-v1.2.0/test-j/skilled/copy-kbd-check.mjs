@@ -1,0 +1,17 @@
+import { chromium } from "playwright";
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+await page.goto("http://localhost:29206/#/technical");
+await page.waitForSelector(".theme-relay");
+await page.waitForTimeout(500);
+const btn = page.locator(".relay-iconbtn");
+await btn.focus();
+await page.keyboard.press("Enter");
+await page.waitForTimeout(200);
+console.log("after Enter:", await btn.getAttribute("aria-label"));
+await page.waitForTimeout(1800);
+console.log("after reset:", await btn.getAttribute("aria-label"));
+await page.keyboard.press("Space");
+await page.waitForTimeout(200);
+console.log("after Space:", await btn.getAttribute("aria-label"));
+await browser.close();

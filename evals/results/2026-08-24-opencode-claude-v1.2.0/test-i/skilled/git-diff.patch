@@ -1,0 +1,41 @@
+diff --git a/src/components/Layout.tsx b/src/components/Layout.tsx
+index 119b294..57c1d9e 100644
+--- a/src/components/Layout.tsx
++++ b/src/components/Layout.tsx
+@@ -2,6 +2,7 @@ import { NavLink, Outlet } from "react-router-dom";
+ 
+ const nav = [
+   { to: "/", label: "Dashboard", end: true },
++  { to: "/incidents", label: "Incidents" },
+   { to: "/billing", label: "Billing" },
+ ];
+ 
+@@ -33,7 +34,7 @@ export function Layout() {
+           ))}
+         </nav>
+       </aside>
+-      <main className="min-w-0 flex-1 overflow-y-auto bg-bg">
++      <main tabIndex={0} className="min-w-0 flex-1 overflow-y-auto bg-bg">
+         <Outlet />
+       </main>
+     </div>
+diff --git a/src/main.tsx b/src/main.tsx
+index e75f114..c76b0c1 100644
+--- a/src/main.tsx
++++ b/src/main.tsx
+@@ -5,6 +5,7 @@ import './index.css'
+ import { Layout } from './components/Layout'
+ import { Dashboard } from './pages/Dashboard'
+ import { Billing } from './pages/Billing'
++import { IncidentQueue } from './pages/IncidentQueue'
+ 
+ createRoot(document.getElementById('root')!).render(
+   <StrictMode>
+@@ -12,6 +13,7 @@ createRoot(document.getElementById('root')!).render(
+       <Routes>
+         <Route element={<Layout />}>
+           <Route index element={<Dashboard />} />
++          <Route path="incidents" element={<IncidentQueue />} />
+           <Route path="billing" element={<Billing />} />
+         </Route>
+       </Routes>

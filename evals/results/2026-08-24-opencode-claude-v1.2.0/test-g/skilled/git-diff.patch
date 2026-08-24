@@ -1,0 +1,220 @@
+diff --git a/DESIGN.md b/DESIGN.md
+index d926e5c..12ce7a0 100644
+--- a/DESIGN.md
++++ b/DESIGN.md
+@@ -47,6 +47,7 @@ Existing token system is CSS custom properties (hex) mapped into Tailwind v4 via
+   --color-warning: #d8a53d;
+   --color-warning-muted: #3a2f14;
+   --color-danger: #e0596b;
++  --color-danger-strong: #e6687a; /* lighter danger for text-on-muted pairings (WCAG AA) */
+   --color-danger-muted: #3a1c22;
+   --color-info: #5b8def;
+ }
+@@ -93,12 +94,12 @@ Existing token system is CSS custom properties (hex) mapped into Tailwind v4 via
+ 
+ ## 12. Navigation
+ 
+-- **Primary navigation model:** Persistent left sidebar (`w-56`, `bg-bg-sunken`), flat list, no nesting yet (Dashboard, Billing).
+-- **How does navigation adapt at narrow viewports?** Not yet decided — no mobile/narrow treatment has been designed for this internal tool yet. Log a decision in section 21 before shipping one rather than guessing.
++- **Primary navigation model:** Persistent left sidebar (`w-56`, `bg-bg-sunken`), flat list (Dashboard, Servers, Billing). One nav DOM node that reflows — see §21 for the responsive decision.
++- **How does navigation adapt at narrow viewports?** Below `lg` (1024px) the sidebar becomes a top strip: brand row + horizontal nav links (decided 2026-08-24, logged in §21).
+ 
+ ## 13. Components
+ 
+-- **Primary component/primitive source:** Custom internal components (`src/components/`) built directly on Tailwind utility classes — `Button`, `Card`/`CardHeader`/`CardBody`, `Badge`, `Input`/`Label`, `Modal`. No shadcn/ui, no Radix, no headless-UI dependency.
++- **Primary component/primitive source:** Custom internal components (`src/components/`) built directly on Tailwind utility classes — `Button`, `Card`/`CardHeader`/`CardBody`, `Badge`, `Input`/`Label`, `Select`, `Textarea`, `Checkbox`, `Modal`. No shadcn/ui, no Radix, no headless-UI dependency.
+ - **Reasoning:** Existing hand-built system to preserve — small enough that a component library wasn't justified yet. New UI should extend these same components rather than introducing shadcn/Radix/another library alongside them.
+ - **Utility/specialized registries in use, if any:** None.
+ 
+@@ -115,13 +116,13 @@ Existing token system is CSS custom properties (hex) mapped into Tailwind v4 via
+ 
+ ## 16. Responsive Behavior
+ 
+-- **Breakpoint scale:** Not yet decided — built and used desktop-only so far (internal ops tool, used at a desk). Treat as an open question, not an assumption that mobile doesn't matter.
+-- **Any viewport this product deliberately does not support (and why)?** No explicit exclusion has been decided yet; don't assume none is needed just because nothing narrow exists today.
++- **Breakpoint scale:** Tailwind default breakpoints (sm 640 / md 768 / lg 1024 / xl 1280). The meaningful layout switch is `lg` — sidebar ↔ top strip (decided 2026-08-24, see §21).
++- **Any viewport this product deliberately does not support (and why)?** None excluded; narrow viewports are supported via the §21 decisions (top-strip nav, contained table scroll).
+ 
+ ## 17. Accessibility
+ 
+ - **Target:** WCAG 2.2 AA (default — see `references/accessibility-wcag.md`).
+-- **Known accessibility debt, if inheriting an existing codebase:** Icon-only close button in `Modal` has an `aria-label`; focus-visible ring is defined globally (`*:focus-visible`). Beyond that, no accessibility audit has been run on this codebase yet — don't assume a clean bill of health, verify.
++- **Known accessibility debt, if inheriting an existing codebase:** Icon-only close button in `Modal` has an `aria-label`; focus-visible ring is defined globally (`*:focus-visible`). First automated audit (axe-core via visual-qa, 2026-08-24) ran against `/servers`: two contrast failures found and fixed (see §21); the Dashboard/Billing pages have not been re-audited since the Button/Badge tone fixes and may still carry the pre-fix pairings.
+ 
+ ## 18. Project-Specific Anti-Patterns (STRICT NEVER)
+ 
+@@ -132,17 +133,23 @@ Existing token system is CSS custom properties (hex) mapped into Tailwind v4 via
+ 
+ ## 19. Component Sources & Exceptions
+ 
+-- **Primary primitives:** Custom (`src/components/Button.tsx`, `Card.tsx`, `Badge.tsx`, `Input.tsx`, `Modal.tsx`).
++- **Primary primitives:** Custom (`src/components/Button.tsx`, `Card.tsx`, `Badge.tsx`, `Input.tsx`, `Select.tsx`, `Textarea.tsx`, `Checkbox.tsx`, `Modal.tsx`).
+ - **Utility registries:** None.
+ - **Charting engine:** None yet.
+ - **Documented exceptions to any rule above, with reasoning:** None yet — no deliberate deviations have been made from the system described above.
+ 
+ ## 20. Open Questions / Not Yet Decided
+ 
+-- Mobile/narrow-viewport behavior (nav collapse pattern, table reflow) — not yet designed.
++- ~~Mobile/narrow-viewport behavior~~ — decided 2026-08-24 (see §21); revisit if nav grows nesting.
+ - Icon set — not yet adopted.
+ - Charting engine — not yet needed, but will be once trend/analytics views are added.
+ 
+ ## 21. Design Decisions Log
+ 
+ - 2026-08-24: Initialized DESIGN.md for `orbitctl`, documenting the token system, component set, and density/geometry conventions already established in the shipped Dashboard and Billing settings pages.
++- 2026-08-24: **Servers page added** (`/servers`, `src/pages/Servers.tsx`) — server inventory table + Add server form, refactored from the legacy `legacy/report.html` fixture. Semantic `<table>` preserved (no div-grid reflow); identifiers in `font-mono`, numerics `.tabular` right-aligned, status as Badge (`up`→success, `down`→danger).
++- 2026-08-24: **Form primitives extended in-house** — `Select`, `Textarea`, `Checkbox` added to `src/components/` in the existing idiom (no registry/library, per §18). `Label` gained optional `htmlFor` for programmatic label association. Checkbox is a native control at 24×24 (`size-6`, `accent-accent`) to satisfy WCAG 2.5.8 target size.
++- 2026-08-24: **Contrast fix — danger badge text.** axe flagged `text-danger` on `bg-danger-muted` at 4.25:1 (< 4.5). Added token `--color-danger-strong: #e6687a` (4.9:1 on danger-muted) and pointed the Badge `danger` tone at it. `--color-danger` remains for error text on raised/sunken surfaces (5.1:1) and non-badge uses.
++- 2026-08-24: **Contrast fix — primary button label.** White on `--color-accent` measured 3.23:1 (< 4.5 for `text-sm`). Primary variant now uses `text-bg` (near-black) on accent: ~6.5:1, matching the terminal-adjacent Vercel/Linear look. No other page rendered a primary button at the time of the change.
++- 2026-08-24: **Responsive decision.** Breakpoint scale = Tailwind defaults; the layout switch is `lg` (1024px). Below `lg`: sidebar becomes a top strip (brand row + horizontal nav, same `NavLink` styles); data tables live in a contained `overflow-x-auto` region with `min-w-[640px]` so columns keep integrity (semantic table preserved, page never scrolls sideways); the 3-field form grid reflows 3→2→1 (`sm`/`lg`). Rationale: ops tables must stay scannable; stacking table rows into cards was rejected as it breaks column comparison for this audience.
++- 2026-08-24: **Focus ring timing note.** `transition-colors` (Tailwind v4) includes `outline-color`, so the global `*:focus-visible` ring animates from currentColor to accent over ~100ms. Ring is visible throughout; no change made.
+diff --git a/src/components/Badge.tsx b/src/components/Badge.tsx
+index 9efc1d5..1b3ecfa 100644
+--- a/src/components/Badge.tsx
++++ b/src/components/Badge.tsx
+@@ -3,7 +3,7 @@ type Tone = "success" | "warning" | "danger" | "info" | "neutral";
+ const tones: Record<Tone, string> = {
+   success: "bg-success-muted text-success",
+   warning: "bg-warning-muted text-warning",
+-  danger: "bg-danger-muted text-danger",
++  danger: "bg-danger-muted text-danger-strong",
+   info: "bg-accent-muted text-accent-strong",
+   neutral: "bg-bg-sunken text-text-muted border border-border",
+ };
+diff --git a/src/components/Button.tsx b/src/components/Button.tsx
+index f385c61..0c9196f 100644
+--- a/src/components/Button.tsx
++++ b/src/components/Button.tsx
+@@ -7,7 +7,7 @@ const base =
+   "inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors duration-100 disabled:opacity-40 disabled:pointer-events-none";
+ 
+ const variants: Record<Variant, string> = {
+-  primary: "bg-accent text-white hover:bg-accent-strong",
++  primary: "bg-accent text-bg hover:bg-accent-strong",
+   secondary:
+     "bg-bg-raised text-text border border-border hover:border-border-strong",
+   ghost: "text-text-muted hover:text-text hover:bg-bg-raised",
+diff --git a/src/components/Input.tsx b/src/components/Input.tsx
+index cb9d284..28d2985 100644
+--- a/src/components/Input.tsx
++++ b/src/components/Input.tsx
+@@ -9,9 +9,15 @@ export function Input({ className = "", ...props }: InputHTMLAttributes<HTMLInpu
+   );
+ }
+ 
+-export function Label({ children }: { children: React.ReactNode }) {
++export function Label({
++  htmlFor,
++  children,
++}: {
++  htmlFor?: string;
++  children: React.ReactNode;
++}) {
+   return (
+-    <label className="mb-1.5 block text-xs font-medium text-text-muted">
++    <label htmlFor={htmlFor} className="mb-1.5 block text-xs font-medium text-text-muted">
+       {children}
+     </label>
+   );
+diff --git a/src/components/Layout.tsx b/src/components/Layout.tsx
+index 119b294..eb52ae3 100644
+--- a/src/components/Layout.tsx
++++ b/src/components/Layout.tsx
+@@ -2,38 +2,38 @@ import { NavLink, Outlet } from "react-router-dom";
+ 
+ const nav = [
+   { to: "/", label: "Dashboard", end: true },
+-  { to: "/billing", label: "Billing" },
++  { to: "/servers", label: "Servers", end: false },
++  { to: "/billing", label: "Billing", end: false },
+ ];
+ 
++const linkClass = ({ isActive }: { isActive: boolean }) =>
++  `rounded-md px-2.5 py-1.5 text-sm transition-colors ${
++    isActive
++      ? "bg-accent-muted text-accent-strong"
++      : "text-text-muted hover:bg-bg-raised hover:text-text"
++  }`;
++
+ export function Layout() {
+   return (
+-    <div className="flex h-full">
+-      <aside className="flex w-56 shrink-0 flex-col border-r border-border bg-bg-sunken">
+-        <div className="flex h-12 items-center px-4">
++    <div className="flex h-full flex-col lg:flex-row">
++      <aside className="flex w-full shrink-0 flex-col border-b border-border bg-bg-sunken lg:w-56 lg:border-b-0 lg:border-r">
++        <div className="flex h-12 shrink-0 items-center px-4">
+           <span className="font-mono text-sm font-semibold tracking-tight text-text">
+             orbitctl
+           </span>
+         </div>
+-        <nav className="flex flex-col gap-0.5 px-2 py-2">
++        <nav
++          className="flex flex-row items-center gap-1 px-2 pb-2 lg:flex-col lg:items-stretch lg:gap-0.5 lg:p-2"
++          aria-label="Primary"
++        >
+           {nav.map((item) => (
+-            <NavLink
+-              key={item.to}
+-              to={item.to}
+-              end={item.end}
+-              className={({ isActive }) =>
+-                `rounded-md px-2.5 py-1.5 text-sm transition-colors ${
+-                  isActive
+-                    ? "bg-accent-muted text-accent-strong"
+-                    : "text-text-muted hover:bg-bg-raised hover:text-text"
+-                }`
+-              }
+-            >
++            <NavLink key={item.to} to={item.to} end={item.end} className={linkClass}>
+               {item.label}
+             </NavLink>
+           ))}
+         </nav>
+       </aside>
+-      <main className="min-w-0 flex-1 overflow-y-auto bg-bg">
++      <main tabIndex={0} className="min-w-0 flex-1 overflow-y-auto bg-bg">
+         <Outlet />
+       </main>
+     </div>
+diff --git a/src/index.css b/src/index.css
+index daa9fef..b00f545 100644
+--- a/src/index.css
++++ b/src/index.css
+@@ -20,6 +20,7 @@
+   --color-warning: #d8a53d;
+   --color-warning-muted: #3a2f14;
+   --color-danger: #e0596b;
++  --color-danger-strong: #e6687a;
+   --color-danger-muted: #3a1c22;
+   --color-info: #5b8def;
+ 
+@@ -48,6 +49,7 @@
+   --color-warning: var(--color-warning);
+   --color-warning-muted: var(--color-warning-muted);
+   --color-danger: var(--color-danger);
++  --color-danger-strong: var(--color-danger-strong);
+   --color-danger-muted: var(--color-danger-muted);
+   --color-info: var(--color-info);
+   --font-family-sans: var(--font-sans);
+diff --git a/src/main.tsx b/src/main.tsx
+index e75f114..0ea7382 100644
+--- a/src/main.tsx
++++ b/src/main.tsx
+@@ -5,6 +5,7 @@ import './index.css'
+ import { Layout } from './components/Layout'
+ import { Dashboard } from './pages/Dashboard'
+ import { Billing } from './pages/Billing'
++import { Servers } from './pages/Servers'
+ 
+ createRoot(document.getElementById('root')!).render(
+   <StrictMode>
+@@ -12,6 +13,7 @@ createRoot(document.getElementById('root')!).render(
+       <Routes>
+         <Route element={<Layout />}>
+           <Route index element={<Dashboard />} />
++          <Route path="servers" element={<Servers />} />
+           <Route path="billing" element={<Billing />} />
+         </Route>
+       </Routes>

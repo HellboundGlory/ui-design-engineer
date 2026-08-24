@@ -1,0 +1,182 @@
+{
+  "url": "http://localhost:5731/",
+  "generatedAt": "2026-08-24T19:03:01.302Z",
+  "readiness": {
+    "waitUntil": "load",
+    "waitForSelector": null,
+    "settleMs": 2200
+  },
+  "axe": {
+    "version": "4.13.0",
+    "tags": [
+      "wcag2a",
+      "wcag2aa",
+      "wcag21a",
+      "wcag21aa",
+      "wcag22aa"
+    ],
+    "disclaimer": "Automated axe-core scan covering a documented subset of WCAG 2.x A/AA rules (see `tags`). This is NOT a full WCAG 2.2 AA conformance test — axe-core's own documentation estimates automated tools catch roughly 30-40% of real accessibility issues. Zero violations means zero AUTOMATED violations found, not full conformance. Complete checklists/accessibility-audit.md for keyboard, focus order, and manual structural review."
+  },
+  "viewports": [
+    {
+      "viewport": "375x812",
+      "navigationError": null,
+      "screenshot": ".eval/visual-qa-final/375x812.png",
+      "overflow": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "hasHorizontalOverflow": false
+      },
+      "structural": {
+        "status": "ok",
+        "brokenImages": [],
+        "missingAlt": [],
+        "zeroSizeVisibleInteractive": [
+          {
+            "selector": "a.py-2.text-[0.8rem]",
+            "text": "Issues"
+          },
+          {
+            "selector": "a.py-2.text-[0.8rem]",
+            "text": "Essays"
+          },
+          {
+            "selector": "a.py-2.text-[0.8rem]",
+            "text": "Studio Visits"
+          },
+          {
+            "selector": "a.py-2.text-[0.8rem]",
+            "text": "Subscribe"
+          }
+        ],
+        "undersizedInteractiveTargets": [],
+        "focusObscured": [],
+        "focusableSampleSize": 20,
+        "focusableTotalCount": 24
+      },
+      "axeViolations": [],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": "768x1024",
+      "navigationError": null,
+      "screenshot": ".eval/visual-qa-final/768x1024.png",
+      "overflow": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "hasHorizontalOverflow": false
+      },
+      "structural": {
+        "status": "ok",
+        "brokenImages": [],
+        "missingAlt": [],
+        "zeroSizeVisibleInteractive": [
+          {
+            "selector": "a.border-b.border-border",
+            "text": "Issues"
+          },
+          {
+            "selector": "a.border-b.border-border",
+            "text": "Essays"
+          },
+          {
+            "selector": "a.border-b.border-border",
+            "text": "Studio Visits"
+          },
+          {
+            "selector": "a.border-b.border-border",
+            "text": "Subscribe"
+          }
+        ],
+        "undersizedInteractiveTargets": [],
+        "focusObscured": [],
+        "focusableSampleSize": 19,
+        "focusableTotalCount": 24
+      },
+      "axeViolations": [],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": "1440x900",
+      "navigationError": null,
+      "screenshot": ".eval/visual-qa-final/1440x900.png",
+      "overflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "hasHorizontalOverflow": false
+      },
+      "structural": {
+        "status": "ok",
+        "brokenImages": [],
+        "missingAlt": [],
+        "zeroSizeVisibleInteractive": [
+          {
+            "selector": "a.border-b.border-border",
+            "text": "Issues"
+          },
+          {
+            "selector": "a.border-b.border-border",
+            "text": "Essays"
+          },
+          {
+            "selector": "a.border-b.border-border",
+            "text": "Studio Visits"
+          },
+          {
+            "selector": "a.border-b.border-border",
+            "text": "Subscribe"
+          }
+        ],
+        "undersizedInteractiveTargets": [],
+        "focusObscured": [],
+        "focusableSampleSize": 19,
+        "focusableTotalCount": 24
+      },
+      "axeViolations": [],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": "1920x1080",
+      "navigationError": null,
+      "screenshot": ".eval/visual-qa-final/1920x1080.png",
+      "overflow": {
+        "scrollWidth": 1920,
+        "clientWidth": 1920,
+        "hasHorizontalOverflow": false
+      },
+      "structural": {
+        "status": "ok",
+        "brokenImages": [],
+        "missingAlt": [],
+        "zeroSizeVisibleInteractive": [
+          {
+            "selector": "a.border-b.border-border",
+            "text": "Issues"
+          },
+          {
+            "selector": "a.border-b.border-border",
+            "text": "Essays"
+          },
+          {
+            "selector": "a.border-b.border-border",
+            "text": "Studio Visits"
+          },
+          {
+            "selector": "a.border-b.border-border",
+            "text": "Subscribe"
+          }
+        ],
+        "undersizedInteractiveTargets": [],
+        "focusObscured": [],
+        "focusableSampleSize": 19,
+        "focusableTotalCount": 24
+      },
+      "axeViolations": [],
+      "consoleErrors": [],
+      "pageErrors": []
+    }
+  ]
+}

@@ -1,0 +1,214 @@
+{
+  "url": "http://localhost:5233/",
+  "generatedAt": "2026-08-24T13:25:00.484Z",
+  "readiness": {
+    "waitUntil": "load",
+    "waitForSelector": "text=Overview",
+    "settleMs": 500
+  },
+  "axe": {
+    "version": "4.13.0",
+    "tags": [
+      "wcag2a",
+      "wcag2aa",
+      "wcag21a",
+      "wcag21aa",
+      "wcag22aa"
+    ],
+    "disclaimer": "Automated axe-core scan covering a documented subset of WCAG 2.x A/AA rules (see `tags`). This is NOT a full WCAG 2.2 AA conformance test — axe-core's own documentation estimates automated tools catch roughly 30-40% of real accessibility issues. Zero violations means zero AUTOMATED violations found, not full conformance. Complete checklists/accessibility-audit.md for keyboard, focus order, and manual structural review."
+  },
+  "viewports": [
+    {
+      "viewport": "375x812",
+      "navigationError": null,
+      "screenshot": ".eval/visual-qa-overview/375x812.png",
+      "overflow": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "hasHorizontalOverflow": false
+      },
+      "structural": {
+        "status": "ok",
+        "brokenImages": [],
+        "missingAlt": [],
+        "zeroSizeVisibleInteractive": [],
+        "undersizedInteractiveTargets": [],
+        "focusObscured": [],
+        "focusableSampleSize": 4,
+        "focusableTotalCount": 4
+      },
+      "axeViolations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI",
+          "nodeCount": 9,
+          "targets": [
+            [
+              ".m_1b7284a3.mantine-Paper-root[data-with-border=\"true\"]:nth-child(1) > p[data-size=\"sm\"]"
+            ],
+            [
+              ".m_1b7284a3.mantine-Paper-root[data-with-border=\"true\"]:nth-child(2) > p[data-size=\"sm\"]"
+            ],
+            [
+              ".m_1b7284a3.mantine-Paper-root[data-with-border=\"true\"]:nth-child(3) > p[data-size=\"sm\"]"
+            ],
+            [
+              "tr:nth-child(1) > td:nth-child(2)"
+            ],
+            [
+              "tr:nth-child(1) > td:nth-child(3)"
+            ]
+          ]
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": "768x1024",
+      "navigationError": null,
+      "screenshot": ".eval/visual-qa-overview/768x1024.png",
+      "overflow": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "hasHorizontalOverflow": false
+      },
+      "structural": {
+        "status": "ok",
+        "brokenImages": [],
+        "missingAlt": [],
+        "zeroSizeVisibleInteractive": [],
+        "undersizedInteractiveTargets": [],
+        "focusObscured": [],
+        "focusableSampleSize": 3,
+        "focusableTotalCount": 4
+      },
+      "axeViolations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI",
+          "nodeCount": 9,
+          "targets": [
+            [
+              ".m_1b7284a3.mantine-Paper-root[data-with-border=\"true\"]:nth-child(1) > p[data-size=\"sm\"]"
+            ],
+            [
+              ".m_1b7284a3.mantine-Paper-root[data-with-border=\"true\"]:nth-child(2) > p[data-size=\"sm\"]"
+            ],
+            [
+              ".m_1b7284a3.mantine-Paper-root[data-with-border=\"true\"]:nth-child(3) > p[data-size=\"sm\"]"
+            ],
+            [
+              "tr:nth-child(1) > td:nth-child(2)"
+            ],
+            [
+              "tr:nth-child(1) > td:nth-child(3)"
+            ]
+          ]
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": "1440x900",
+      "navigationError": null,
+      "screenshot": ".eval/visual-qa-overview/1440x900.png",
+      "overflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "hasHorizontalOverflow": false
+      },
+      "structural": {
+        "status": "ok",
+        "brokenImages": [],
+        "missingAlt": [],
+        "zeroSizeVisibleInteractive": [],
+        "undersizedInteractiveTargets": [],
+        "focusObscured": [],
+        "focusableSampleSize": 3,
+        "focusableTotalCount": 4
+      },
+      "axeViolations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI",
+          "nodeCount": 9,
+          "targets": [
+            [
+              ".m_1b7284a3.mantine-Paper-root[data-with-border=\"true\"]:nth-child(1) > p[data-size=\"sm\"]"
+            ],
+            [
+              ".m_1b7284a3.mantine-Paper-root[data-with-border=\"true\"]:nth-child(2) > p[data-size=\"sm\"]"
+            ],
+            [
+              ".m_1b7284a3.mantine-Paper-root[data-with-border=\"true\"]:nth-child(3) > p[data-size=\"sm\"]"
+            ],
+            [
+              "tr:nth-child(1) > td:nth-child(2)"
+            ],
+            [
+              "tr:nth-child(1) > td:nth-child(3)"
+            ]
+          ]
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": "1920x1080",
+      "navigationError": null,
+      "screenshot": ".eval/visual-qa-overview/1920x1080.png",
+      "overflow": {
+        "scrollWidth": 1920,
+        "clientWidth": 1920,
+        "hasHorizontalOverflow": false
+      },
+      "structural": {
+        "status": "ok",
+        "brokenImages": [],
+        "missingAlt": [],
+        "zeroSizeVisibleInteractive": [],
+        "undersizedInteractiveTargets": [],
+        "focusObscured": [],
+        "focusableSampleSize": 3,
+        "focusableTotalCount": 4
+      },
+      "axeViolations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI",
+          "nodeCount": 9,
+          "targets": [
+            [
+              ".m_1b7284a3.mantine-Paper-root[data-with-border=\"true\"]:nth-child(1) > p[data-size=\"sm\"]"
+            ],
+            [
+              ".m_1b7284a3.mantine-Paper-root[data-with-border=\"true\"]:nth-child(2) > p[data-size=\"sm\"]"
+            ],
+            [
+              ".m_1b7284a3.mantine-Paper-root[data-with-border=\"true\"]:nth-child(3) > p[data-size=\"sm\"]"
+            ],
+            [
+              "tr:nth-child(1) > td:nth-child(2)"
+            ],
+            [
+              "tr:nth-child(1) > td:nth-child(3)"
+            ]
+          ]
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    }
+  ]
+}

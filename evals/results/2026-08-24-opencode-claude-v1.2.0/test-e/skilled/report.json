@@ -1,0 +1,1731 @@
+{
+  "url": "http://localhost:5183/",
+  "generatedAt": "2026-08-24T18:49:46.370Z",
+  "readiness": {
+    "waitUntil": "load",
+    "waitForSelector": null,
+    "settleMs": 300
+  },
+  "axe": {
+    "version": "4.13.0",
+    "tags": [
+      "wcag2a",
+      "wcag2aa",
+      "wcag21a",
+      "wcag21aa",
+      "wcag22aa"
+    ],
+    "disclaimer": "Automated axe-core scan covering a documented subset of WCAG 2.x A/AA rules (see `tags`). This is NOT a full WCAG 2.2 AA conformance test — axe-core's own documentation estimates automated tools catch roughly 30-40% of real accessibility issues. Zero violations means zero AUTOMATED violations found, not full conformance. Complete checklists/accessibility-audit.md for keyboard, focus order, and manual structural review."
+  },
+  "viewports": [
+    {
+      "viewport": "375x812",
+      "navigationError": null,
+      "screenshot": ".eval/qa-report/375x812.png",
+      "overflow": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "hasHorizontalOverflow": false
+      },
+      "structural": {
+        "status": "ok",
+        "brokenImages": [],
+        "missingAlt": [],
+        "zeroSizeVisibleInteractive": [
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": "Overview"
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": "Customers"
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": "Accounts"
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": "Billing"
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": "Support"
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": "Settings"
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button.inline-flex.h-full",
+            "text": "Customer"
+          },
+          {
+            "selector": "button.inline-flex.h-full",
+            "text": "Status"
+          },
+          {
+            "selector": "button.inline-flex.h-full",
+            "text": "Tier"
+          },
+          {
+            "selector": "button.inline-flex.h-full",
+            "text": "MRR"
+          },
+          {
+            "selector": "button.inline-flex.h-full",
+            "text": "Seats"
+          },
+          {
+            "selector": "button.inline-flex.h-full",
+            "text": "Owner"
+          },
+          {
+            "selector": "button.inline-flex.h-full",
+            "text": "Region"
+          },
+          {
+            "selector": "button.inline-flex.h-full",
+            "text": "Last activity"
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_9_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_b_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_d_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_f_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_h_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_j_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_l_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_n_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_p_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_r_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_t_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_v_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_11_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_13_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_15_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_17_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_19_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_1b_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_1d_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_1f_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_1h_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_1j_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_1l_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_1n_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_1p_.flex.size-6",
+            "text": ""
+          }
+        ],
+        "undersizedInteractiveTargets": [
+          {
+            "selector": "button.flex.size-7",
+            "text": "",
+            "width": 22,
+            "height": 28
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          }
+        ],
+        "focusObscured": [
+          {
+            "selector": "button#radix-_r_27_.flex.size-6",
+            "coveredBy": "div.flex.items-center"
+          },
+          {
+            "selector": "button#radix-_r_2f_.flex.size-6",
+            "coveredBy": "div.flex.items-center"
+          },
+          {
+            "selector": "button#radix-_r_2n_.flex.size-6",
+            "coveredBy": "div.flex.items-center"
+          }
+        ],
+        "focusableSampleSize": 40,
+        "focusableTotalCount": 133
+      },
+      "axeViolations": [],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": "768x1024",
+      "navigationError": null,
+      "screenshot": ".eval/qa-report/768x1024.png",
+      "overflow": {
+        "scrollWidth": 768,
+        "clientWidth": 768,
+        "hasHorizontalOverflow": false
+      },
+      "structural": {
+        "status": "ok",
+        "brokenImages": [],
+        "missingAlt": [],
+        "zeroSizeVisibleInteractive": [
+          {
+            "selector": "a.flex.h-8",
+            "text": "Overview"
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": "Customers"
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": "Accounts"
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": "Billing"
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": "Support"
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": "Settings"
+          },
+          {
+            "selector": "button.inline-flex.h-full",
+            "text": "Seats"
+          },
+          {
+            "selector": "button.inline-flex.h-full",
+            "text": "Owner"
+          },
+          {
+            "selector": "button.inline-flex.h-full",
+            "text": "Region"
+          },
+          {
+            "selector": "button.inline-flex.h-full",
+            "text": "Last activity"
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_1r_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_1t_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_1v_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_21_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_23_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_25_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_27_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_29_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2b_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2d_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2f_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2h_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2j_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2l_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2n_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2p_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2r_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2t_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2v_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_31_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_33_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_35_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_37_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_39_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_3b_.flex.size-6",
+            "text": ""
+          }
+        ],
+        "undersizedInteractiveTargets": [
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          }
+        ],
+        "focusObscured": [],
+        "focusableSampleSize": 40,
+        "focusableTotalCount": 133
+      },
+      "axeViolations": [],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": "1440x900",
+      "navigationError": null,
+      "screenshot": ".eval/qa-report/1440x900.png",
+      "overflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "hasHorizontalOverflow": false
+      },
+      "structural": {
+        "status": "ok",
+        "brokenImages": [],
+        "missingAlt": [],
+        "zeroSizeVisibleInteractive": [
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_1r_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_1t_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_1v_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_21_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_23_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_25_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_27_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_29_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2b_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2d_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2f_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2h_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2j_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2l_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2n_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2p_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2r_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2t_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2v_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_31_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_33_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_35_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_37_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_39_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_3b_.flex.size-6",
+            "text": ""
+          }
+        ],
+        "undersizedInteractiveTargets": [
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          }
+        ],
+        "focusObscured": [],
+        "focusableSampleSize": 40,
+        "focusableTotalCount": 133
+      },
+      "axeViolations": [],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": "1920x1080",
+      "navigationError": null,
+      "screenshot": ".eval/qa-report/1920x1080.png",
+      "overflow": {
+        "scrollWidth": 1920,
+        "clientWidth": 1920,
+        "hasHorizontalOverflow": false
+      },
+      "structural": {
+        "status": "ok",
+        "brokenImages": [],
+        "missingAlt": [],
+        "zeroSizeVisibleInteractive": [
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "a.flex.h-8",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_1r_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_1t_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_1v_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_21_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_23_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_25_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_27_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_29_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2b_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2d_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2f_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2h_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2j_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2l_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2n_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2p_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2r_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2t_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_2v_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_31_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_33_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_35_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_37_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_39_.flex.size-6",
+            "text": ""
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": ""
+          },
+          {
+            "selector": "button#radix-_r_3b_.flex.size-6",
+            "text": ""
+          }
+        ],
+        "undersizedInteractiveTargets": [
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          },
+          {
+            "selector": "button.flex.size-4",
+            "text": "",
+            "width": 16,
+            "height": 16
+          }
+        ],
+        "focusObscured": [],
+        "focusableSampleSize": 40,
+        "focusableTotalCount": 133
+      },
+      "axeViolations": [],
+      "consoleErrors": [],
+      "pageErrors": []
+    }
+  ]
+}

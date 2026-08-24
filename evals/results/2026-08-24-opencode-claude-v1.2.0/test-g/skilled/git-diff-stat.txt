@@ -1,0 +1,8 @@
+ DESIGN.md                 | 23 +++++++++++++++--------
+ src/components/Badge.tsx  |  2 +-
+ src/components/Button.tsx |  2 +-
+ src/components/Input.tsx  | 10 ++++++++--
+ src/components/Layout.tsx | 36 ++++++++++++++++++------------------
+ src/index.css             |  2 ++
+ src/main.tsx              |  2 ++
+ 7 files changed, 47 insertions(+), 30 deletions(-)

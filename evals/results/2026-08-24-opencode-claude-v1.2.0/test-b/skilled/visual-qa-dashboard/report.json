@@ -1,0 +1,58 @@
+{
+  "url": "http://localhost:5401/",
+  "generatedAt": "2026-08-24T13:49:36.739Z",
+  "readiness": {
+    "waitUntil": "load",
+    "waitForSelector": null,
+    "settleMs": 500
+  },
+  "axe": {
+    "version": "4.13.0",
+    "tags": [
+      "wcag2a",
+      "wcag2aa",
+      "wcag21a",
+      "wcag21aa",
+      "wcag22aa"
+    ],
+    "disclaimer": "Automated axe-core scan covering a documented subset of WCAG 2.x A/AA rules (see `tags`). This is NOT a full WCAG 2.2 AA conformance test — axe-core's own documentation estimates automated tools catch roughly 30-40% of real accessibility issues. Zero violations means zero AUTOMATED violations found, not full conformance. Complete checklists/accessibility-audit.md for keyboard, focus order, and manual structural review."
+  },
+  "viewports": [
+    {
+      "viewport": "375x812",
+      "navigationError": null,
+      "screenshot": ".eval/visual-qa-dashboard/375x812.png",
+      "overflow": {
+        "scrollWidth": 375,
+        "clientWidth": 375,
+        "hasHorizontalOverflow": false
+      },
+      "structural": {
+        "status": "ok",
+        "brokenImages": [],
+        "missingAlt": [],
+        "zeroSizeVisibleInteractive": [],
+        "undersizedInteractiveTargets": [],
+        "focusObscured": [],
+        "focusableSampleSize": 3,
+        "focusableTotalCount": 3
+      },
+      "axeViolations": [
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "help": "Scrollable region must have keyboard access",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/scrollable-region-focusable?application=axeAPI",
+          "nodeCount": 1,
+          "targets": [
+            [
+              "main"
+            ]
+          ]
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    }
+  ]
+}
