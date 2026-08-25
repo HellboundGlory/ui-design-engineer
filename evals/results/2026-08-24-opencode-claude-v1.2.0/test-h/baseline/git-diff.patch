@@ -1,0 +1,211 @@
+diff --git a/src/components/Input.tsx b/src/components/Input.tsx
+index cb9d284..d120341 100644
+--- a/src/components/Input.tsx
++++ b/src/components/Input.tsx
+@@ -16,3 +16,13 @@ export function Label({ children }: { children: React.ReactNode }) {
+     </label>
+   );
+ }
++
++export function Checkbox({ className = "", ...props }: InputHTMLAttributes<HTMLInputElement>) {
++  return (
++    <input
++      type="checkbox"
++      className={`h-3.5 w-3.5 shrink-0 rounded-sm border border-border-strong bg-bg-sunken accent-accent ${className}`}
++      {...props}
++    />
++  );
++}
+diff --git a/src/components/Modal.tsx b/src/components/Modal.tsx
+index 04cb45c..10bd37b 100644
+--- a/src/components/Modal.tsx
++++ b/src/components/Modal.tsx
+@@ -1,6 +1,9 @@
+-import { useEffect, type ReactNode } from "react";
++import { useEffect, useRef, type ReactNode } from "react";
+ import { createPortal } from "react-dom";
+ 
++const FOCUSABLE_SELECTOR =
++  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
++
+ export function Modal({
+   open,
+   onClose,
+@@ -14,28 +17,58 @@ export function Modal({
+   children: ReactNode;
+   footer?: ReactNode;
+ }) {
++  const dialogRef = useRef<HTMLDivElement>(null);
++  const previouslyFocused = useRef<HTMLElement | null>(null);
++
++  // Standard dialog focus behavior: move focus in on open, trap Tab/Shift+Tab
++  // inside the dialog while it's open, and restore focus to the trigger on close.
+   useEffect(() => {
+     if (!open) return;
++    previouslyFocused.current = document.activeElement as HTMLElement | null;
++    const dialog = dialogRef.current;
++    const firstFocusable = dialog?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
++    (firstFocusable ?? dialog)?.focus();
++
+     const onKey = (e: KeyboardEvent) => {
+-      if (e.key === "Escape") onClose();
++      if (e.key === "Escape") {
++        onClose();
++        return;
++      }
++      if (e.key !== "Tab" || !dialog) return;
++      const focusable = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
++      if (focusable.length === 0) return;
++      const first = focusable[0];
++      const last = focusable[focusable.length - 1];
++      if (e.shiftKey && document.activeElement === first) {
++        e.preventDefault();
++        last.focus();
++      } else if (!e.shiftKey && document.activeElement === last) {
++        e.preventDefault();
++        first.focus();
++      }
+     };
+     document.addEventListener("keydown", onKey);
+-    return () => document.removeEventListener("keydown", onKey);
++    return () => {
++      document.removeEventListener("keydown", onKey);
++      previouslyFocused.current?.focus();
++    };
+   }, [open, onClose]);
+ 
+   if (!open) return null;
+ 
+   return createPortal(
+-    <div className="fixed inset-0 z-50 flex items-center justify-center">
++    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+       <div
+         className="absolute inset-0 bg-black/60"
+         onClick={onClose}
+         aria-hidden="true"
+       />
+       <div
++        ref={dialogRef}
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="modal-title"
++        tabIndex={-1}
+         className="relative w-full max-w-md rounded-lg border border-border-strong bg-bg-raised shadow-xl"
+       >
+         <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
+diff --git a/src/pages/Billing.tsx b/src/pages/Billing.tsx
+index f12684b..3b3b0f7 100644
+--- a/src/pages/Billing.tsx
++++ b/src/pages/Billing.tsx
+@@ -1,6 +1,9 @@
++import { useEffect, useState } from "react";
+ import { Card, CardHeader, CardBody } from "../components/Card";
+ import { Button } from "../components/Button";
+ import { Badge } from "../components/Badge";
++import { WebhookModal } from "../components/WebhookModal";
++import { loadWebhookConfig, saveWebhookConfig, type WebhookConfig } from "../lib/webhooks";
+ 
+ const invoices = [
+   { id: "INV-2091", date: "2026-08-01", amount: "$249.00", status: "paid" as const },
+@@ -9,6 +12,24 @@ const invoices = [
+ ];
+ 
+ export function Billing() {
++  const [webhook, setWebhook] = useState<WebhookConfig | null>(() => loadWebhookConfig());
++  const [modalOpen, setModalOpen] = useState(false);
++  const [testStatus, setTestStatus] = useState<"idle" | "sending" | "sent">("idle");
++
++  useEffect(() => {
++    if (testStatus === "idle") return;
++    const delay = testStatus === "sending" ? 700 : 1800;
++    const next = testStatus === "sending" ? "sent" : "idle";
++    const timer = setTimeout(() => setTestStatus(next), delay);
++    return () => clearTimeout(timer);
++  }, [testStatus]);
++
++  function handleSaveWebhook(config: WebhookConfig) {
++    setWebhook(config);
++    saveWebhookConfig(config);
++    setModalOpen(false);
++  }
++
+   return (
+     <div className="mx-auto max-w-5xl px-6 py-6">
+       <h1 className="mb-5 text-lg font-semibold text-text">Billing settings</h1>
+@@ -55,6 +76,61 @@ export function Billing() {
+         </Card>
+       </div>
+ 
++      <Card className="mb-5">
++        <CardHeader
++          title="Webhooks"
++          action={
++            <Button size="sm" variant="secondary" onClick={() => setModalOpen(true)}>
++              {webhook ? "Edit" : "Configure"}
++            </Button>
++          }
++        />
++        <CardBody>
++          {webhook ? (
++            <div className="flex items-start justify-between gap-4">
++              <div className="min-w-0">
++                <div className="flex items-center gap-2">
++                  <span className="truncate font-mono text-sm text-text">{webhook.url}</span>
++                  <Badge tone={webhook.active ? "success" : "neutral"}>
++                    {webhook.active ? "active" : "paused"}
++                  </Badge>
++                </div>
++                <div className="mt-2 flex flex-wrap gap-1.5">
++                  {webhook.events.map((id) => (
++                    <span
++                      key={id}
++                      className="rounded-sm bg-bg-sunken px-1.5 py-0.5 font-mono text-[11px] text-text-muted"
++                    >
++                      {id}
++                    </span>
++                  ))}
++                </div>
++              </div>
++              <Button
++                size="sm"
++                variant="ghost"
++                className="shrink-0"
++                disabled={!webhook.active || testStatus !== "idle"}
++                onClick={() => setTestStatus("sending")}
++              >
++                {testStatus === "sending"
++                  ? "Sending…"
++                  : testStatus === "sent"
++                    ? "Sent ✓"
++                    : "Send test event"}
++              </Button>
++            </div>
++          ) : (
++            <div>
++              <p className="text-sm text-text-muted">No endpoint configured.</p>
++              <p className="mt-1 text-xs text-text-faint">
++                Add an endpoint to receive billing event notifications.
++              </p>
++            </div>
++          )}
++        </CardBody>
++      </Card>
++
+       <Card>
+         <CardHeader title="Invoices" />
+         <CardBody className="p-0">
+@@ -88,6 +164,14 @@ export function Billing() {
+           </table>
+         </CardBody>
+       </Card>
++
++      {modalOpen && (
++        <WebhookModal
++          onClose={() => setModalOpen(false)}
++          config={webhook}
++          onSave={handleSaveWebhook}
++        />
++      )}
+     </div>
+   );
+ }
