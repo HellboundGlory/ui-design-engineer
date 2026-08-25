@@ -1,0 +1,21 @@
+ .eval/screenshots/01-logs-initial.png             | Bin 0 -> 122111 bytes
+ .eval/screenshots/02-logs-payload-expanded.png    | Bin 0 -> 97581 bytes
+ .eval/screenshots/03-logs-error-filter.png        | Bin 0 -> 46503 bytes
+ .eval/screenshots/04-logs-search.png              | Bin 0 -> 32176 bytes
+ .eval/screenshots/05-logs-keyboard-selection.png  | Bin 0 -> 100330 bytes
+ .eval/screenshots/06-logs-keyboard-expand.png     | Bin 0 -> 100342 bytes
+ .eval/screenshots/07-logs-paused.png              | Bin 0 -> 100853 bytes
+ .eval/screenshots/08-logs-shortcuts-modal.png     | Bin 0 -> 117001 bytes
+ .eval/screenshots/09-dashboard-for-comparison.png | Bin 0 -> 41204 bytes
+ .eval/shot.mjs                                    |  75 +++++
+ .eval/worker-report.md                            | 196 ++++++++++++
+ package-lock.json                                 |  48 +++
+ package.json                                      |   1 +
+ src/components/Input.tsx                          |   9 +-
+ src/components/Layout.tsx                         |   1 +
+ src/components/log-panel/JsonTree.tsx             | 122 ++++++++
+ src/components/log-panel/ShortcutsModal.tsx       |  42 +++
+ src/lib/logs.ts                                   | 143 +++++++++
+ src/main.tsx                                      |   2 +
+ src/pages/Logs.tsx                                | 351 ++++++++++++++++++++++
+ 20 files changed, 988 insertions(+), 2 deletions(-)

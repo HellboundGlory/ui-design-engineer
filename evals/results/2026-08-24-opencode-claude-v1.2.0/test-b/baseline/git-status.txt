@@ -1,0 +1,24 @@
+On branch eval-test-b-baseline-claude
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   .eval/screenshots/01-logs-initial.png
+	new file:   .eval/screenshots/02-logs-payload-expanded.png
+	new file:   .eval/screenshots/03-logs-error-filter.png
+	new file:   .eval/screenshots/04-logs-search.png
+	new file:   .eval/screenshots/05-logs-keyboard-selection.png
+	new file:   .eval/screenshots/06-logs-keyboard-expand.png
+	new file:   .eval/screenshots/07-logs-paused.png
+	new file:   .eval/screenshots/08-logs-shortcuts-modal.png
+	new file:   .eval/screenshots/09-dashboard-for-comparison.png
+	new file:   .eval/shot.mjs
+	new file:   .eval/worker-report.md
+	modified:   package-lock.json
+	modified:   package.json
+	modified:   src/components/Input.tsx
+	modified:   src/components/Layout.tsx
+	new file:   src/components/log-panel/JsonTree.tsx
+	new file:   src/components/log-panel/ShortcutsModal.tsx
+	new file:   src/lib/logs.ts
+	modified:   src/main.tsx
+	new file:   src/pages/Logs.tsx
+

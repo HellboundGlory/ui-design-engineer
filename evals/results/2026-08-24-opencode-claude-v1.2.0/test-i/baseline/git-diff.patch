@@ -1,0 +1,459 @@
+diff --git a/.eval/screenshots/01-incidents-desktop-1440.png b/.eval/screenshots/01-incidents-desktop-1440.png
+new file mode 100644
+index 0000000..36b6ff5
+Binary files /dev/null and b/.eval/screenshots/01-incidents-desktop-1440.png differ
+diff --git a/.eval/screenshots/02-incidents-tablet-834.png b/.eval/screenshots/02-incidents-tablet-834.png
+new file mode 100644
+index 0000000..f365f9e
+Binary files /dev/null and b/.eval/screenshots/02-incidents-tablet-834.png differ
+diff --git a/.eval/screenshots/03-incidents-mobile-390.png b/.eval/screenshots/03-incidents-mobile-390.png
+new file mode 100644
+index 0000000..9faebc1
+Binary files /dev/null and b/.eval/screenshots/03-incidents-mobile-390.png differ
+diff --git a/.eval/screenshots/04-dashboard-desktop-1440.png b/.eval/screenshots/04-dashboard-desktop-1440.png
+new file mode 100644
+index 0000000..7657a49
+Binary files /dev/null and b/.eval/screenshots/04-dashboard-desktop-1440.png differ
+diff --git a/.eval/screenshots/05-dashboard-mobile-390.png b/.eval/screenshots/05-dashboard-mobile-390.png
+new file mode 100644
+index 0000000..7ac448a
+Binary files /dev/null and b/.eval/screenshots/05-dashboard-mobile-390.png differ
+diff --git a/.eval/screenshots/06-billing-mobile-390.png b/.eval/screenshots/06-billing-mobile-390.png
+new file mode 100644
+index 0000000..a2fefbe
+Binary files /dev/null and b/.eval/screenshots/06-billing-mobile-390.png differ
+diff --git a/.eval/shot-existing.mjs b/.eval/shot-existing.mjs
+new file mode 100644
+index 0000000..a1b4b03
+--- /dev/null
++++ b/.eval/shot-existing.mjs
+@@ -0,0 +1,17 @@
++import { chromium } from "playwright";
++
++const base = "http://localhost:4173";
++const outDir = new URL("./screenshots/", import.meta.url);
++
++const browser = await chromium.launch();
++const page = await browser.newPage();
++await page.setViewportSize({ width: 390, height: 844 });
++
++await page.goto(`${base}/`, { waitUntil: "networkidle" });
++await page.screenshot({ path: new URL("05-dashboard-mobile-390.png", outDir).pathname, fullPage: true });
++
++await page.goto(`${base}/billing`, { waitUntil: "networkidle" });
++await page.screenshot({ path: new URL("06-billing-mobile-390.png", outDir).pathname, fullPage: true });
++
++await browser.close();
++console.log("done");
+diff --git a/.eval/shot.mjs b/.eval/shot.mjs
+new file mode 100644
+index 0000000..322d7b4
+--- /dev/null
++++ b/.eval/shot.mjs
+@@ -0,0 +1,35 @@
++import { chromium } from "playwright";
++
++const base = "http://localhost:4173";
++const outDir = new URL("./screenshots/", import.meta.url);
++
++const viewports = [
++  { name: "desktop-1440", width: 1440, height: 900 },
++  { name: "tablet-834", width: 834, height: 1112 },
++  { name: "mobile-390", width: 390, height: 844 },
++];
++
++const browser = await chromium.launch();
++const page = await browser.newPage();
++
++let n = 1;
++for (const vp of viewports) {
++  await page.setViewportSize({ width: vp.width, height: vp.height });
++  await page.goto(`${base}/incidents`, { waitUntil: "networkidle" });
++  await page.screenshot({
++    path: new URL(`${String(n).padStart(2, "0")}-incidents-${vp.name}.png`, outDir).pathname,
++    fullPage: true,
++  });
++  n++;
++}
++
++// Also capture Dashboard for token-consistency sanity check
++await page.setViewportSize({ width: 1440, height: 900 });
++await page.goto(`${base}/`, { waitUntil: "networkidle" });
++await page.screenshot({
++  path: new URL(`${String(n).padStart(2, "0")}-dashboard-desktop-1440.png`, outDir).pathname,
++  fullPage: true,
++});
++
++await browser.close();
++console.log("done");
+diff --git a/.eval/worker-report.md b/.eval/worker-report.md
+new file mode 100644
+index 0000000..b4b7002
+--- /dev/null
++++ b/.eval/worker-report.md
+@@ -0,0 +1,151 @@
++# Worker report — Incident Queue page (baseline / no-skill run)
++
++## Task as given
++
++Product brief: "Recreate this interface screenshot as a responsive React component
++matching our local Tailwind tokens." The reference (`reference/screenshot.jpg`) shows a
++warm/light "Support Queue" panel from an unrelated e-commerce-support app: a two-column
++layout with (a) a list panel of rows — title, subtitle, status pill — and (b) a narrower
++sidebar with two stat cards ("Avg. first reply" / "Open tickets"). I was told to treat the
++screenshot as a reference for **layout, spacing, and composition only**, and to map it onto
++orbitctl's own dark-mode token system and existing primitives rather than copying the
++screenshot's literal palette, and to use my own judgment on whether to re-domain the content
++to fit an API-ops product.
++
++## What I read before building
++
++- `reference/screenshot.jpg` (viewed directly as an image).
++- `src/index.css` — the CSS-variable token system (`--color-bg*`, `--color-border*`,
++  `--color-text*`, `--color-accent*`, `--color-success/warning/danger/info*` and their
++  `-muted` variants, radii, fonts) and the Tailwind v4 `@theme` block that exposes them as
++  utility classes (`bg-bg-raised`, `text-text-muted`, `bg-warning-muted`, etc.).
++- `src/components/Card.tsx`, `Badge.tsx`, `Button.tsx`, `Input.tsx`, `Modal.tsx`,
++  `Layout.tsx` — existing primitives and the app shell (fixed 224px left nav + `Outlet`).
++- `src/pages/Dashboard.tsx` and `src/pages/Billing.tsx` — existing page conventions: page
++  wrapper (`mx-auto max-w-5xl px-6 py-6`), `h1` styling, stat-card pattern, table/row
++  patterns, `Badge` tone usage.
++- `src/main.tsx` — routing setup (`react-router-dom` v7, `Routes`/`Route` under a shared
++  `Layout`).
++- `package.json` — confirmed React 19, Vite 8, Tailwind v4, TypeScript, oxlint; no test
++  runner or existing Playwright setup in the project.
++
++I deliberately did not open or reference anything under
++`/home/james/Downloads/Projects/ui-design-engineer` or invoke the `ui-design-engineer`
++skill/slash-command, per the task constraint (baseline/no-skill arm).
++
++## What I built
++
++**New page:** `src/pages/Incidents.tsx`, wired into `src/main.tsx` at route `/incidents`
++and added as a third nav item in `src/components/Layout.tsx` (between Dashboard and
++Billing), so it's reachable the same way the existing pages are, not just a floating
++component.
++
++**Re-domaining decision:** orbitctl is an API/infra-ops dashboard (service health, RPS,
++billing), not a customer-support tool. Keeping literal "Support Queue" copy (agents,
++customers, order refunds) would have been visually faithful but contextually foreign to the
++product. I mapped the screenshot's *shape* — a queue of rows needing attention plus two
++sidebar stat cards — onto an "Incident queue": each row is an infra incident
++(`api-gateway — p99 latency spike`, `billing-worker — elevated error rate`, etc.) with a
++subtitle showing the triggering monitor and elapsed/resolved time, and a status pill of
++either "Investigating" (mirrors "Needs reply") or "Resolved" (mirrors "Closed"). The two
++sidebar stats became "Avg. time to ack" (mirrors "Avg. first reply") and "Open incidents"
++(mirrors "Open tickets"), with the open-incidents count (2) kept consistent with the two
++"Investigating" rows shown, since having the sidebar stat contradict the visible list felt
++like a more obvious flaw than an unassisted build should ship.
++
++**Component/token mapping:**
++- List/sidebar wrapper: `grid grid-cols-1 gap-4 lg:grid-cols-[1fr_280px]` — single column
++  on narrow viewports, two-column (wide list + fixed-ish narrow sidebar) at `lg` and above,
++  matching the screenshot's proportions on desktop.
++- List panel: reused the existing `Card`/`CardBody` primitives (no `CardHeader`, since the
++  screenshot's list panel has no header bar — just rows directly in the card, which is a
++  deliberate departure from `Dashboard`'s `CardHeader`-topped table for closer fidelity to
++  the reference composition).
++- Rows: plain `<ul>/<li>` (semantically a list, not a table, matching the screenshot's row
++  composition rather than force-fitting the `Dashboard`/`Billing` `<table>` pattern) with
++  `border-b border-border last:border-0` dividers, `flex-col` on narrow screens promoting to
++  `sm:flex-row sm:items-center sm:justify-between` — title/subtitle stack above the pill on
++  very narrow widths, sit inline with it from `sm` up.
++- Status pills: existing `Badge` component, `tone="warning"` for "Investigating"
++  (screenshot's amber "Needs reply") and `tone="success"` for "Resolved" (screenshot's green
++  "Closed") — these tones already exist in `index.css` as `--color-warning`/`--color-success`
++  with `-muted` backgrounds, so no new colors were introduced anywhere in the build.
++- Sidebar stat cards: `Card` with the same `px-4 py-3.5` padding and label/value/sub
++  structure as `Dashboard`'s existing stat cards (`text-[11px] uppercase tracking-wide`
++  label, large `tabular font-semibold` value, small muted sub-line) — reused an existing
++  pattern rather than inventing a new one.
++- All colors are the project's semantic tokens (`text-text`, `text-text-muted`, `bg-bg-raised`,
++  `border-border`, `bg-warning-muted`/`text-warning`, `bg-success-muted`/`text-success`, etc.)
++  applied via the existing Tailwind `@theme` mappings. No hex values were copied from the
++  screenshot's warm/light palette.
++
++**Responsive reasoning (screenshot only shows one desktop viewport):**
++- `lg:grid-cols-[1fr_280px]` collapses to a single stacked column below `lg` (1024px) so the
++  sidebar doesn't get crushed at tablet/mobile widths — verified visually at 1440, 834, and
++  390px (see screenshots below).
++- Row content uses `min-w-0` + `truncate` on title/subtitle so long incident names can't
++  blow out the row or force horizontal scroll, and the row itself switches from
++  `flex-row` to `flex-col` below `sm` so the badge doesn't cramp against long text on the
++  narrowest widths.
++- Stat cards are a `flex flex-col` sidebar (not a fixed-width row), so at narrow widths they
++  become full-width stacked cards rather than being squeezed into a slim column.
++
++## Checks actually performed
++
++- `npm install` — installed existing declared deps (were not yet installed in this
++  worktree) via the project's own `package-lock.json`.
++- `npm run build` (`tsc -b && vite build`) — **passed**, no type errors, clean production
++  build (`dist/` produced, ~238KB JS / ~17KB CSS unminified-report sizes as printed by Vite).
++- `npm run lint` (`oxlint`) — **passed**, exit code 0, no warnings or errors.
++- Added `playwright` as a new devDependency (`npm install -D playwright`) purely for local
++  visual verification, per the task's allowance for a self-installed Playwright instead of
++  browser-automation MCP tools. Installed only the Chromium browser binary
++  (`npx playwright install chromium`) — this machine's `sudo` is not available
++  non-interactively so `--with-deps` failed, but the plain Chromium download succeeded and
++  worked fine for screenshotting.
++- Ran the Vite dev server locally and captured real rendered screenshots with a throwaway
++  script (`.eval/shot.mjs`, `.eval/shot-existing.mjs`) at three viewports:
++  - `.eval/screenshots/01-incidents-desktop-1440.png` — 1440×900, two-column layout, matches
++    the reference's proportions and row/stat-card composition with dark tokens instead of
++    the warm palette.
++  - `.eval/screenshots/02-incidents-tablet-834.png` — 834×1112 (portrait tablet), still
++    two-column since `lg` (1024px) hasn't been crossed yet — confirmed this reads fine at
++    this width rather than assuming it would.
++  - `.eval/screenshots/03-incidents-mobile-390.png` — 390×844, single-column stack, rows
++    truncate as designed, sidebar cards go full-width below the list.
++  - `.eval/screenshots/04-dashboard-desktop-1440.png` — sanity check that the existing
++    Dashboard page still renders correctly and that the new nav item didn't break anything.
++  - `.eval/screenshots/05-dashboard-mobile-390.png`,
++    `.eval/screenshots/06-billing-mobile-390.png` — comparison screenshots of the
++    **existing, unmodified** pages at 390px, taken to check whether a mobile layout problem
++    I saw was something I introduced.
++
++## Known gaps / deliberately out of scope
++
++- **Mobile content width is bottlenecked by the existing app shell, not by this page.** At
++  390px, `Layout.tsx`'s left nav is a fixed, non-collapsing `w-56` (224px) sidebar with no
++  hamburger/drawer behavior, leaving only ~166px for page content on any route. I confirmed
++  via screenshots 05/06 that this squeeze and clipping already happens identically on the
++  pre-existing Dashboard and Billing pages (Dashboard's stat cards and table are visibly
++  cramped/clipped at 390px too). Fixing that is a shared-shell change affecting every route
++  in the app, well beyond "recreate this one interface," so I left `Layout.tsx`'s sidebar
++  behavior untouched and did not attempt a mobile nav collapse/drawer. My page's own content
++  reflows as sanely as it can within that constrained width (stacks, truncates, no
++  overflow), but true mobile usability of the app as a whole is bounded by this pre-existing
++  shell limitation.
++- **No automated accessibility audit** (no axe-core or similar was run) — I relied on
++  semantic markup (`<ul>/<li>`, existing `Badge`/`Card` components which already carry
++  whatever accessibility properties they had) and visual/manual review only. I did not
++  verify color contrast ratios numerically, though all colors reuse existing tokens already
++  used elsewhere in the app (e.g. `Dashboard`'s warning/success text), so contrast should be
++  no worse than the rest of the app.
++- **No unit/component tests** were added or run — the project has no test runner configured
++  (`package.json` has no test script), so this matches the existing project convention.
++- Stat/incident data is static/hardcoded (matching the style of `Dashboard.tsx` and
++  `Billing.tsx`, which also use hardcoded arrays, not live data).
++- I did not verify behavior in any browser other than Chromium (via Playwright), and did not
++  test keyboard-only navigation through the new list beyond it being a plain semantic list
++  with no custom interactive widgets (no keyboard traps introduced, but no explicit
++  keyboard-navigation test was performed either).
++- `package-lock.json` and `package.json` are modified only to add `playwright` as a
++  devDependency for verification; it is not imported by any application code.
+diff --git a/package-lock.json b/package-lock.json
+index 400c959..57e7aae 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -19,6 +19,7 @@
+         "@types/react-dom": "^19.2.4",
+         "@vitejs/plugin-react": "^6.1.0",
+         "oxlint": "^1.79.0",
++        "playwright": "^1.62.1",
+         "tailwindcss": "^4.3.3",
+         "typescript": "~6.0.2",
+         "vite": "^8.2.2"
+@@ -1715,6 +1716,53 @@
+         "url": "https://github.com/sponsors/jonschlinkert"
+       }
+     },
++    "node_modules/playwright": {
++      "version": "1.62.1",
++      "resolved": "https://registry.npmjs.org/playwright/-/playwright-1.62.1.tgz",
++      "integrity": "sha512-0M+L3LAD8/nm554LOla9Ayx0j0tmFZ0FBcoQ7F1VuVHpM/XpiC8RcDzBQB8W5+hA8L22THxELzeF+2WcUzvcLg==",
++      "dev": true,
++      "license": "Apache-2.0",
++      "dependencies": {
++        "playwright-core": "1.62.1"
++      },
++      "bin": {
++        "playwright": "cli.js"
++      },
++      "engines": {
++        "node": ">=20"
++      },
++      "optionalDependencies": {
++        "fsevents": "2.3.2"
++      }
++    },
++    "node_modules/playwright-core": {
++      "version": "1.62.1",
++      "resolved": "https://registry.npmjs.org/playwright-core/-/playwright-core-1.62.1.tgz",
++      "integrity": "sha512-wPYSwEBJY9GHraISXqyqtx0na0LpO3XEX7jNDhntbex7tzUS7kLnZsOlFruFJB4Hi/rhDMjXGqHewDZ68nYZVw==",
++      "dev": true,
++      "license": "Apache-2.0",
++      "bin": {
++        "playwright-core": "cli.js"
++      },
++      "engines": {
++        "node": ">=20"
++      }
++    },
++    "node_modules/playwright/node_modules/fsevents": {
++      "version": "2.3.2",
++      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.2.tgz",
++      "integrity": "sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==",
++      "dev": true,
++      "hasInstallScript": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^8.16.0 || ^10.6.0 || >=11.0.0"
++      }
++    },
+     "node_modules/postcss": {
+       "version": "8.5.26",
+       "resolved": "https://registry.npmjs.org/postcss/-/postcss-8.5.26.tgz",
+diff --git a/package.json b/package.json
+index 9ba3784..61420f0 100644
+--- a/package.json
++++ b/package.json
+@@ -21,6 +21,7 @@
+     "@types/react-dom": "^19.2.4",
+     "@vitejs/plugin-react": "^6.1.0",
+     "oxlint": "^1.79.0",
++    "playwright": "^1.62.1",
+     "tailwindcss": "^4.3.3",
+     "typescript": "~6.0.2",
+     "vite": "^8.2.2"
+diff --git a/reference/screenshot.jpg b/reference/screenshot.jpg
+new file mode 100644
+index 0000000..0716a97
+Binary files /dev/null and b/reference/screenshot.jpg differ
+diff --git a/src/components/Layout.tsx b/src/components/Layout.tsx
+index 119b294..e4c4227 100644
+--- a/src/components/Layout.tsx
++++ b/src/components/Layout.tsx
+@@ -2,6 +2,7 @@ import { NavLink, Outlet } from "react-router-dom";
+ 
+ const nav = [
+   { to: "/", label: "Dashboard", end: true },
++  { to: "/incidents", label: "Incidents" },
+   { to: "/billing", label: "Billing" },
+ ];
+ 
+diff --git a/src/main.tsx b/src/main.tsx
+index e75f114..dac781e 100644
+--- a/src/main.tsx
++++ b/src/main.tsx
+@@ -5,6 +5,7 @@ import './index.css'
+ import { Layout } from './components/Layout'
+ import { Dashboard } from './pages/Dashboard'
+ import { Billing } from './pages/Billing'
++import { Incidents } from './pages/Incidents'
+ 
+ createRoot(document.getElementById('root')!).render(
+   <StrictMode>
+@@ -12,6 +13,7 @@ createRoot(document.getElementById('root')!).render(
+       <Routes>
+         <Route element={<Layout />}>
+           <Route index element={<Dashboard />} />
++          <Route path="incidents" element={<Incidents />} />
+           <Route path="billing" element={<Billing />} />
+         </Route>
+       </Routes>
+diff --git a/src/pages/Incidents.tsx b/src/pages/Incidents.tsx
+new file mode 100644
+index 0000000..3b7b81d
+--- /dev/null
++++ b/src/pages/Incidents.tsx
+@@ -0,0 +1,94 @@
++import { Card, CardBody } from "../components/Card";
++import { Badge } from "../components/Badge";
++
++type IncidentStatus = "investigating" | "resolved";
++
++const statusMeta: Record<IncidentStatus, { label: string; tone: "warning" | "success" }> = {
++  investigating: { label: "Investigating", tone: "warning" },
++  resolved: { label: "Resolved", tone: "success" },
++};
++
++const incidents = [
++  {
++    id: "INC-0512",
++    title: "api-gateway — p99 latency spike",
++    meta: "latency-monitor · waiting 22m",
++    status: "investigating" as IncidentStatus,
++  },
++  {
++    id: "INC-0509",
++    title: "billing-worker — elevated error rate",
++    meta: "error-budget-alert · waiting 6m",
++    status: "investigating" as IncidentStatus,
++  },
++  {
++    id: "INC-0498",
++    title: "auth-service — cert rotation reminder",
++    meta: "cert-watcher · resolved 3h ago",
++    status: "resolved" as IncidentStatus,
++  },
++  {
++    id: "INC-0487",
++    title: "ingest-pipeline — disk usage warning",
++    meta: "disk-monitor · resolved 1d ago",
++    status: "resolved" as IncidentStatus,
++  },
++];
++
++const stats = [
++  { label: "Avg. time to ack", value: "6m", sub: "last 24h" },
++  { label: "Open incidents", value: "2", sub: "1 unassigned" },
++];
++
++export function Incidents() {
++  return (
++    <div className="mx-auto max-w-5xl px-6 py-6">
++      <div className="mb-5">
++        <h1 className="text-lg font-semibold text-text">Incident queue</h1>
++        <p className="mt-0.5 text-xs text-text-muted">orbitctl — Platform Ops</p>
++      </div>
++
++      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_280px]">
++        <Card>
++          <CardBody className="p-0">
++            <ul>
++              {incidents.map((incident) => {
++                const meta = statusMeta[incident.status];
++                return (
++                  <li
++                    key={incident.id}
++                    className="flex flex-col gap-1.5 border-b border-border px-4 py-3 last:border-0 sm:flex-row sm:items-center sm:justify-between sm:gap-3"
++                  >
++                    <div className="min-w-0">
++                      <div className="truncate text-sm font-medium text-text">
++                        {incident.title}
++                      </div>
++                      <div className="mt-0.5 truncate text-xs text-text-muted">
++                        {incident.meta}
++                      </div>
++                    </div>
++                    <Badge tone={meta.tone}>{meta.label}</Badge>
++                  </li>
++                );
++              })}
++            </ul>
++          </CardBody>
++        </Card>
++
++        <div className="flex flex-col gap-4">
++          {stats.map((s) => (
++            <Card key={s.label} className="px-4 py-3.5">
++              <div className="text-[11px] font-medium uppercase tracking-wide text-text-muted">
++                {s.label}
++              </div>
++              <div className="tabular mt-1.5 text-2xl font-semibold text-text">
++                {s.value}
++              </div>
++              <div className="mt-0.5 text-xs text-text-muted">{s.sub}</div>
++            </Card>
++          ))}
++        </div>
++      </div>
++    </div>
++  );
++}

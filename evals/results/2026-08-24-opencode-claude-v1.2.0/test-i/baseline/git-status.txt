@@ -1,0 +1,19 @@
+On branch eval-test-i-baseline-claude
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   .eval/screenshots/01-incidents-desktop-1440.png
+	new file:   .eval/screenshots/02-incidents-tablet-834.png
+	new file:   .eval/screenshots/03-incidents-mobile-390.png
+	new file:   .eval/screenshots/04-dashboard-desktop-1440.png
+	new file:   .eval/screenshots/05-dashboard-mobile-390.png
+	new file:   .eval/screenshots/06-billing-mobile-390.png
+	new file:   .eval/shot-existing.mjs
+	new file:   .eval/shot.mjs
+	new file:   .eval/worker-report.md
+	modified:   package-lock.json
+	modified:   package.json
+	new file:   reference/screenshot.jpg
+	modified:   src/components/Layout.tsx
+	modified:   src/main.tsx
+	new file:   src/pages/Incidents.tsx
+
