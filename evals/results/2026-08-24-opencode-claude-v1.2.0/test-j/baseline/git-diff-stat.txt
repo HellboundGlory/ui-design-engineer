@@ -1,0 +1,27 @@
+ .eval/screenshots/01-compare-desktop-1268w.jpg     |  Bin 0 -> 77892 bytes
+ .eval/screenshots/02-technical-desktop-1268w.jpg   |  Bin 0 -> 45409 bytes
+ .eval/screenshots/03-playful-desktop-1268w.jpg     |  Bin 0 -> 46550 bytes
+ .eval/screenshots/04-playful-narrow-500w.jpg       |  Bin 0 -> 36325 bytes
+ .../05-compare-narrow-500w-single-column.jpg       |  Bin 0 -> 31310 bytes
+ .eval/screenshots/06-playful-focus-skip-link.jpg   |  Bin 0 -> 32034 bytes
+ .../screenshots/07-playful-focus-follow-button.jpg |  Bin 0 -> 32201 bytes
+ .../screenshots/08-technical-focus-email-link.jpg  |  Bin 0 -> 30306 bytes
+ .eval/worker-report.md                             |   84 +
+ eslint.config.js                                   |   25 +
+ index.html                                         |   19 +
+ package-lock.json                                  | 3873 ++++++++++++++++++++
+ package.json                                       |   32 +
+ public/favicon.svg                                 |    1 +
+ src/App.tsx                                        |  116 +
+ src/components/PlayfulProfileCard.tsx              |  148 +
+ src/components/TechnicalProfileCard.tsx            |  122 +
+ src/data/engineerProfile.ts                        |   67 +
+ src/data/readerProfile.ts                          |   73 +
+ src/index.css                                      |   53 +
+ src/main.tsx                                       |   13 +
+ src/vite-env.d.ts                                  |    1 +
+ tsconfig.app.json                                  |   23 +
+ tsconfig.json                                      |    7 +
+ tsconfig.node.json                                 |   18 +
+ vite.config.ts                                     |    8 +
+ 26 files changed, 4683 insertions(+)

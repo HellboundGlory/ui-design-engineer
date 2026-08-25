@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@theme {
+  --font-mono-tech: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  --font-sans-tech: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display-warm: "Quicksand", ui-rounded, "Nunito", system-ui, sans-serif;
+  --font-sans-warm: "Nunito", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: #f4f4f5;
+  color-scheme: light;
+}
+
+:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.45);
+  }
+  50% {
+    opacity: 0.85;
+    box-shadow: 0 0 0 4px rgba(52, 211, 153, 0);
+  }
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 2.4s ease-in-out infinite;
+}
+
+@keyframes flame-wiggle {
+  0%,
+  100% {
+    transform: rotate(-4deg) scale(1);
+  }
+  50% {
+    transform: rotate(5deg) scale(1.08);
+  }
+}
+
+.group:hover .animate-flame-wiggle {
+  animation: flame-wiggle 0.6s ease-in-out infinite;
+}
