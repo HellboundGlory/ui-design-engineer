@@ -1,0 +1,15 @@
+ .eval/screenshots/01-servers-page.png            | Bin 0 -> 38490 bytes
+ .eval/screenshots/02-add-server-modal.png        | Bin 0 -> 52926 bytes
+ .eval/screenshots/03-add-server-validation.png   | Bin 0 -> 56277 bytes
+ .eval/screenshots/04-edit-server-modal.png       | Bin 0 -> 53496 bytes
+ .eval/screenshots/05-dashboard-for-reference.png | Bin 0 -> 41112 bytes
+ .eval/verify.mjs                                 |  58 ++++++
+ .eval/verify2.mjs                                |  32 ++++
+ .eval/worker-report.md                           |  79 ++++++++
+ package-lock.json                                |  72 +++++++
+ package.json                                     |   2 +
+ src/components/Input.tsx                         |  56 +++++-
+ src/components/Layout.tsx                        |   1 +
+ src/main.tsx                                     |   2 +
+ src/pages/Servers.tsx                            | 229 +++++++++++++++++++++++
+ 14 files changed, 528 insertions(+), 3 deletions(-)

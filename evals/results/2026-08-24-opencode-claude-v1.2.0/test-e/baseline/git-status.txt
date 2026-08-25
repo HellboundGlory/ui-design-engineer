@@ -1,0 +1,37 @@
+On branch eval-test-e-baseline-claude
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   .eval/screenshots/01-desktop-default-view.jpg
+	new file:   .eval/screenshots/02-row-selection-bulk-bar.jpg
+	new file:   .eval/screenshots/03-bulk-status-update-applied.jpg
+	new file:   .eval/screenshots/04-multicolumn-sort-status-then-mrr.jpg
+	new file:   .eval/screenshots/05-pagination-page2.jpg
+	new file:   .eval/screenshots/06-status-filter-applied.jpg
+	new file:   .eval/screenshots/07-search-filter.jpg
+	new file:   .eval/screenshots/08-laptop-1024-horizontal-scroll.jpg
+	new file:   .eval/screenshots/09-mobile-390-graceful-scroll.jpg
+	new file:   .eval/worker-report.md
+	modified:   .gitignore
+	new file:   .oxlintrc.json
+	new file:   README.md
+	new file:   index.html
+	new file:   package-lock.json
+	new file:   package.json
+	new file:   src/App.tsx
+	new file:   src/components/BulkActionsBar.tsx
+	new file:   src/components/CustomerTable.tsx
+	new file:   src/components/Pagination.tsx
+	new file:   src/components/SortHeaderCell.tsx
+	new file:   src/components/StatusBadge.tsx
+	new file:   src/components/StatusFilter.tsx
+	new file:   src/data/generateCustomers.ts
+	new file:   src/index.css
+	new file:   src/lib/format.ts
+	new file:   src/lib/sort.ts
+	new file:   src/main.tsx
+	new file:   src/types.ts
+	new file:   tsconfig.app.json
+	new file:   tsconfig.json
+	new file:   tsconfig.node.json
+	new file:   vite.config.ts
+

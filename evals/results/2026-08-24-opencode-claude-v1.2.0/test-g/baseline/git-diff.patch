@@ -1,0 +1,674 @@
+diff --git a/.eval/screenshots/01-servers-page.png b/.eval/screenshots/01-servers-page.png
+new file mode 100644
+index 0000000..0dae191
+Binary files /dev/null and b/.eval/screenshots/01-servers-page.png differ
+diff --git a/.eval/screenshots/02-add-server-modal.png b/.eval/screenshots/02-add-server-modal.png
+new file mode 100644
+index 0000000..34ddc3a
+Binary files /dev/null and b/.eval/screenshots/02-add-server-modal.png differ
+diff --git a/.eval/screenshots/03-add-server-validation.png b/.eval/screenshots/03-add-server-validation.png
+new file mode 100644
+index 0000000..5cdae78
+Binary files /dev/null and b/.eval/screenshots/03-add-server-validation.png differ
+diff --git a/.eval/screenshots/04-edit-server-modal.png b/.eval/screenshots/04-edit-server-modal.png
+new file mode 100644
+index 0000000..a59e0ce
+Binary files /dev/null and b/.eval/screenshots/04-edit-server-modal.png differ
+diff --git a/.eval/screenshots/05-dashboard-for-reference.png b/.eval/screenshots/05-dashboard-for-reference.png
+new file mode 100644
+index 0000000..61711e4
+Binary files /dev/null and b/.eval/screenshots/05-dashboard-for-reference.png differ
+diff --git a/.eval/verify.mjs b/.eval/verify.mjs
+new file mode 100644
+index 0000000..33f69f6
+--- /dev/null
++++ b/.eval/verify.mjs
+@@ -0,0 +1,58 @@
++import { chromium } from "playwright";
++import AxeBuilder from "@axe-core/playwright";
++import fs from "node:fs";
++
++const base = "http://localhost:5183";
++const shotDir =
++  "/home/james/orca/workspaces/ui-design-engineer-eval-seeds/eval-test-g-baseline/.eval/screenshots";
++fs.mkdirSync(shotDir, { recursive: true });
++
++const browser = await chromium.launch();
++const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
++const page = await context.newPage();
++
++const results = {};
++
++// 1. Servers page default view
++await page.goto(`${base}/servers`, { waitUntil: "networkidle" });
++await page.screenshot({ path: `${shotDir}/01-servers-page.png` });
++
++let axe = await new AxeBuilder({ page }).analyze();
++results["servers-page"] = axe.violations.map((v) => ({ id: v.id, impact: v.impact, nodes: v.nodes.length }));
++
++// 2. Open Add Server modal
++await page.getByRole("button", { name: "Add server" }).click();
++await page.waitForTimeout(150);
++await page.screenshot({ path: `${shotDir}/02-add-server-modal.png` });
++
++axe = await new AxeBuilder({ page }).analyze();
++results["add-modal"] = axe.violations.map((v) => ({ id: v.id, impact: v.impact, nodes: v.nodes.length }));
++
++// 3. Trigger native validation (submit empty required fields)
++await page.getByRole("button", { name: "Add server" }).nth(1).click().catch(() => {});
++await page.waitForTimeout(150);
++await page.screenshot({ path: `${shotDir}/03-add-server-validation.png` });
++
++// close modal, open edit
++await page.keyboard.press("Escape");
++await page.waitForTimeout(150);
++await page.getByRole("button", { name: /Edit edge-01/ }).click();
++await page.waitForTimeout(150);
++await page.screenshot({ path: `${shotDir}/04-edit-server-modal.png` });
++
++axe = await new AxeBuilder({ page }).analyze();
++results["edit-modal"] = axe.violations.map((v) => ({ id: v.id, impact: v.impact, nodes: v.nodes.length }));
++
++await page.keyboard.press("Escape");
++
++// 4. Dashboard for comparison (tokens/visual consistency)
++await page.goto(`${base}/`, { waitUntil: "networkidle" });
++await page.screenshot({ path: `${shotDir}/05-dashboard-for-reference.png` });
++
++await browser.close();
++
++fs.writeFileSync(
++  "/tmp/axe-results.json",
++  JSON.stringify(results, null, 2),
++);
++console.log(JSON.stringify(results, null, 2));
+diff --git a/.eval/verify2.mjs b/.eval/verify2.mjs
+new file mode 100644
+index 0000000..d795390
+--- /dev/null
++++ b/.eval/verify2.mjs
+@@ -0,0 +1,32 @@
++import { chromium } from "playwright";
++import AxeBuilder from "@axe-core/playwright";
++
++const base = "http://localhost:5183";
++const browser = await chromium.launch();
++const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
++const page = await context.newPage();
++
++async function report(label, url, afterNav) {
++  await page.goto(url, { waitUntil: "networkidle" });
++  if (afterNav) await afterNav();
++  const axe = await new AxeBuilder({ page }).analyze();
++  console.log(`\n=== ${label} ===`);
++  for (const v of axe.violations) {
++    console.log(`- ${v.id} (${v.impact}): ${v.help}`);
++    for (const n of v.nodes) {
++      console.log(`    target: ${n.target.join(" ")}`);
++      console.log(`    summary: ${n.failureSummary?.split("\n").join(" | ")}`);
++    }
++  }
++  if (axe.violations.length === 0) console.log("  (none)");
++}
++
++await report("Dashboard (existing page, baseline)", `${base}/`);
++await report("Billing (existing page, baseline)", `${base}/billing`);
++await report("Servers (new page)", `${base}/servers`);
++await report("Servers - Add modal open", `${base}/servers`, async () => {
++  await page.getByRole("button", { name: "Add server" }).click();
++  await page.waitForTimeout(150);
++});
++
++await browser.close();
+diff --git a/.eval/worker-report.md b/.eval/worker-report.md
+new file mode 100644
+index 0000000..c15f23f
+--- /dev/null
++++ b/.eval/worker-report.md
+@@ -0,0 +1,79 @@
++# Worker Report — Server Inventory / `legacy/report.html` refactor
++
++## Run metadata
++
++- **Arm:** baseline, no-skill (no `ui-design-engineer` plugin invoked, no reference material from that repo read).
++- **Read before building:**
++  - `DESIGN.md` (root) — full document.
++  - `src/index.css` — token definitions and `@theme` mapping.
++  - `src/components/Button.tsx`, `Card.tsx`, `Badge.tsx`, `Input.tsx`, `Modal.tsx`, `Layout.tsx`.
++  - `src/pages/Dashboard.tsx`, `src/pages/Billing.tsx` (existing page conventions: container width/padding, `Card`/`CardHeader`/`CardBody` usage, table markup, `tabular` class usage).
++  - `src/main.tsx` (routing setup).
++  - `legacy/report.html` (the fixture to port).
++- **Tools actually used for verification:** `tsc -b` (via `npm run build`), `vite build`, `oxlint` (via `npm run lint`), and a self-installed, project-local, dev-only `playwright` + `@axe-core/playwright` (added as devDependencies, not shipped in any production bundle) for screenshots and automated contrast/ARIA checks against the running `vite` dev server. No browser MCP/extension was used.
++
++## Task as given
++
++Port `legacy/report.html` (a bare HTML table of servers + an unlabeled "Add Server" form, using `bgcolor`/`cellpadding`/no `<label>`s) into a real, routed page in this app, styled with the project's existing token system and components — not a new palette, not new primitives duplicating what exists, no loss of semantic structure, and a genuine (not just cosmetic) accessibility improvement over the fixture.
++
++## What I built
++
++**New page:** `src/pages/Servers.tsx`, routed at `/servers`, added to the sidebar nav in `src/components/Layout.tsx` (between Dashboard and Billing) and to `src/main.tsx`'s route table.
++
++**Structure, mapped from the fixture:**
++- The inventory table → a `Card` + `CardHeader` + `CardBody` (`p-0`) wrapping a real `<table>`, following the exact pattern already used for the Services table on `Dashboard.tsx` and the Invoices table on `Billing.tsx`. Kept `Name / Region / Status / CPU / Memory` columns from the fixture, added a trailing actions column.
++  - `<th scope="col">` on every header (fixture had none — headers were plain `<td>`s in a `bgcolor="#cccccc"` row).
++  - Added a visually-hidden `<caption>` describing the table's purpose (fixture had none).
++  - The trailing "Actions" header has no visible label (matches the existing Billing invoices table's pattern of a blank action-column header) but I gave it an `sr-only` span rather than leaving it truly empty — see Known Gaps below re: an existing `empty-table-header` finding on `Billing` that this page does **not** repeat.
++  - Numeric columns (CPU, Memory) get the project's `.tabular` utility and are right-aligned, matching Dashboard/Billing conventions.
++  - Status → `Badge` component: `up` → `tone="success"`, `down` → `tone="danger"`. Using red/danger here is for a genuine error/outage state, which is explicitly the one allowed use of `--color-danger` per `DESIGN.md` section 18's anti-pattern rule.
++  - The fixture's dead `<a href="#">edit</a>` link → a real `Button size="sm" variant="ghost"` that opens an edit modal, with an `sr-only` suffix (`Edit edge-01`, etc.) so the accessible name is unambiguous when there are multiple identical "Edit" buttons in a list (the fixture's identical "edit" links had this exact ambiguity problem for screen-reader users navigating by link list).
++- The "Add Server" form → opens in the existing `Modal` component (same one used elsewhere in the app), triggered by a primary `Button` in the `CardHeader` action slot — this mirrors the "Change plan" / "Update" action-in-header pattern already established on `Billing.tsx`. The same modal/form is reused for both "Add server" and "Edit `<name>`" (prefilled via `defaultValue`, remounted via a `key` on the `<form>` so uncontrolled defaults reset correctly when switching rows), so there's one form implementation, not two.
++- Form fields, each with a real `<label htmlFor>`/`id` pair (fixture had bare `Name:<input>` text with no association at all):
++  - Name — `Input`, `required`.
++  - Region — new `Select` primitive (didn't exist; added, see below), `required`, options taken from the fixture's three regions.
++  - IP address — `Input`, `required`, `pattern` for dotted-decimal IPv4, plus a visible hint paragraph wired via `aria-describedby` (the fixture's IP field had no colon after its label and no validation at all).
++  - Active / Enable monitoring — new `Checkbox` primitive, grouped in a `<fieldset>`/`<legend>` ("Options") so screen-reader users get the grouping the fixture's two bare, run-together checkboxes lacked.
++  - Notes — new `Textarea` primitive.
++  - A visible "Fields marked * are required" note (not just an asterisk with no explanation) covers WCAG 3.3.2 (labels/instructions) for the required fields, since I relied on native HTML5 `required`/`pattern` constraint validation (browser-native, accessible-by-default) rather than hand-rolling custom validation UI.
++  - Submit ("Add server"/"Save changes") and Cancel live in the `Modal`'s `footer` slot, matching every other modal-shaped affordance in the app; the submit button uses `form="server-form"` to associate with the `<form>` in the modal body from outside it.
++- On submit, the page holds real local React state (`useState<Server[]>`) seeded with the fixture's four rows; "Add server" appends a new row (status defaults to `up`, CPU/Memory show `—` since there's no real telemetry for a server that was never actually provisioned — I deliberately did not fabricate fake percentages), and "Edit" updates name/region on the existing row in place. This is a working, not a decorative, form.
++
++**New primitives added to `src/components/Input.tsx`:** `Select`, `Textarea`, `Checkbox`, alongside the existing `Input`/`Label`. These didn't exist in the design system but the form genuinely needed them; each one reuses the exact same tokens/sizing as `Input` (`h-9`/`rounded-md`/`border-border`/`bg-bg-sunken`/`focus:border-accent`, `text-sm`), so they read as the same family rather than a new system. I did not reach for shadcn/Radix or any headless-UI library, per `DESIGN.md` section 18's strict rule. No new colors were introduced anywhere — every class used maps to a token already defined in `src/index.css` or a Tailwind utility already used elsewhere in the app (`sr-only`, `flex`, spacing scale, etc.).
++
++**Global focus handling:** relies entirely on the existing `*:focus-visible` rule in `index.css` — I didn't add any bespoke focus styling to the new checkboxes/selects.
++
++## Key decisions / reasoning
++
++1. **Modal-based add/edit instead of an inline second Card.** The fixture just stacked "Add Server" below the table. I chose a modal because (a) `Billing.tsx` already established the "header action button → dialog-shaped interaction" pattern for mutating state (`Change plan`, `Update`), and (b) it lets one form implementation serve both add and edit, avoiding a second near-duplicate form on the page. This is a bigger structural change than a literal 1:1 port, but it's the app's own established pattern, not an invented one.
++2. **Reused Edit for the fixture's dead link rather than dropping it.** The brief calls a "table becomes a div grid for no reason" a weak result; by the same logic, silently deleting the only interactive affordance in the legacy table (however non-functional) felt like the wrong default, so I gave it real behavior.
++3. **Didn't invent table columns the form implies (IP, notes, active/monitoring) that the fixture's own table never had.** The legacy table's columns are Name/Region/Status/CPU/Mem; the legacy form collects more than that. Rather than fabricate a richer schema, new rows only populate the columns the table already tracks — IP/notes/active/monitoring are collected and validated (matching the fixture's form) but not persisted/displayed anywhere, since there is no backend and no existing column for them. This is a deliberate scope-limiting choice; noted below as a gap.
++4. **Kept the `<table>` as a real table.** No div-grid conversion — `scope="col"` headers, a `<caption>`, and semantic `<td>`s throughout, per the brief's explicit guidance.
++
++## Verification actually performed
++
++- `npm run build` (`tsc -b && vite build`) — **passes**, no type errors, builds cleanly.
++- `npm run lint` (`oxlint`) — **passes**, exit code 0, no findings.
++- Self-installed `playwright` + `@axe-core/playwright` (devDependencies only) against `vite --port 5183`:
++  - Screenshots saved to `.eval/screenshots/`:
++    1. `01-servers-page.png` — the Servers list page.
++    2. `02-add-server-modal.png` — "Add server" modal, empty state.
++    3. `03-add-server-validation.png` — attempted submit with required fields empty (native browser validation).
++    4. `04-edit-server-modal.png` — "Edit edge-01" modal, prefilled.
++    5. `05-dashboard-for-reference.png` — existing Dashboard page, for visual side-by-side token consistency.
++  - Automated axe scans on `/`, `/billing`, `/servers`, and `/servers` with the Add modal open (scripts left at `.eval/verify.mjs` and `.eval/verify2.mjs`). Findings, and how I handled each:
++    - **`color-contrast` on `.bg-accent` primary buttons (white text on `--color-accent`, ~3.23:1, needs 4.5:1):** this is a defect in the *existing* `Button` component's `primary` variant token pairing, not something I introduced — I confirmed neither `Dashboard.tsx` nor `Billing.tsx` uses `variant="primary"` at all (they only use `secondary`/`ghost`), so this page is simply the first to exercise that variant and surface a pre-existing, unexercised design-system defect. I judged it out of scope to silently change `--color-accent` or `Button.tsx`'s color mapping for the whole app without a logged design decision (this affects every future primary button, not just this page) — flagging it here is the more honest move than either papering over it with a page-local hardcoded color (which the brief explicitly warns against) or quietly leaving it unmentioned.
++    - **`color-contrast` on `Badge tone="danger"` (`#e0596b` on `#3a1c22`, 4.24:1, needs 4.5:1):** same category of issue — a pre-existing, marginal (off by ~6%) token pairing in `Badge.tsx` that no existing page happened to exercise (Dashboard only uses success/warning tones, Billing only success). Flagged for the same reason, not fixed locally.
++    - **`color-contrast` on my own hint/help text:** initially used `text-text-faint` (2.97:1 against the modal's `bg-bg-raised`) for the "required fields" note and the IP-format hint. Caught this in the axe run and fixed it by switching to `text-text-muted` (the tier already used for real body/meta text elsewhere, e.g. Billing's "Renews on..." caption) — re-ran axe and confirmed this specific finding cleared. This one *was* mine to fix, and I fixed it.
++    - **`heading-order` (h1 → h3, skipping h2):** present identically on `Dashboard` and `Billing` already (caused by `CardHeader` always rendering an `h3`). Not a regression I introduced — Servers matches the same pre-existing pattern as every other page in the app.
++    - **`empty-table-header` on Billing's blank action-column header:** pre-existing on `Billing`, and Servers does **not** reproduce it, since I gave the trailing header an `sr-only` label.
++  - I did **not** run a full manual screen-reader pass (VoiceOver/NVDA), a keyboard-only walkthrough beyond visual/Escape-to-close checks, or a Lighthouse/full WCAG audit — the axe-core automated ruleset plus manual code-level review (label associations, `aria-describedby`, `fieldset`/`legend`, `scope="col"`) is what actually happened, and axe itself only catches a subset of WCAG issues (it does not verify e.g. logical tab order, or that the native `required`/`pattern` validation messages are well-announced by every browser/AT combination).
++
++## Known gaps / deliberately out of scope
++
++- The `--color-accent` / primary-button and danger-badge contrast shortfalls described above are real, pre-existing, WCAG-AA-failing token pairings in the shared design system that this page's normal, correct use of `variant="primary"` and `tone="danger"` happens to be the first thing in the app to surface. I did not fix them, since doing so means changing shared tokens/components used (or usable) app-wide, which is a design decision beyond this page's brief — flagging clearly here instead of hiding it or hacking around it locally.
++- No backend: `Add server`/`Save changes` only mutate in-memory React state; nothing persists across a reload. This matches the fixture's own `<form action="/servers" method="post">`, which also had no real backend in this repo.
++- IP/Active/Enable monitoring/Notes are collected and validated in the form (matching the fixture) but not displayed anywhere in the table afterward, since the existing table schema has no columns for them and I didn't want to invent new ones unasked (see decision #3 above).
++- No mobile/narrow-viewport treatment — `DESIGN.md` section 16 explicitly says this is an open, undecided question for the whole app, not something to resolve unilaterally on one new page.
++- No full manual AT (screen reader) pass — see Verification section above.
++- `legacy/report.html` itself was left in place on disk but is now unused/orphaned, per the task instructions (it didn't need to keep working standalone).
+diff --git a/package-lock.json b/package-lock.json
+index 400c959..5ec974b 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -13,17 +13,32 @@
+         "react-router-dom": "^7.18.2"
+       },
+       "devDependencies": {
++        "@axe-core/playwright": "^4.13.0",
+         "@tailwindcss/vite": "^4.3.3",
+         "@types/node": "^24.13.3",
+         "@types/react": "^19.2.18",
+         "@types/react-dom": "^19.2.4",
+         "@vitejs/plugin-react": "^6.1.0",
+         "oxlint": "^1.79.0",
++        "playwright": "^1.62.1",
+         "tailwindcss": "^4.3.3",
+         "typescript": "~6.0.2",
+         "vite": "^8.2.2"
+       }
+     },
++    "node_modules/@axe-core/playwright": {
++      "version": "4.13.0",
++      "resolved": "https://registry.npmjs.org/@axe-core/playwright/-/playwright-4.13.0.tgz",
++      "integrity": "sha512-6YLx+kxXu5GJceG4ozFg+33a2EMTdjYwWGloJ3sb9Kta5pp+ZNS53uxGVog5JetIY8s++P5UrtX+cri+u0VAVg==",
++      "dev": true,
++      "license": "MPL-2.0",
++      "dependencies": {
++        "axe-core": "~4.13.0"
++      },
++      "peerDependencies": {
++        "playwright-core": ">= 1.0.0"
++      }
++    },
+     "node_modules/@jridgewell/gen-mapping": {
+       "version": "0.3.13",
+       "resolved": "https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.3.13.tgz",
+@@ -1262,6 +1277,16 @@
+         }
+       }
+     },
++    "node_modules/axe-core": {
++      "version": "4.13.0",
++      "resolved": "https://registry.npmjs.org/axe-core/-/axe-core-4.13.0.tgz",
++      "integrity": "sha512-UzGt8zg7Ny8djbYMhxl2zuEevVa7r2gJjYY5Lwr1xM7+XU2nd6CkIWFTVcCIbAP63vSz71NaVyyuSk9lHKcy0A==",
++      "dev": true,
++      "license": "MPL-2.0",
++      "engines": {
++        "node": ">=4"
++      }
++    },
+     "node_modules/cookie": {
+       "version": "1.1.1",
+       "resolved": "https://registry.npmjs.org/cookie/-/cookie-1.1.1.tgz",
+@@ -1715,6 +1740,53 @@
+         "url": "https://github.com/sponsors/jonschlinkert"
+       }
+     },
++    "node_modules/playwright": {
++      "version": "1.62.1",
++      "resolved": "https://registry.npmjs.org/playwright/-/playwright-1.62.1.tgz",
++      "integrity": "sha512-0M+L3LAD8/nm554LOla9Ayx0j0tmFZ0FBcoQ7F1VuVHpM/XpiC8RcDzBQB8W5+hA8L22THxELzeF+2WcUzvcLg==",
++      "dev": true,
++      "license": "Apache-2.0",
++      "dependencies": {
++        "playwright-core": "1.62.1"
++      },
++      "bin": {
++        "playwright": "cli.js"
++      },
++      "engines": {
++        "node": ">=20"
++      },
++      "optionalDependencies": {
++        "fsevents": "2.3.2"
++      }
++    },
++    "node_modules/playwright-core": {
++      "version": "1.62.1",
++      "resolved": "https://registry.npmjs.org/playwright-core/-/playwright-core-1.62.1.tgz",
++      "integrity": "sha512-wPYSwEBJY9GHraISXqyqtx0na0LpO3XEX7jNDhntbex7tzUS7kLnZsOlFruFJB4Hi/rhDMjXGqHewDZ68nYZVw==",
++      "dev": true,
++      "license": "Apache-2.0",
++      "bin": {
++        "playwright-core": "cli.js"
++      },
++      "engines": {
++        "node": ">=20"
++      }
++    },
++    "node_modules/playwright/node_modules/fsevents": {
++      "version": "2.3.2",
++      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.2.tgz",
++      "integrity": "sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==",
++      "dev": true,
++      "hasInstallScript": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^8.16.0 || ^10.6.0 || >=11.0.0"
++      }
++    },
+     "node_modules/postcss": {
+       "version": "8.5.26",
+       "resolved": "https://registry.npmjs.org/postcss/-/postcss-8.5.26.tgz",
+diff --git a/package.json b/package.json
+index 9ba3784..11add54 100644
+--- a/package.json
++++ b/package.json
+@@ -15,12 +15,14 @@
+     "react-router-dom": "^7.18.2"
+   },
+   "devDependencies": {
++    "@axe-core/playwright": "^4.13.0",
+     "@tailwindcss/vite": "^4.3.3",
+     "@types/node": "^24.13.3",
+     "@types/react": "^19.2.18",
+     "@types/react-dom": "^19.2.4",
+     "@vitejs/plugin-react": "^6.1.0",
+     "oxlint": "^1.79.0",
++    "playwright": "^1.62.1",
+     "tailwindcss": "^4.3.3",
+     "typescript": "~6.0.2",
+     "vite": "^8.2.2"
+diff --git a/src/components/Input.tsx b/src/components/Input.tsx
+index cb9d284..0fbfb0b 100644
+--- a/src/components/Input.tsx
++++ b/src/components/Input.tsx
+@@ -1,4 +1,8 @@
+-import type { InputHTMLAttributes } from "react";
++import type {
++  InputHTMLAttributes,
++  SelectHTMLAttributes,
++  TextareaHTMLAttributes,
++} from "react";
+ 
+ export function Input({ className = "", ...props }: InputHTMLAttributes<HTMLInputElement>) {
+   return (
+@@ -9,10 +13,56 @@ export function Input({ className = "", ...props }: InputHTMLAttributes<HTMLInpu
+   );
+ }
+ 
+-export function Label({ children }: { children: React.ReactNode }) {
++export function Label({
++  children,
++  ...props
++}: React.LabelHTMLAttributes<HTMLLabelElement>) {
+   return (
+-    <label className="mb-1.5 block text-xs font-medium text-text-muted">
++    <label className="mb-1.5 block text-xs font-medium text-text-muted" {...props}>
+       {children}
+     </label>
+   );
+ }
++
++export function Select({
++  className = "",
++  ...props
++}: SelectHTMLAttributes<HTMLSelectElement>) {
++  return (
++    <select
++      className={`h-9 w-full rounded-md border border-border bg-bg-sunken px-3 text-sm text-text focus:border-accent ${className}`}
++      {...props}
++    />
++  );
++}
++
++export function Textarea({
++  className = "",
++  ...props
++}: TextareaHTMLAttributes<HTMLTextAreaElement>) {
++  return (
++    <textarea
++      className={`w-full rounded-md border border-border bg-bg-sunken px-3 py-2 text-sm text-text placeholder:text-text-faint focus:border-accent ${className}`}
++      {...props}
++    />
++  );
++}
++
++export function Checkbox({
++  id,
++  label,
++  className = "",
++  ...props
++}: InputHTMLAttributes<HTMLInputElement> & { id: string; label: string }) {
++  return (
++    <label htmlFor={id} className="flex items-center gap-2 text-sm text-text">
++      <input
++        id={id}
++        type="checkbox"
++        className={`h-4 w-4 rounded-sm border border-border-strong bg-bg-sunken accent-accent ${className}`}
++        {...props}
++      />
++      {label}
++    </label>
++  );
++}
+diff --git a/src/components/Layout.tsx b/src/components/Layout.tsx
+index 119b294..db264e0 100644
+--- a/src/components/Layout.tsx
++++ b/src/components/Layout.tsx
+@@ -2,6 +2,7 @@ import { NavLink, Outlet } from "react-router-dom";
+ 
+ const nav = [
+   { to: "/", label: "Dashboard", end: true },
++  { to: "/servers", label: "Servers" },
+   { to: "/billing", label: "Billing" },
+ ];
+ 
+diff --git a/src/main.tsx b/src/main.tsx
+index e75f114..0ea7382 100644
+--- a/src/main.tsx
++++ b/src/main.tsx
+@@ -5,6 +5,7 @@ import './index.css'
+ import { Layout } from './components/Layout'
+ import { Dashboard } from './pages/Dashboard'
+ import { Billing } from './pages/Billing'
++import { Servers } from './pages/Servers'
+ 
+ createRoot(document.getElementById('root')!).render(
+   <StrictMode>
+@@ -12,6 +13,7 @@ createRoot(document.getElementById('root')!).render(
+       <Routes>
+         <Route element={<Layout />}>
+           <Route index element={<Dashboard />} />
++          <Route path="servers" element={<Servers />} />
+           <Route path="billing" element={<Billing />} />
+         </Route>
+       </Routes>
+diff --git a/src/pages/Servers.tsx b/src/pages/Servers.tsx
+new file mode 100644
+index 0000000..64c7aa1
+--- /dev/null
++++ b/src/pages/Servers.tsx
+@@ -0,0 +1,229 @@
++import { useState, type FormEvent } from "react";
++import { Card, CardHeader, CardBody } from "../components/Card";
++import { Button } from "../components/Button";
++import { Badge } from "../components/Badge";
++import { Modal } from "../components/Modal";
++import { Input, Label, Select, Textarea, Checkbox } from "../components/Input";
++
++type ServerStatus = "up" | "down";
++
++type Server = {
++  id: string;
++  name: string;
++  region: string;
++  status: ServerStatus;
++  cpu: string;
++  mem: string;
++};
++
++const REGIONS = ["us-east", "eu-west", "ap-south"] as const;
++
++const initialServers: Server[] = [
++  { id: "edge-01", name: "edge-01", region: "us-east", status: "up", cpu: "42%", mem: "3.1GB" },
++  { id: "edge-02", name: "edge-02", region: "us-east", status: "up", cpu: "81%", mem: "7.4GB" },
++  { id: "edge-03", name: "edge-03", region: "eu-west", status: "down", cpu: "0%", mem: "0GB" },
++  { id: "edge-04", name: "edge-04", region: "ap-south", status: "up", cpu: "63%", mem: "5.0GB" },
++];
++
++export function Servers() {
++  const [servers, setServers] = useState<Server[]>(initialServers);
++  const [modalMode, setModalMode] = useState<"add" | "edit" | null>(null);
++  const [editingServer, setEditingServer] = useState<Server | null>(null);
++
++  function openAdd() {
++    setEditingServer(null);
++    setModalMode("add");
++  }
++
++  function openEdit(server: Server) {
++    setEditingServer(server);
++    setModalMode("edit");
++  }
++
++  function closeModal() {
++    setModalMode(null);
++    setEditingServer(null);
++  }
++
++  function handleSubmit(e: FormEvent<HTMLFormElement>) {
++    e.preventDefault();
++    const form = e.currentTarget;
++    const data = new FormData(form);
++    const name = String(data.get("name") ?? "").trim();
++    const region = String(data.get("region") ?? REGIONS[0]);
++
++    if (!name) return;
++
++    if (modalMode === "edit" && editingServer) {
++      setServers((prev) =>
++        prev.map((s) => (s.id === editingServer.id ? { ...s, name, region } : s)),
++      );
++    } else {
++      setServers((prev) => [
++        ...prev,
++        {
++          id:
++            typeof crypto !== "undefined" && "randomUUID" in crypto
++              ? crypto.randomUUID()
++              : `server-${prev.length}-${Date.now()}`,
++          name,
++          region,
++          status: "up",
++          cpu: "—",
++          mem: "—",
++        },
++      ]);
++    }
++
++    closeModal();
++  }
++
++  const editing = modalMode === "edit" ? editingServer : null;
++
++  return (
++    <div className="mx-auto max-w-5xl px-6 py-6">
++      <h1 className="mb-5 text-lg font-semibold text-text">Servers</h1>
++
++      <Card>
++        <CardHeader
++          title="Server inventory"
++          action={
++            <Button size="sm" variant="primary" onClick={openAdd}>
++              Add server
++            </Button>
++          }
++        />
++        <CardBody className="p-0">
++          <table className="w-full text-sm">
++            <caption className="sr-only">
++              Server inventory: name, region, status, CPU and memory usage, and available
++              actions
++            </caption>
++            <thead>
++              <tr className="border-b border-border text-left text-xs text-text-muted">
++                <th scope="col" className="px-4 py-2 font-medium">
++                  Name
++                </th>
++                <th scope="col" className="px-4 py-2 font-medium">
++                  Region
++                </th>
++                <th scope="col" className="px-4 py-2 font-medium">
++                  Status
++                </th>
++                <th scope="col" className="px-4 py-2 text-right font-medium">
++                  CPU
++                </th>
++                <th scope="col" className="px-4 py-2 text-right font-medium">
++                  Memory
++                </th>
++                <th scope="col" className="px-4 py-2 font-medium">
++                  <span className="sr-only">Actions</span>
++                </th>
++              </tr>
++            </thead>
++            <tbody>
++              {servers.map((server) => (
++                <tr key={server.id} className="border-b border-border last:border-0">
++                  <td className="px-4 py-2.5 font-mono text-text">{server.name}</td>
++                  <td className="px-4 py-2.5 text-text-muted">{server.region}</td>
++                  <td className="px-4 py-2.5">
++                    <Badge tone={server.status === "up" ? "success" : "danger"}>
++                      {server.status}
++                    </Badge>
++                  </td>
++                  <td className="tabular px-4 py-2.5 text-right text-text">{server.cpu}</td>
++                  <td className="tabular px-4 py-2.5 text-right text-text">{server.mem}</td>
++                  <td className="px-4 py-2.5 text-right">
++                    <Button size="sm" variant="ghost" onClick={() => openEdit(server)}>
++                      Edit<span className="sr-only"> {server.name}</span>
++                    </Button>
++                  </td>
++                </tr>
++              ))}
++            </tbody>
++          </table>
++        </CardBody>
++      </Card>
++
++      <Modal
++        open={modalMode !== null}
++        onClose={closeModal}
++        title={editing ? `Edit ${editing.name}` : "Add server"}
++        footer={
++          <>
++            <Button type="button" variant="ghost" onClick={closeModal}>
++              Cancel
++            </Button>
++            <Button type="submit" form="server-form" variant="primary">
++              {editing ? "Save changes" : "Add server"}
++            </Button>
++          </>
++        }
++      >
++        <form id="server-form" key={editing ? editing.id : "add"} onSubmit={handleSubmit}>
++          <p className="mb-3 text-xs text-text-muted">Fields marked * are required.</p>
++
++          <div className="mb-3">
++            <Label htmlFor="server-name">Name *</Label>
++            <Input
++              id="server-name"
++              name="name"
++              type="text"
++              required
++              aria-required="true"
++              defaultValue={editing ? editing.name : ""}
++              placeholder="edge-05"
++            />
++          </div>
++
++          <div className="mb-3">
++            <Label htmlFor="server-region">Region *</Label>
++            <Select
++              id="server-region"
++              name="region"
++              required
++              aria-required="true"
++              defaultValue={editing ? editing.region : REGIONS[0]}
++            >
++              {REGIONS.map((region) => (
++                <option key={region} value={region}>
++                  {region}
++                </option>
++              ))}
++            </Select>
++          </div>
++
++          <div className="mb-3">
++            <Label htmlFor="server-ip">IP address *</Label>
++            <Input
++              id="server-ip"
++              name="ip"
++              type="text"
++              required
++              aria-required="true"
++              pattern="^(\d{1,3}\.){3}\d{1,3}$"
++              aria-describedby="server-ip-hint"
++              placeholder="10.0.4.12"
++            />
++            <p id="server-ip-hint" className="mt-1 text-xs text-text-muted">
++              IPv4 dotted-decimal format, e.g. 10.0.4.12
++            </p>
++          </div>
++
++          <fieldset className="mb-3">
++            <legend className="mb-1.5 text-xs font-medium text-text-muted">Options</legend>
++            <div className="flex flex-col gap-2">
++              <Checkbox id="server-active" name="active" label="Active" />
++              <Checkbox id="server-monitor" name="monitor" label="Enable monitoring" />
++            </div>
++          </fieldset>
++
++          <div>
++            <Label htmlFor="server-notes">Notes</Label>
++            <Textarea id="server-notes" name="notes" rows={3} />
++          </div>
++        </form>
++      </Modal>
++    </div>
++  );
++}

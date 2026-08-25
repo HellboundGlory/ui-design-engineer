@@ -1,0 +1,18 @@
+On branch eval-test-g-baseline-claude
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   .eval/screenshots/01-servers-page.png
+	new file:   .eval/screenshots/02-add-server-modal.png
+	new file:   .eval/screenshots/03-add-server-validation.png
+	new file:   .eval/screenshots/04-edit-server-modal.png
+	new file:   .eval/screenshots/05-dashboard-for-reference.png
+	new file:   .eval/verify.mjs
+	new file:   .eval/verify2.mjs
+	new file:   .eval/worker-report.md
+	modified:   package-lock.json
+	modified:   package.json
+	modified:   src/components/Input.tsx
+	modified:   src/components/Layout.tsx
+	modified:   src/main.tsx
+	new file:   src/pages/Servers.tsx
+

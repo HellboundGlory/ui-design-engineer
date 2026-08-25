@@ -1,0 +1,34 @@
+ .eval/screenshots/01-desktop-default-view.jpg      |  Bin 0 -> 117372 bytes
+ .eval/screenshots/02-row-selection-bulk-bar.jpg    |  Bin 0 -> 118452 bytes
+ .../screenshots/03-bulk-status-update-applied.jpg  |  Bin 0 -> 117737 bytes
+ .../04-multicolumn-sort-status-then-mrr.jpg        |  Bin 0 -> 112516 bytes
+ .eval/screenshots/05-pagination-page2.jpg          |  Bin 0 -> 113180 bytes
+ .eval/screenshots/06-status-filter-applied.jpg     |  Bin 0 -> 112441 bytes
+ .eval/screenshots/07-search-filter.jpg             |  Bin 0 -> 120431 bytes
+ .../08-laptop-1024-horizontal-scroll.jpg           |  Bin 0 -> 61877 bytes
+ .../screenshots/09-mobile-390-graceful-scroll.jpg  |  Bin 0 -> 42191 bytes
+ .eval/worker-report.md                             |  208 +++
+ .gitignore                                         |   22 +-
+ .oxlintrc.json                                     |    8 +
+ README.md                                          |   24 +
+ index.html                                         |   12 +
+ package-lock.json                                  | 1942 ++++++++++++++++++++
+ package.json                                       |   27 +
+ src/App.tsx                                        |  266 +++
+ src/components/BulkActionsBar.tsx                  |  121 ++
+ src/components/CustomerTable.tsx                   |  126 ++
+ src/components/Pagination.tsx                      |  105 ++
+ src/components/SortHeaderCell.tsx                  |   68 +
+ src/components/StatusBadge.tsx                     |   54 +
+ src/components/StatusFilter.tsx                    |   82 +
+ src/data/generateCustomers.ts                      |  160 ++
+ src/index.css                                      |   28 +
+ src/lib/format.ts                                  |   45 +
+ src/lib/sort.ts                                    |   69 +
+ src/main.tsx                                       |   10 +
+ src/types.ts                                       |   46 +
+ tsconfig.app.json                                  |   26 +
+ tsconfig.json                                      |    7 +
+ tsconfig.node.json                                 |   23 +
+ vite.config.ts                                     |    8 +
+ 33 files changed, 3483 insertions(+), 4 deletions(-)

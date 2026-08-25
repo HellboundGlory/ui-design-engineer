@@ -1,0 +1,3672 @@
+diff --git a/.eval/screenshots/01-desktop-default-view.jpg b/.eval/screenshots/01-desktop-default-view.jpg
+new file mode 100644
+index 0000000..f72eaac
+Binary files /dev/null and b/.eval/screenshots/01-desktop-default-view.jpg differ
+diff --git a/.eval/screenshots/02-row-selection-bulk-bar.jpg b/.eval/screenshots/02-row-selection-bulk-bar.jpg
+new file mode 100644
+index 0000000..708712c
+Binary files /dev/null and b/.eval/screenshots/02-row-selection-bulk-bar.jpg differ
+diff --git a/.eval/screenshots/03-bulk-status-update-applied.jpg b/.eval/screenshots/03-bulk-status-update-applied.jpg
+new file mode 100644
+index 0000000..355f7cb
+Binary files /dev/null and b/.eval/screenshots/03-bulk-status-update-applied.jpg differ
+diff --git a/.eval/screenshots/04-multicolumn-sort-status-then-mrr.jpg b/.eval/screenshots/04-multicolumn-sort-status-then-mrr.jpg
+new file mode 100644
+index 0000000..48c7428
+Binary files /dev/null and b/.eval/screenshots/04-multicolumn-sort-status-then-mrr.jpg differ
+diff --git a/.eval/screenshots/05-pagination-page2.jpg b/.eval/screenshots/05-pagination-page2.jpg
+new file mode 100644
+index 0000000..ee9d87e
+Binary files /dev/null and b/.eval/screenshots/05-pagination-page2.jpg differ
+diff --git a/.eval/screenshots/06-status-filter-applied.jpg b/.eval/screenshots/06-status-filter-applied.jpg
+new file mode 100644
+index 0000000..8af5230
+Binary files /dev/null and b/.eval/screenshots/06-status-filter-applied.jpg differ
+diff --git a/.eval/screenshots/07-search-filter.jpg b/.eval/screenshots/07-search-filter.jpg
+new file mode 100644
+index 0000000..1df2df7
+Binary files /dev/null and b/.eval/screenshots/07-search-filter.jpg differ
+diff --git a/.eval/screenshots/08-laptop-1024-horizontal-scroll.jpg b/.eval/screenshots/08-laptop-1024-horizontal-scroll.jpg
+new file mode 100644
+index 0000000..1661bb7
+Binary files /dev/null and b/.eval/screenshots/08-laptop-1024-horizontal-scroll.jpg differ
+diff --git a/.eval/screenshots/09-mobile-390-graceful-scroll.jpg b/.eval/screenshots/09-mobile-390-graceful-scroll.jpg
+new file mode 100644
+index 0000000..4a2bd6e
+Binary files /dev/null and b/.eval/screenshots/09-mobile-390-graceful-scroll.jpg differ
+diff --git a/.eval/worker-report.md b/.eval/worker-report.md
+new file mode 100644
+index 0000000..2fb7475
+--- /dev/null
++++ b/.eval/worker-report.md
+@@ -0,0 +1,208 @@
++# Worker Report — Customer Admin Console
++
++## Run metadata
++
++- **Stack:** React 19 + TypeScript, Vite 8, Tailwind CSS v4 (`@tailwindcss/vite`
++  plugin, CSS-first config via `@theme` — no `tailwind.config.js` needed in v4).
++  No component library (no shadcn/MUI/AntD) — hand-built table, dropdowns, and
++  badges. No router, no server — single-page, single-view app, appropriate for
++  the scope of the brief.
++- **Dependencies added and why:**
++  - `tailwindcss` + `@tailwindcss/vite` — utility styling.
++  - No other runtime dependencies. Deliberately did not reach for a table
++    library (e.g. TanStack Table) or a UI kit — the brief's surface area
++    (sort, select, bulk actions, pagination) is small enough that hand-rolled
++    logic is more transparent to review and keeps the bundle small
++    (213 KB JS / 66 KB gzipped for the whole app).
++- **Tools actually used for verification:** the `claude-in-chrome` browser
++  MCP extension (navigate, resize_window, click/type, screenshot,
++  read_console_messages). It worked reliably for everything I needed,
++  including window resizing, so I did not fall back to a local Playwright
++  install.
++- Scaffolded with `npm create vite@latest -- --template react-ts` into a
++  temp dir and moved contents in (the target directory wasn't empty enough
++  for create-vite to scaffold in place non-interactively).
++
++## Task as given
++
++"Build an enterprise customer administration system with multi-column
++sorting, row selection, bulk actions menu, status badge chips, and
++pagination." Greenfield, audience = internal ops staff using the tool all
++day at a desk, 8-hour shifts. Brief asked for the density framing to
++visibly shape decisions, not just be flavor text, and for a real, sortable,
++paginated dataset of 100+ rows rather than a static happy-path mock.
++
++## What I built
++
++A single-page **Customers** view inside a minimal app shell (12px-height
++top bar with product name / breadcrumb / account count — no sidebar, since
++a sidebar with mostly-dead nav items would itself have been the kind of
++non-functional decoration the brief warns against). The view is one card
++containing, top to bottom: a filter/search toolbar, a bulk-actions bar that
++only renders when `selectedCount > 0`, the table itself, and a pagination
++footer.
++
++**Data model** (`src/types.ts`, `src/data/generateCustomers.ts`): a
++`Customer` has id, company, contact name/email, status (active / trial /
++past_due / suspended / churned), plan tier (starter / growth / enterprise /
++enterprise+), MRR, seats (used/total), region, account owner, a health
++score, and created/last-activity dates. 220 rows are generated with a
++seeded PRNG (`mulberry32`) so the dataset is large enough to make sorting
++and pagination meaningful and is stable across reloads within a session
++rather than reshuffling on every render — but it does regenerate fresh (not
++persisted) on a hard reload, which is a known/acceptable limitation for a
++mocked dataset (see Gaps).
++
++**Density / layout reasoning (the part the brief cared about most):** the
++"8-hour desk shift" framing drove several concrete, checkable decisions
++rather than staying abstract:
++- Row height is `h-9` (36px) with `py-1.5` cell padding and `text-sm`
++  (14px) body text — noticeably tighter than a consumer-app card list or a
++  typical marketing-site table, closer to the density of tools like
++  Retool/Airtable-grid/admin-panel tables that people stare at all day.
++  I explicitly rejected a card-grid reinterpretation of the data — this is
++  a real `<table>`/`<thead>`/`<tbody>`/`<th scope="col">` structure, because
++  a card grid would cost roughly 3-4x the vertical space per row for the
++  same information and would break column-wise scanning, which is the
++  actual task ops staff do (scanning a column, not reading one row as a
++  unit).
++- Numeric columns (MRR, seats, health) are right-aligned with
++  `tabular-nums` so digits line up vertically for fast scanning — a detail
++  that matters more the longer someone stares at a column of numbers.
++- Sticky table header (`sticky top-0`) so column headers stay visible
++  while scrolling a long page of rows within the card.
++- Status badge chips are intentionally low-weight: a small dot + 11px text
++  on a pale tint background with a subtle ring, not a saturated filled
++  pill. They're meant to be scannable peripherally (color cues) without
++  visually shouting on every single row of a dense table — five different
++  saturated chip colors repeated down 50 rows would fight for attention all
++  day.
++- The bulk-actions bar is genuinely contextual: it does not render at all
++  (not just hidden/disabled) when `selectedIds.size === 0`, and appears as
++  a compact dark bar (distinguishable from the light toolbar above it)
++  only once something is selected — verified visually (screenshots
++  02/03).
++- Toolbar and pagination footer are similarly compact (small `text-xs`
++  controls, ~44px toolbar height) rather than the larger touch-friendly
++  controls appropriate for an occasional-use consumer surface.
++
++**Functional behavior (not decorative):**
++- **Multi-column sort:** click a header to sort by it (asc → desc → off);
++  shift-click another header to add it as a secondary key, shown with a
++  small numbered badge next to the arrow indicating sort priority. Sort
++  state is an ordered `SortRule[]`, applied left-to-right in
++  `src/lib/sort.ts` with a final stable id tiebreaker. Verified this
++  actually changes row order, including the secondary key correctly
++  breaking ties within the primary key's groups (see screenshot 04: sorted
++  by Status then MRR — MRR is visibly ascending *within* the Active group).
++- **Row selection:** per-row checkbox, header checkbox with real
++  indeterminate state (`ref` callback setting `.indeterminate`), scoped to
++  the current page (selection persists across pages in the `Set<string>`
++  even though "select all on page" only touches the visible page — I did
++  not build a "select all N matching across pages" affordance; see Gaps).
++- **Bulk actions:** "Set status" (mark active / suspend / mark churned) —
++  actually mutates the underlying dataset via `setCustomers`, confirmed by
++  screenshot 03 showing three rows' Status column changing from
++  Active/Active/Trial to Suspended after the action, and selection
++  clearing afterward. "Export CSV" builds a real CSV client-side and
++  triggers a browser download via an object URL. "Delete" removes the
++  selected rows from state after a native `confirm()` guard.
++- **Filters:** free-text search (company/contact/email/id), a multi-select
++  status filter (checkbox dropdown), and single-select plan/region
++  filters, all combined and re-applied live, with a result count and a
++  "Reset filters" affordance that only appears when a filter is active.
++  Changing any filter resets to page 1.
++- **Pagination:** real slicing of the sorted+filtered array
++  (`sorted.slice(start, start + pageSize)`), page-size selector
++  (25/50/100), numbered page buttons with ellipsis collapsing for larger
++  page counts, "Showing X–Y of Z" — verified with screenshot 05 (page 2
++  correctly shows rows 51–100 and sort order continues correctly across
++  the page boundary).
++
++## Key decisions / reasoning
++
++- Kept the app to one view rather than adding sidebar nav to other
++  "enterprise" sections (Billing, Reports, etc.) that the brief didn't ask
++  for — those would have been unwired decoration, which the brief
++  explicitly flags as a failure mode.
++- Table columns are fixed-width-ish via `min-w-*` utility classes and the
++  table has `overflow-x-auto`; below ~1150px the table scrolls
++  horizontally rather than the columns getting so cramped they become
++  illegible or wrapping into multi-line cells. For a data-dense internal
++  tool used at a desk on presumably a reasonably wide monitor, this felt
++  like the right trade-off versus collapsing to a card layout on narrow
++  viewports (which would undermine the "real table" requirement).
++- Health score is shown as a plain color-coded number rather than a
++  progress bar / sparkline, to avoid adding visual weight to a column that
++  exists mostly for quick threshold scanning.
++- Contact cell shows name + a muted, truncated email on a second line
++  within the same row height band — the only two-line cell in the table —
++  because splitting contact into two full columns (Name, Email) would have
++  cost significant horizontal width for information that's rarely sorted
++  or scanned independently of the name.
++
++## What I actually verified
++
++- `npx tsc -b` — clean, no type errors.
++- `npx oxlint` — clean, no lint findings (rules: react/rules-of-hooks,
++  react/only-export-components, plus default oxc/typescript rule sets).
++- `npm run build` — succeeds (`tsc -b && vite build`), production bundle
++  213 KB JS / 21 KB CSS (66.8 KB / 5 KB gzipped).
++- Live browser verification via `claude-in-chrome` against `vite preview`
++  (production build) at `http://localhost:4321`, screenshots saved to
++  `.eval/screenshots/`:
++  1. `01-desktop-default-view.jpg` — 1440×900 default load, sorted by MRR
++     desc, 220 accounts, dense table visible.
++  2. `02-row-selection-bulk-bar.jpg` — 3 rows selected, bulk bar appears,
++     selected rows highlighted.
++  3. `03-bulk-status-update-applied.jpg` — after choosing "Suspend" from
++     the Set Status menu: the 3 rows' Status cells actually changed to
++     "Suspended" and selection cleared. This is the strongest evidence the
++     bulk action is wired to real state, not a UI-only affordance.
++  4. `04-multicolumn-sort-status-then-mrr.jpg` — Status (priority 1) +
++     MRR (priority 2) sort, confirming secondary-key ordering within
++     primary-key groups.
++  5. `05-pagination-page2.jpg` — page 2, "Showing 51–100 of 220", sort
++     order continuous across the page boundary.
++  6. `06-status-filter-applied.jpg` — status multi-filter narrows 220 → 191
++     matches, page resets to 1.
++  7. `07-search-filter.jpg` — text search "cascade" narrows to 13 matching
++     rows, all containing "Cascade" in the company name.
++  8. `08-laptop-1024-horizontal-scroll.jpg` — 1024px viewport: table
++     scrolls horizontally rather than collapsing/breaking.
++  9. `09-mobile-390-graceful-scroll.jpg` — 390px viewport: toolbar wraps,
++     table remains a real scrollable table with no broken/overlapping
++     layout, pagination controls wrap sanely. Not a designed-for-mobile
++     layout (correctly out of scope for an at-a-desk tool) but confirmed
++     it degrades without breaking.
++  - Checked `read_console_messages` after a fresh navigation — no console
++    errors or warnings on load.
++- **What I did NOT verify:** no automated accessibility audit (e.g. axe)
++  was run — I applied ARIA by hand (`aria-sort` on sortable headers,
++  `aria-label` on checkboxes, `role="toolbar"`/`role="menu"` on the bulk
++  bar, `aria-selected` on rows, `aria-current="page"` on pagination) and
++  spot-checked focus states visually, but did not do a full keyboard-only
++  pass through every interactive element or screen-reader testing. No
++  automated unit/integration tests were written (no test framework was
++  installed) — verification here is build/type/lint-clean plus manual
++  browser interaction as documented above, not a test suite. No
++  cross-browser testing (Chromium only, via the MCP extension). No
++  performance profiling of render cost at higher row counts (only tested
++  at 220 rows).
++
++## Known gaps / deliberately out of scope
++
++- No backend — all data is client-side generated/mocked and mutations
++  (status change, delete) are local state only; a reload regenerates the
++  same 220 rows from the seeded PRNG rather than persisting mutations.
++- No "select all N matching filters across all pages" — selection/bulk
++  actions operate on individually- or page-checked rows only, which is a
++  common enough real-world admin-table limitation but worth flagging.
++- No undo for bulk Delete beyond the browser `confirm()` guard.
++- No column-visibility toggle, no saved views/filters, no row-detail
++  drawer or edit-in-place — the brief scoped this to sorting/selection/bulk
++  actions/badges/pagination and I stayed inside that rather than
++  speculatively adding an edit surface.
++- No dark mode / theming.
++- Mobile/narrow-viewport layout is "doesn't break," not "designed for" —
++  consistent with the stated desk-bound audience.
+diff --git a/.gitignore b/.gitignore
+index 7cd39be..a547bf3 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,10 +1,24 @@
++# Logs
++logs
++*.log
++npm-debug.log*
++yarn-debug.log*
++yarn-error.log*
++pnpm-debug.log*
++lerna-debug.log*
++
+ node_modules
+ dist
+ dist-ssr
+-.next
+-out
+-build
+-*.log
+ *.local
++
++# Editor directories and files
+ .vscode/*
+ !.vscode/extensions.json
++.idea
++.DS_Store
++*.suo
++*.ntvs*
++*.njsproj
++*.sln
++*.sw?
+diff --git a/.oxlintrc.json b/.oxlintrc.json
+new file mode 100644
+index 0000000..6fa991d
+--- /dev/null
++++ b/.oxlintrc.json
+@@ -0,0 +1,8 @@
++{
++  "$schema": "./node_modules/oxlint/configuration_schema.json",
++  "plugins": ["react", "typescript", "oxc"],
++  "rules": {
++    "react/rules-of-hooks": "error",
++    "react/only-export-components": ["warn", { "allowConstantExport": true }]
++  }
++}
+diff --git a/README.md b/README.md
+new file mode 100644
+index 0000000..29466ce
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1,24 @@
++# Customer Admin Console
++
++An internal-tool style customer administration screen: dense sortable table,
++multi-select with bulk actions, filters, and pagination over a generated
++220-row mock dataset.
++
++## Stack
++
++- React 19 + TypeScript
++- Vite 8 (build tool)
++- Tailwind CSS v4 (utility styling, no component kit)
++
++## Scripts
++
++```bash
++npm install
++npm run dev       # dev server
++npm run build     # tsc -b && vite build
++npm run preview   # serve the production build locally
++npm run lint      # oxlint
++```
++
++See `.eval/worker-report.md` for the engineering handoff notes (design
++reasoning, verification performed, known gaps).
+diff --git a/index.html b/index.html
+new file mode 100644
+index 0000000..8d81bab
+--- /dev/null
++++ b/index.html
+@@ -0,0 +1,12 @@
++<!doctype html>
++<html lang="en">
++  <head>
++    <meta charset="UTF-8" />
++    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++    <title>Customer Admin Console</title>
++  </head>
++  <body>
++    <div id="root"></div>
++    <script type="module" src="/src/main.tsx"></script>
++  </body>
++</html>
+diff --git a/package-lock.json b/package-lock.json
+new file mode 100644
+index 0000000..9d80c34
+--- /dev/null
++++ b/package-lock.json
+@@ -0,0 +1,1942 @@
++{
++  "name": "customer-admin-console",
++  "version": "0.0.0",
++  "lockfileVersion": 3,
++  "requires": true,
++  "packages": {
++    "": {
++      "name": "customer-admin-console",
++      "version": "0.0.0",
++      "dependencies": {
++        "react": "^19.2.8",
++        "react-dom": "^19.2.8"
++      },
++      "devDependencies": {
++        "@tailwindcss/vite": "^4.3.3",
++        "@types/node": "^24.13.3",
++        "@types/react": "^19.2.18",
++        "@types/react-dom": "^19.2.4",
++        "@vitejs/plugin-react": "^6.1.0",
++        "oxlint": "^1.79.0",
++        "tailwindcss": "^4.3.3",
++        "typescript": "~6.0.2",
++        "vite": "^8.2.2"
++      }
++    },
++    "node_modules/@jridgewell/gen-mapping": {
++      "version": "0.3.13",
++      "resolved": "https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.3.13.tgz",
++      "integrity": "sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/sourcemap-codec": "^1.5.0",
++        "@jridgewell/trace-mapping": "^0.3.24"
++      }
++    },
++    "node_modules/@jridgewell/remapping": {
++      "version": "2.3.5",
++      "resolved": "https://registry.npmjs.org/@jridgewell/remapping/-/remapping-2.3.5.tgz",
++      "integrity": "sha512-LI9u/+laYG4Ds1TDKSJW2YPrIlcVYOwi2fUC6xB43lueCjgxV4lffOCZCtYFiH6TNOX+tQKXx97T4IKHbhyHEQ==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/gen-mapping": "^0.3.5",
++        "@jridgewell/trace-mapping": "^0.3.24"
++      }
++    },
++    "node_modules/@jridgewell/resolve-uri": {
++      "version": "3.1.2",
++      "resolved": "https://registry.npmjs.org/@jridgewell/resolve-uri/-/resolve-uri-3.1.2.tgz",
++      "integrity": "sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==",
++      "dev": true,
++      "license": "MIT",
++      "engines": {
++        "node": ">=6.0.0"
++      }
++    },
++    "node_modules/@jridgewell/sourcemap-codec": {
++      "version": "1.5.5",
++      "resolved": "https://registry.npmjs.org/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.5.5.tgz",
++      "integrity": "sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/@jridgewell/trace-mapping": {
++      "version": "0.3.31",
++      "resolved": "https://registry.npmjs.org/@jridgewell/trace-mapping/-/trace-mapping-0.3.31.tgz",
++      "integrity": "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/resolve-uri": "^3.1.0",
++        "@jridgewell/sourcemap-codec": "^1.4.14"
++      }
++    },
++    "node_modules/@oxc-project/types": {
++      "version": "0.146.0",
++      "resolved": "https://registry.npmjs.org/@oxc-project/types/-/types-0.146.0.tgz",
++      "integrity": "sha512-XC0QsnnhVe7sLIWmYmdPw7x5P0h4W8vUU3Nv1ySgWXtvCz8NizoAEpGXA0sOYoJQV2Rl13LgURAHQ5cI5ILCSA==",
++      "dev": true,
++      "license": "MIT",
++      "funding": {
++        "url": "https://github.com/sponsors/Boshen"
++      }
++    },
++    "node_modules/@oxlint/binding-android-arm-eabi": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-android-arm-eabi/-/binding-android-arm-eabi-1.80.0.tgz",
++      "integrity": "sha512-RM3Plj+biQpxa5d1GOOX6ciDlcUROmm4OZ/pLTpitkQt2mJv4jhtY4cbgaetOm5UKWZe05/TGQ6o1Vl8EOHkrA==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-android-arm64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-android-arm64/-/binding-android-arm64-1.80.0.tgz",
++      "integrity": "sha512-YlO5JEf0Yr2bUUlu8O8daVcUxtcGGbcSmyV7E7nSbJbfAdxTE0PFPwgnIlw7wXJaTYjb+qs5hI5q3jxUkI7cAw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-darwin-arm64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-darwin-arm64/-/binding-darwin-arm64-1.80.0.tgz",
++      "integrity": "sha512-BULDOyO3AhsmdWfQeIUCykDt3dd7XZBGLhp1eIh56skRv01O+cNjNPwXMIbeW1x4+pxcln5if72wcRgViVo7PA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-darwin-x64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-darwin-x64/-/binding-darwin-x64-1.80.0.tgz",
++      "integrity": "sha512-YJ4JzLw7N5TDSQFlA0hAQGHvnDZgyypm1yunObVWcWiF9KM7eGCJKYKLgTC2Fi/57OdnBhbj4OkzPGdFQJ6HyA==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-freebsd-x64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-freebsd-x64/-/binding-freebsd-x64-1.80.0.tgz",
++      "integrity": "sha512-AYUIk5QnL0s8oWAYsREZwkRYy1SupJTXALo93J1TgzHywxQtdM99FecRMQ87MXEdPQ0j1TmEpeeq3fGNkpvMqg==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm-gnueabihf": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.80.0.tgz",
++      "integrity": "sha512-9hBZVANupQ89W9dXyE0n8doCyaW5pDyGn3y6XlIMPZ+rIKuyqkr3SNUXmVJIhuvUq0NBU3RBiSXXE69l4XI6KA==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm-musleabihf": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm-musleabihf/-/binding-linux-arm-musleabihf-1.80.0.tgz",
++      "integrity": "sha512-SvS2uKqzY+pbfuvAHzH4338R6Zwo805GAwrIMVvK1KxoOWCIjZUdfzTCvilD7z6JK91v011+zYMryabhDo2AsQ==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm64-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.80.0.tgz",
++      "integrity": "sha512-tCLadyqRVL3pQTRPNg7cjXKvcvS4fbyXeQHhKk5BTJ1oftQln5/yIIWbu/Xom/DX41zv2P9QGt6+D/TtQVtY3A==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm64-musl": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.80.0.tgz",
++      "integrity": "sha512-XfpCNRlOPcLlJl4Bn/FUhjqlR6BVavEykERBf/MV7YA9VZDa5g5znVqYhyviMafcxS9Pe/i/kPvHNO0U6svEHQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-ppc64-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.80.0.tgz",
++      "integrity": "sha512-3I4yMwcFG9NeO8ioY6JBBuKsIm5GL/x7MATt1S4tVWaxPu5HcJ+XnLUbcVBTxG8q2Wu56HSj+NmXQiVYb1lp6A==",
++      "cpu": [
++        "ppc64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-riscv64-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-riscv64-gnu/-/binding-linux-riscv64-gnu-1.80.0.tgz",
++      "integrity": "sha512-E1wAKymkpe1/E8helzBKdm81OBOF+ezxRyXRMEuik3ZpWDER5CPOKZwF66RsdwW98uwZv8UTFremUQtC1CzdJA==",
++      "cpu": [
++        "riscv64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-riscv64-musl": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-riscv64-musl/-/binding-linux-riscv64-musl-1.80.0.tgz",
++      "integrity": "sha512-+gLRGD4sIo3+VA++iham5UxD9tKSoJ/VOrROCEXIcknrYtQg6iIQgvjN0cpiRF7N6UYC7pJbvHJlDnMge5LRpQ==",
++      "cpu": [
++        "riscv64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-s390x-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.80.0.tgz",
++      "integrity": "sha512-aR0PrzHj9leW3NmzBAAP4EzdoBNoJcs9sjnIQPIwyRnBGYrRbXUIpEB5Q39AqK3PLY5JK5uEhDQDiUa1QSAstw==",
++      "cpu": [
++        "s390x"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-x64-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.80.0.tgz",
++      "integrity": "sha512-vSVh5cSo3Xxs6ghBCcFJlpbkbENzDog1qXtoXLa/HC3aCrR4XO76GZbXmQoCPHnu99nQpdCeC3H9tdNICfDh7A==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-x64-musl": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-x64-musl/-/binding-linux-x64-musl-1.80.0.tgz",
++      "integrity": "sha512-FfzBXpNQ8u7/ZI/p8bl73MeZ508Ax3hxWp3SiJpEFiC+BB9XcXy5FAZHTLKDPSzrUpxQZSZJAVdDmuJp/+HDBQ==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-openharmony-arm64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-openharmony-arm64/-/binding-openharmony-arm64-1.80.0.tgz",
++      "integrity": "sha512-zMzbkumtmprCgRwoYNzcB3iC39fXdJIMLMU33KdCjEGLlJGOEt1+LwQ4LF8ndLzAEKVz4BR0y3V6Xrkk3Nm3yA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "openharmony"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-win32-arm64-msvc": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.80.0.tgz",
++      "integrity": "sha512-ib6iRcrXsk4t1fm3iKcwksyWh1ZkZXC/2mEzakl0ai2+6HZunf1WWMZ/xP9EJAvw9g9K4UVTC3NF/+G2qLrbTQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-win32-ia32-msvc": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-win32-ia32-msvc/-/binding-win32-ia32-msvc-1.80.0.tgz",
++      "integrity": "sha512-xhRWBMpLxZvgKAH6+DJZmpP+W8Y8UdQOSU1JfxSWNXsaBaRGW77j+1hCuNHlzj7OH4SPN8fYd1q0o2qrDtoVyw==",
++      "cpu": [
++        "ia32"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-win32-x64-msvc": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.80.0.tgz",
++      "integrity": "sha512-yAnO7lwBYQnz2pcfBPIGQQZWIX5zd5R/1aAKIF3oE+TVj7IhoHcROjOkz3sRDngzqhfPKfFaXqug5j5rE5dn6Q==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-android-arm-eabi": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-android-arm-eabi/-/binding-android-arm-eabi-1.2.5.tgz",
++      "integrity": "sha512-DLe/i+l8ynIBY7XEQ191TeZvCoowIGa18R+dIV30GW7DiOtp74i/xX8hs8GUjW5ARV7VZuie3d6AumSmCwbeRA==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-android-arm64": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-android-arm64/-/binding-android-arm64-1.2.5.tgz",
++      "integrity": "sha512-zXcwKlQApYAOELHd8PwKDFkagYF9Wy4e0RJ+0qnzl9Pjnpj75TEG8ufv40p2J7kCEfwZAsNiuzRIyNNMWT38ig==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-darwin-arm64": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-darwin-arm64/-/binding-darwin-arm64-1.2.5.tgz",
++      "integrity": "sha512-dK4QakI42nzWgJT5sm4y4y/O//D4OxM75/cH28RLV+nzIN9AY+YsbuUVrUTjlLjXR6vpyxFbSsbmNuJ6BP9sww==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-darwin-x64": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-darwin-x64/-/binding-darwin-x64-1.2.5.tgz",
++      "integrity": "sha512-fqSALaUu1Wjd1nK2uW2kJDWdLCc8lx1IcY+MTY26Aurfdx19anlzhqXOgCFbBFQnlFDTn4TC1/7Nz4Bl2mLP3A==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-freebsd-x64": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-freebsd-x64/-/binding-freebsd-x64-1.2.5.tgz",
++      "integrity": "sha512-/vCnNxlkxs9tKxNDcyWUePpJ/PgTzxIaVhoM5SmG8UV+GR/IcPam4VYxi7GIMo7PSDuNqlJqvprqii9NqqVCMw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-arm-gnueabihf": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.2.5.tgz",
++      "integrity": "sha512-abk0NLA519LxRCszmbE0jYKuQ9YPocOXTiOXOo6Yr+YAT95VH+PtqYAjOJvGKt3viEd/x4qzabAlwd5bHOOARg==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-arm64-gnu": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.2.5.tgz",
++      "integrity": "sha512-Y7eALiJ8lr0M2HH103Js+g7V34wf6snlpZLAsHI90uLhr3PVlNsbFVAXJC9d/V6BnPyKtpSwI+NcB/RLxsQxuA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-arm64-musl": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.2.5.tgz",
++      "integrity": "sha512-xMvZgnbZg4YVnR/AX2b3oOPDTFYJvUVaJg5FedA/LuvexAtXibZQej4cnTkw3rjsJ/ggUROB64TdtETiim+FYA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-ppc64-gnu": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.2.5.tgz",
++      "integrity": "sha512-GRjeqTUDHTo5GwntsLaAMcBahG3nlpjftXWZLN73HiYQlhwEowvarFgQnRnQZtIp4keXX7quXFbG38uPZBa2EA==",
++      "cpu": [
++        "ppc64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-s390x-gnu": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.2.5.tgz",
++      "integrity": "sha512-vLNTR45F2Uwc8AufkNXPmB4VliaXs+FvcheEogIzOXzO4l+LzieXF5A/TWxLy5HtqpsRCHUfd0lPVrrdgXdLHQ==",
++      "cpu": [
++        "s390x"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-x64-gnu": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.2.5.tgz",
++      "integrity": "sha512-Mgj59/HTuYeK9Gz2MA+mBWKnHsAgkBSec15ZMb1st3oIfFbX7gCjOae7GydHhzcyQi9Z/7M1QuN9bR3oFqF0jQ==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-x64-musl": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-x64-musl/-/binding-linux-x64-musl-1.2.5.tgz",
++      "integrity": "sha512-mY8AP0/ichsbhAxGnLa3d3+MwV0EfgrPND2bplI3Ym8T6R2pJ0N87bvrKVwNXmdy3jnr6eQBecdqx/HMknBmpA==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-openharmony-arm64": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-openharmony-arm64/-/binding-openharmony-arm64-1.2.5.tgz",
++      "integrity": "sha512-8SLssA2oweAxyRgDp789ACfRb/3P+zNRJpzZxSizxF9m8NUDQ4+3xjo8ttjhVGGw6Qxb70oZiEtIjaKikCO7Yw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "openharmony"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-win32-arm64-msvc": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.2.5.tgz",
++      "integrity": "sha512-vGbruD5zquhoc8D9SViXgN2FBJtNdTyQ4DtG+SWiEGlJiAzoKcZ2xp+xuXCffhubVdt0NJlTZqkeRuERy7g8Cw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-win32-x64-msvc": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.2.5.tgz",
++      "integrity": "sha512-e/SXpgISz+IoqVcSSI0rx/d/he8zqLex+/rCWpnHpmVfmPIUjag9H6P7zotf0gJHwPUhQxZ/mF8tr6acebT9yw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/pluginutils": {
++      "version": "1.0.1",
++      "resolved": "https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.0.1.tgz",
++      "integrity": "sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/@tailwindcss/node": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/node/-/node-4.3.3.tgz",
++      "integrity": "sha512-/T8IKEsf9VTU6tLjgC7+sv2mOPtQxzE2jMw7u4Tt40Tx+QSZxpzh95/H6cMKoja9XuW7iMdLJYBB0o9G1CaAgg==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/remapping": "^2.3.5",
++        "enhanced-resolve": "^5.24.1",
++        "jiti": "^2.7.0",
++        "lightningcss": "1.32.0",
++        "magic-string": "^0.30.21",
++        "source-map-js": "^1.2.1",
++        "tailwindcss": "4.3.3"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss/-/lightningcss-1.32.0.tgz",
++      "integrity": "sha512-NXYBzinNrblfraPGyrbPoD19C1h9lfI/1mzgWYvXUTe414Gz/X1FD2XBZSZM7rRTrMA8JL3OtAaGifrIKhQ5yQ==",
++      "dev": true,
++      "license": "MPL-2.0",
++      "dependencies": {
++        "detect-libc": "^2.0.3"
++      },
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      },
++      "optionalDependencies": {
++        "lightningcss-android-arm64": "1.32.0",
++        "lightningcss-darwin-arm64": "1.32.0",
++        "lightningcss-darwin-x64": "1.32.0",
++        "lightningcss-freebsd-x64": "1.32.0",
++        "lightningcss-linux-arm-gnueabihf": "1.32.0",
++        "lightningcss-linux-arm64-gnu": "1.32.0",
++        "lightningcss-linux-arm64-musl": "1.32.0",
++        "lightningcss-linux-x64-gnu": "1.32.0",
++        "lightningcss-linux-x64-musl": "1.32.0",
++        "lightningcss-win32-arm64-msvc": "1.32.0",
++        "lightningcss-win32-x64-msvc": "1.32.0"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-android-arm64": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-android-arm64/-/lightningcss-android-arm64-1.32.0.tgz",
++      "integrity": "sha512-YK7/ClTt4kAK0vo6w3X+Pnm0D2cf2vPHbhOXdoNti1Ga0al1P4TBZhwjATvjNwLEBCnKvjJc2jQgHXH0NEwlAg==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-darwin-arm64": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.32.0.tgz",
++      "integrity": "sha512-RzeG9Ju5bag2Bv1/lwlVJvBE3q6TtXskdZLLCyfg5pt+HLz9BqlICO7LZM7VHNTTn/5PRhHFBSjk5lc4cmscPQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-darwin-x64": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-darwin-x64/-/lightningcss-darwin-x64-1.32.0.tgz",
++      "integrity": "sha512-U+QsBp2m/s2wqpUYT/6wnlagdZbtZdndSmut/NJqlCcMLTWp5muCrID+K5UJ6jqD2BFshejCYXniPDbNh73V8w==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-freebsd-x64": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-freebsd-x64/-/lightningcss-freebsd-x64-1.32.0.tgz",
++      "integrity": "sha512-JCTigedEksZk3tHTTthnMdVfGf61Fky8Ji2E4YjUTEQX14xiy/lTzXnu1vwiZe3bYe0q+SpsSH/CTeDXK6WHig==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-linux-arm-gnueabihf": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm-gnueabihf/-/lightningcss-linux-arm-gnueabihf-1.32.0.tgz",
++      "integrity": "sha512-x6rnnpRa2GL0zQOkt6rts3YDPzduLpWvwAF6EMhXFVZXD4tPrBkEFqzGowzCsIWsPjqSK+tyNEODUBXeeVHSkw==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-linux-arm64-gnu": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-gnu/-/lightningcss-linux-arm64-gnu-1.32.0.tgz",
++      "integrity": "sha512-0nnMyoyOLRJXfbMOilaSRcLH3Jw5z9HDNGfT/gwCPgaDjnx0i8w7vBzFLFR1f6CMLKF8gVbebmkUN3fa/kQJpQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-linux-arm64-musl": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-musl/-/lightningcss-linux-arm64-musl-1.32.0.tgz",
++      "integrity": "sha512-UpQkoenr4UJEzgVIYpI80lDFvRmPVg6oqboNHfoH4CQIfNA+HOrZ7Mo7KZP02dC6LjghPQJeBsvXhJod/wnIBg==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-linux-x64-gnu": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.32.0.tgz",
++      "integrity": "sha512-V7Qr52IhZmdKPVr+Vtw8o+WLsQJYCTd8loIfpDaMRWGUZfBOYEJeyJIkqGIDMZPwPx24pUMfwSxxI8phr/MbOA==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-linux-x64-musl": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-musl/-/lightningcss-linux-x64-musl-1.32.0.tgz",
++      "integrity": "sha512-bYcLp+Vb0awsiXg/80uCRezCYHNg1/l3mt0gzHnWV9XP1W5sKa5/TCdGWaR/zBM2PeF/HbsQv/j2URNOiVuxWg==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-win32-arm64-msvc": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-win32-arm64-msvc/-/lightningcss-win32-arm64-msvc-1.32.0.tgz",
++      "integrity": "sha512-8SbC8BR40pS6baCM8sbtYDSwEVQd4JlFTOlaD3gWGHfThTcABnNDBda6eTZeqbofalIJhFx0qKzgHJmcPTnGdw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-win32-x64-msvc": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.32.0.tgz",
++      "integrity": "sha512-Amq9B/SoZYdDi1kFrojnoqPLxYhQ4Wo5XiL8EVJrVsB8ARoC1PWW6VGtT0WKCemjy8aC+louJnjS7U18x3b06Q==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/oxide": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide/-/oxide-4.3.3.tgz",
++      "integrity": "sha512-krXjAikiaFSPaK/FkAQT5UTx3VormQaiZ5hBFlJZ9UFQGB/rwg1MZIhHAG9smMQRTdyJxP6Qt5MwMtdyU5FWrA==",
++      "dev": true,
++      "license": "MIT",
++      "engines": {
++        "node": ">= 20"
++      },
++      "optionalDependencies": {
++        "@tailwindcss/oxide-android-arm64": "4.3.3",
++        "@tailwindcss/oxide-darwin-arm64": "4.3.3",
++        "@tailwindcss/oxide-darwin-x64": "4.3.3",
++        "@tailwindcss/oxide-freebsd-x64": "4.3.3",
++        "@tailwindcss/oxide-linux-arm-gnueabihf": "4.3.3",
++        "@tailwindcss/oxide-linux-arm64-gnu": "4.3.3",
++        "@tailwindcss/oxide-linux-arm64-musl": "4.3.3",
++        "@tailwindcss/oxide-linux-x64-gnu": "4.3.3",
++        "@tailwindcss/oxide-linux-x64-musl": "4.3.3",
++        "@tailwindcss/oxide-wasm32-wasi": "4.3.3",
++        "@tailwindcss/oxide-win32-arm64-msvc": "4.3.3",
++        "@tailwindcss/oxide-win32-x64-msvc": "4.3.3"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-android-arm64": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-android-arm64/-/oxide-android-arm64-4.3.3.tgz",
++      "integrity": "sha512-Y85A2gmPSkl5Ve5qR86GL4HT509cFqQh1aes9p3sSkyTPwt0Pppf3GkwGe4JPACcRYjgJIEhQgM6dBClnr0NYw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-darwin-arm64": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-darwin-arm64/-/oxide-darwin-arm64-4.3.3.tgz",
++      "integrity": "sha512-BiaWatpBcERQFDlOjRDpIVXuFK5PJez5SA4JMg6VYZdBYU+qKfV/vqjcIs+IYmtitf1xYQZTwXvU/8y4lfZUGw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-darwin-x64": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-darwin-x64/-/oxide-darwin-x64-4.3.3.tgz",
++      "integrity": "sha512-fAeUqfV5ndhxRwai8cXGzdLvul9utWOmeTkv69unv4ZXixjn61Z+p9lCWdwOwA3TYboG3BwdVuN/RDjhBRl0mw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-freebsd-x64": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-freebsd-x64/-/oxide-freebsd-x64-4.3.3.tgz",
++      "integrity": "sha512-iyf5bV6+wnAlflVeEy7R25dupxTNECZN5QMI0qNT6eT+EgaGdZcKhGkr5SdoaWiLJ3spLqIY9VCeSGrwmtg4kw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-arm-gnueabihf": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-arm-gnueabihf/-/oxide-linux-arm-gnueabihf-4.3.3.tgz",
++      "integrity": "sha512-aAYUprJAJQWWbRrPvtjdroZ56Md+JM8pMiopS6xGEwDfLhqj+2ver2p4nU4Mb3CRqcMmNBjo8KkUgcxhkzVQGQ==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-arm64-gnu": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-arm64-gnu/-/oxide-linux-arm64-gnu-4.3.3.tgz",
++      "integrity": "sha512-nDxldcEENOxZRzC2uu9jrutZdAAQtb+8WWDCSnWL1zvBk1+FN+x6MtDViPB5AJMfttVCUhehGWus3XBPgatM/w==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-arm64-musl": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-arm64-musl/-/oxide-linux-arm64-musl-4.3.3.tgz",
++      "integrity": "sha512-Md44bD6veX/PC5iyF8cDVnw4HBIANZepRZZ7a8DQOvkfo5WUBwcp6iAuCUz23u+4SUkhJlD3eL7hNdW8ezd/kA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-x64-gnu": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-x64-gnu/-/oxide-linux-x64-gnu-4.3.3.tgz",
++      "integrity": "sha512-tx7us1muwOKAKWao2v/GaafFeQboE6aj88vC6ziN2NCGcRm8gWUhwjzg+YdVB1e4boAtdtma4L43onunI6NS4w==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-x64-musl": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-x64-musl/-/oxide-linux-x64-musl-4.3.3.tgz",
++      "integrity": "sha512-SJxX60smvHgasZoBy11dX6YRjXJFovwWBoedhbQPOBzgFWBHGB+TVPWB9BxzR7TTxU8FQZAI2AyiNCMzFm8Img==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-wasm32-wasi": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-wasm32-wasi/-/oxide-wasm32-wasi-4.3.3.tgz",
++      "integrity": "sha512-jx1+rPhY/5Ympkktd656HBWEBLxP7dH06losBLjjf5vgCODXvi9KhtftWcMIwTFIDqBr7cRnQkdLnAG+IOlGvQ==",
++      "bundleDependencies": [
++        "@napi-rs/wasm-runtime",
++        "@emnapi/core",
++        "@emnapi/runtime",
++        "@tybys/wasm-util",
++        "@emnapi/wasi-threads",
++        "tslib"
++      ],
++      "cpu": [
++        "wasm32"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "dependencies": {
++        "@emnapi/core": "^1.11.1",
++        "@emnapi/runtime": "^1.11.1",
++        "@emnapi/wasi-threads": "^1.2.2",
++        "@napi-rs/wasm-runtime": "^1.1.4",
++        "@tybys/wasm-util": "^0.10.2",
++        "tslib": "^2.8.1"
++      },
++      "engines": {
++        "node": ">=14.0.0"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-win32-arm64-msvc": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-win32-arm64-msvc/-/oxide-win32-arm64-msvc-4.3.3.tgz",
++      "integrity": "sha512-3rc292Ca2ceK6Ulcc/bAVnTs/3nDtoPhyEKlgPv+yQJQi/JS/AMJlqzxvlDacL1nekbrcf6bTqp/jV4qgnPxNQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-win32-x64-msvc": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-win32-x64-msvc/-/oxide-win32-x64-msvc-4.3.3.tgz",
++      "integrity": "sha512-yJ0pwIVc/nYeGoV02WtsN8KYyLQv7kyI2wDnkezyJlGGjkd4QLwDGAwl47YpPJeuI0M0ObaXGSPjvWDPeTPggw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/vite": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/vite/-/vite-4.3.3.tgz",
++      "integrity": "sha512-yYU8cogLeSh/ms2jh8Fj7jaba/EWa7Ja6GoUqYZaraEuCI5YS6ms6ObZgjjedm+jm6XZjdNRWBpPP6Z86oOxcw==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@tailwindcss/node": "4.3.3",
++        "@tailwindcss/oxide": "4.3.3",
++        "tailwindcss": "4.3.3"
++      },
++      "peerDependencies": {
++        "vite": "^5.2.0 || ^6 || ^7 || ^8"
++      }
++    },
++    "node_modules/@types/node": {
++      "version": "24.13.3",
++      "resolved": "https://registry.npmjs.org/@types/node/-/node-24.13.3.tgz",
++      "integrity": "sha512-Dh8vAsV36ig5wa9OX4pXvMc9D3Veibfw2wix0CUwYODLD8nkj9UsLjASr49nPg+2eKzxhBV+v7L8pXvT4e639Q==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "undici-types": "~7.18.0"
++      }
++    },
++    "node_modules/@types/react": {
++      "version": "19.2.18",
++      "resolved": "https://registry.npmjs.org/@types/react/-/react-19.2.18.tgz",
++      "integrity": "sha512-AnzbBERsrLKtk2XSfTbYRLjQPdy116Sty4q+T+Bp3IC4l6jNBvreVPAHmpq9qhXQM7CXZPjLVmGMw9sy+hxQ3w==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "csstype": "^3.2.2"
++      }
++    },
++    "node_modules/@types/react-dom": {
++      "version": "19.2.5",
++      "resolved": "https://registry.npmjs.org/@types/react-dom/-/react-dom-19.2.5.tgz",
++      "integrity": "sha512-fMPwH9v7r/pp43yUd2/Mbiex5KouJwwR3dzHkhLREUC6764VyDsqxhAxv6OFEYR1RhjOyD1naqba8ECDBe7ZQg==",
++      "dev": true,
++      "license": "MIT",
++      "peerDependencies": {
++        "@types/react": "^19.2.0"
++      }
++    },
++    "node_modules/@vitejs/plugin-react": {
++      "version": "6.1.0",
++      "resolved": "https://registry.npmjs.org/@vitejs/plugin-react/-/plugin-react-6.1.0.tgz",
++      "integrity": "sha512-qd2BzUBehkov86WFhg0JkEFEYyCLG9uPCe6qWTY/kRlss9OvJrOF2UbIWT7p+8IzZHkEu0DNGHc4HSv+JdDLsw==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@rolldown/pluginutils": "^1.0.1"
++      },
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      },
++      "peerDependencies": {
++        "@rolldown/plugin-babel": "^0.1.7 || ^0.2.0",
++        "babel-plugin-react-compiler": "^1.0.0",
++        "oxc-transform-react": "^0.145.0",
++        "vite": "^8.0.0"
++      },
++      "peerDependenciesMeta": {
++        "@rolldown/plugin-babel": {
++          "optional": true
++        },
++        "babel-plugin-react-compiler": {
++          "optional": true
++        },
++        "oxc-transform-react": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/csstype": {
++      "version": "3.2.3",
++      "resolved": "https://registry.npmjs.org/csstype/-/csstype-3.2.3.tgz",
++      "integrity": "sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/detect-libc": {
++      "version": "2.1.2",
++      "resolved": "https://registry.npmjs.org/detect-libc/-/detect-libc-2.1.2.tgz",
++      "integrity": "sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==",
++      "dev": true,
++      "license": "Apache-2.0",
++      "engines": {
++        "node": ">=8"
++      }
++    },
++    "node_modules/enhanced-resolve": {
++      "version": "5.24.5",
++      "resolved": "https://registry.npmjs.org/enhanced-resolve/-/enhanced-resolve-5.24.5.tgz",
++      "integrity": "sha512-L1l8TNvomm6UVW5B253AGxQagSQr+vGwhMlrrfRS2qmhx46AMpMVJKQYLvWYbysTMY8VoicOvzHzoHMbyzB+4A==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "graceful-fs": "^4.2.4",
++        "tapable": "^2.3.3"
++      },
++      "engines": {
++        "node": ">=10.13.0"
++      }
++    },
++    "node_modules/fdir": {
++      "version": "6.5.0",
++      "resolved": "https://registry.npmjs.org/fdir/-/fdir-6.5.0.tgz",
++      "integrity": "sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==",
++      "dev": true,
++      "license": "MIT",
++      "engines": {
++        "node": ">=12.0.0"
++      },
++      "peerDependencies": {
++        "picomatch": "^3 || ^4"
++      },
++      "peerDependenciesMeta": {
++        "picomatch": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/fsevents": {
++      "version": "2.3.3",
++      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz",
++      "integrity": "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==",
++      "dev": true,
++      "hasInstallScript": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^8.16.0 || ^10.6.0 || >=11.0.0"
++      }
++    },
++    "node_modules/graceful-fs": {
++      "version": "4.2.11",
++      "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz",
++      "integrity": "sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==",
++      "dev": true,
++      "license": "ISC"
++    },
++    "node_modules/jiti": {
++      "version": "2.7.0",
++      "resolved": "https://registry.npmjs.org/jiti/-/jiti-2.7.0.tgz",
++      "integrity": "sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ==",
++      "dev": true,
++      "license": "MIT",
++      "bin": {
++        "jiti": "lib/jiti-cli.mjs"
++      }
++    },
++    "node_modules/lightningcss": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss/-/lightningcss-1.33.0.tgz",
++      "integrity": "sha512-WkUDrojuJs0xkgGf2udWxa3yGBRxPtxUkB79i6aCZLRgc7PM8fZe9TosfPDcvEpQZbuFASnHYmRLBLUbmLOIIA==",
++      "dev": true,
++      "license": "MPL-2.0",
++      "dependencies": {
++        "detect-libc": "^2.0.3"
++      },
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      },
++      "optionalDependencies": {
++        "lightningcss-android-arm64": "1.33.0",
++        "lightningcss-darwin-arm64": "1.33.0",
++        "lightningcss-darwin-x64": "1.33.0",
++        "lightningcss-freebsd-x64": "1.33.0",
++        "lightningcss-linux-arm-gnueabihf": "1.33.0",
++        "lightningcss-linux-arm64-gnu": "1.33.0",
++        "lightningcss-linux-arm64-musl": "1.33.0",
++        "lightningcss-linux-x64-gnu": "1.33.0",
++        "lightningcss-linux-x64-musl": "1.33.0",
++        "lightningcss-win32-arm64-msvc": "1.33.0",
++        "lightningcss-win32-x64-msvc": "1.33.0"
++      }
++    },
++    "node_modules/lightningcss-android-arm64": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-android-arm64/-/lightningcss-android-arm64-1.33.0.tgz",
++      "integrity": "sha512-gEpRTalKdosp4Bb8qWtc2iOgE5SeIHlpS1up9bFq2wAyYhl1UdTObYiHe98zEM9SQvSoqQZ1IQD0JNpg3Ml5pg==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-darwin-arm64": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.33.0.tgz",
++      "integrity": "sha512-Sciaz8eenNTKn9b3t7+xr0ipTp9YxKQY4npwQ3mrRuL0BAVHBLyZxofhaKBAVtzmtRZ/zTyo0/to4B1uWG/Djg==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-darwin-x64": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-darwin-x64/-/lightningcss-darwin-x64-1.33.0.tgz",
++      "integrity": "sha512-Z5UPAxzrjlWNNyGy6i65cJzzvgJ5D3T6wMvs+gWpY9d7qRhANrxqAp6LhxIgZhWEw18RfJTGcRxjuLIBr+m8XQ==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-freebsd-x64": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-freebsd-x64/-/lightningcss-freebsd-x64-1.33.0.tgz",
++      "integrity": "sha512-QQM/Ti/hQajJwCY+RiWuCZ9sdtI/XQk7nDK5vC8kkdwixezOlDgvDx7+RT+QjK6FcFT4MpsuoBnHIo/O3StRRg==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-arm-gnueabihf": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm-gnueabihf/-/lightningcss-linux-arm-gnueabihf-1.33.0.tgz",
++      "integrity": "sha512-N7FVBe6iS24MlM6R/4RBTxGhQheZGs7tiQ9U32UtF75NzP5Q7xWPRqLBCKxlRQRk3rY1jCIPLzx7WzOhuUIRLQ==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-arm64-gnu": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-gnu/-/lightningcss-linux-arm64-gnu-1.33.0.tgz",
++      "integrity": "sha512-j2v/itmy4HlNxlc6voKXYgBqNi0Ng2LShg4z7GufpEgs05P+2suBVyi9I6YHq5uoVFx9ETin3eCEhLVyXGQnKg==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-arm64-musl": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-musl/-/lightningcss-linux-arm64-musl-1.33.0.tgz",
++      "integrity": "sha512-yiO5ROMuYQgXbC60yjZU5CYSFZGKXL0HFATXt9mHJn1+zW55oCtMI9NfcVhYLMFDL7gV7oBPon/EmMMGg2OvtQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-x64-gnu": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.33.0.tgz",
++      "integrity": "sha512-ar+Ju7LmcN0Jo4FpL4hpFybwNG9/3A/Br5KW2n2jyODg3MEZXaDYADdemoNS+BDNfMgKvylJLj4S5tyRActuAg==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-x64-musl": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-musl/-/lightningcss-linux-x64-musl-1.33.0.tgz",
++      "integrity": "sha512-RYiYbkokw0trfKqqzfF55lginwEPrD3OJDfTuJzFs1MK6iFnDenaz1fqLLtX4ITG3OktJQXOeTaw1awrBAlZPw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-win32-arm64-msvc": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-win32-arm64-msvc/-/lightningcss-win32-arm64-msvc-1.33.0.tgz",
++      "integrity": "sha512-1K+MPfLSFVpphzpdbfkhlWk6wBrTObBzS2T6db10PNOZgR9GoVsAWzwNyuhUYYbTp23j+4RrncfujZ4uAzXvwA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-win32-x64-msvc": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.33.0.tgz",
++      "integrity": "sha512-OlEICDx/Xl0FqSp4bry8zFnCvGpig3Gl4gCquvYwHuqJKEC1+n9NgDniFvqHGmMv1ZkqDJrDqKKSykTDX+ehuA==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/magic-string": {
++      "version": "0.30.21",
++      "resolved": "https://registry.npmjs.org/magic-string/-/magic-string-0.30.21.tgz",
++      "integrity": "sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/sourcemap-codec": "^1.5.5"
++      }
++    },
++    "node_modules/nanoid": {
++      "version": "3.3.18",
++      "resolved": "https://registry.npmjs.org/nanoid/-/nanoid-3.3.18.tgz",
++      "integrity": "sha512-DTg4MJbGMWkfi6VZFdNt2/caMbQy4Ou+Op/hJQvGEWcnVfoA1QA+xzRKAzw9jD6+GVOOeYr/mIcuDSdug6F6+w==",
++      "dev": true,
++      "funding": [
++        {
++          "type": "github",
++          "url": "https://github.com/sponsors/ai"
++        }
++      ],
++      "license": "MIT",
++      "bin": {
++        "nanoid": "bin/nanoid.cjs"
++      },
++      "engines": {
++        "node": "^10 || ^12 || ^13.7 || ^14 || >=15.0.1"
++      }
++    },
++    "node_modules/oxlint": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/oxlint/-/oxlint-1.80.0.tgz",
++      "integrity": "sha512-5nTiSps4qdbCWLbxzuO00alHkEO2exR9YMN/ig6QXWrLsYSG0KaObOAM+l6oU2LcKPWoSAGYbkZIGEu1ViiWKA==",
++      "dev": true,
++      "license": "MIT",
++      "bin": {
++        "oxlint": "bin/oxlint"
++      },
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/Boshen"
++      },
++      "optionalDependencies": {
++        "@oxlint/binding-android-arm-eabi": "1.80.0",
++        "@oxlint/binding-android-arm64": "1.80.0",
++        "@oxlint/binding-darwin-arm64": "1.80.0",
++        "@oxlint/binding-darwin-x64": "1.80.0",
++        "@oxlint/binding-freebsd-x64": "1.80.0",
++        "@oxlint/binding-linux-arm-gnueabihf": "1.80.0",
++        "@oxlint/binding-linux-arm-musleabihf": "1.80.0",
++        "@oxlint/binding-linux-arm64-gnu": "1.80.0",
++        "@oxlint/binding-linux-arm64-musl": "1.80.0",
++        "@oxlint/binding-linux-ppc64-gnu": "1.80.0",
++        "@oxlint/binding-linux-riscv64-gnu": "1.80.0",
++        "@oxlint/binding-linux-riscv64-musl": "1.80.0",
++        "@oxlint/binding-linux-s390x-gnu": "1.80.0",
++        "@oxlint/binding-linux-x64-gnu": "1.80.0",
++        "@oxlint/binding-linux-x64-musl": "1.80.0",
++        "@oxlint/binding-openharmony-arm64": "1.80.0",
++        "@oxlint/binding-win32-arm64-msvc": "1.80.0",
++        "@oxlint/binding-win32-ia32-msvc": "1.80.0",
++        "@oxlint/binding-win32-x64-msvc": "1.80.0"
++      },
++      "peerDependencies": {
++        "oxlint-tsgolint": ">=7.0.2001",
++        "vite-plus": "*"
++      },
++      "peerDependenciesMeta": {
++        "oxlint-tsgolint": {
++          "optional": true
++        },
++        "vite-plus": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/picocolors": {
++      "version": "1.1.1",
++      "resolved": "https://registry.npmjs.org/picocolors/-/picocolors-1.1.1.tgz",
++      "integrity": "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==",
++      "dev": true,
++      "license": "ISC"
++    },
++    "node_modules/picomatch": {
++      "version": "4.0.7",
++      "resolved": "https://registry.npmjs.org/picomatch/-/picomatch-4.0.7.tgz",
++      "integrity": "sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==",
++      "dev": true,
++      "license": "MIT",
++      "engines": {
++        "node": ">=12"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/jonschlinkert"
++      }
++    },
++    "node_modules/postcss": {
++      "version": "8.5.26",
++      "resolved": "https://registry.npmjs.org/postcss/-/postcss-8.5.26.tgz",
++      "integrity": "sha512-u82N74LFzG8ca+dD8puPnplTXoGH4fTPpVGuIbt36G3qvNlkvfD0lEAZSxaly3KX8TS/L1A1gsCEmvKmBcVbkQ==",
++      "dev": true,
++      "funding": [
++        {
++          "type": "opencollective",
++          "url": "https://opencollective.com/postcss/"
++        },
++        {
++          "type": "tidelift",
++          "url": "https://tidelift.com/funding/github/npm/postcss"
++        },
++        {
++          "type": "github",
++          "url": "https://github.com/sponsors/ai"
++        }
++      ],
++      "license": "MIT",
++      "dependencies": {
++        "nanoid": "^3.3.17",
++        "picocolors": "^1.1.1",
++        "source-map-js": "^1.2.1"
++      },
++      "engines": {
++        "node": "^10 || ^12 || >=14"
++      }
++    },
++    "node_modules/react": {
++      "version": "19.2.8",
++      "resolved": "https://registry.npmjs.org/react/-/react-19.2.8.tgz",
++      "integrity": "sha512-PWaYA1L/q9u2u7xYQi+Y3L3Yfnie7XyLeaJICV1MGD6LprsBxcAqGjYyr0eY3p+QdsA+x/Irkt4Qif8D63+Sbw==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=0.10.0"
++      }
++    },
++    "node_modules/react-dom": {
++      "version": "19.2.8",
++      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-19.2.8.tgz",
++      "integrity": "sha512-rVprimfGBG3DR+Tq0IQG2DT5PxKth1WIGDmj5yPmlzr4YBe7uyE+Du4oVqTDXZSHGGGXRtTJEGSSePyQCMBglQ==",
++      "license": "MIT",
++      "dependencies": {
++        "scheduler": "^0.27.0"
++      },
++      "peerDependencies": {
++        "react": "^19.2.8"
++      }
++    },
++    "node_modules/rolldown": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/rolldown/-/rolldown-1.2.5.tgz",
++      "integrity": "sha512-VD2IE5PUG4Oj8zz2VGykiYd5wbnjdIiSsNQb8Qu5B+noEp+A78mu2iVvpp27g8es14Tk9rofNs5Tku9iQCS4fA==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@oxc-project/types": "=0.146.0",
++        "@rolldown/pluginutils": "^1.0.0"
++      },
++      "bin": {
++        "rolldown": "bin/cli.mjs"
++      },
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      },
++      "optionalDependencies": {
++        "@rolldown/binding-android-arm-eabi": "1.2.5",
++        "@rolldown/binding-android-arm64": "1.2.5",
++        "@rolldown/binding-darwin-arm64": "1.2.5",
++        "@rolldown/binding-darwin-x64": "1.2.5",
++        "@rolldown/binding-freebsd-x64": "1.2.5",
++        "@rolldown/binding-linux-arm-gnueabihf": "1.2.5",
++        "@rolldown/binding-linux-arm64-gnu": "1.2.5",
++        "@rolldown/binding-linux-arm64-musl": "1.2.5",
++        "@rolldown/binding-linux-ppc64-gnu": "1.2.5",
++        "@rolldown/binding-linux-s390x-gnu": "1.2.5",
++        "@rolldown/binding-linux-x64-gnu": "1.2.5",
++        "@rolldown/binding-linux-x64-musl": "1.2.5",
++        "@rolldown/binding-openharmony-arm64": "1.2.5",
++        "@rolldown/binding-win32-arm64-msvc": "1.2.5",
++        "@rolldown/binding-win32-x64-msvc": "1.2.5"
++      }
++    },
++    "node_modules/scheduler": {
++      "version": "0.27.0",
++      "resolved": "https://registry.npmjs.org/scheduler/-/scheduler-0.27.0.tgz",
++      "integrity": "sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==",
++      "license": "MIT"
++    },
++    "node_modules/source-map-js": {
++      "version": "1.2.1",
++      "resolved": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.1.tgz",
++      "integrity": "sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==",
++      "dev": true,
++      "license": "BSD-3-Clause",
++      "engines": {
++        "node": ">=0.10.0"
++      }
++    },
++    "node_modules/tailwindcss": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/tailwindcss/-/tailwindcss-4.3.3.tgz",
++      "integrity": "sha512-gOhV3P7ufE62QDGg1zVaTgCR+EtPv92k2nIhVcVKcLmxT1sUBsQGhnZj175j+MqRt4zLF7ic+sCYjfhxMxj7YQ==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/tapable": {
++      "version": "2.3.3",
++      "resolved": "https://registry.npmjs.org/tapable/-/tapable-2.3.3.tgz",
++      "integrity": "sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==",
++      "dev": true,
++      "license": "MIT",
++      "engines": {
++        "node": ">=6"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/webpack"
++      }
++    },
++    "node_modules/tinyglobby": {
++      "version": "0.2.17",
++      "resolved": "https://registry.npmjs.org/tinyglobby/-/tinyglobby-0.2.17.tgz",
++      "integrity": "sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "fdir": "^6.5.0",
++        "picomatch": "^4.0.4"
++      },
++      "engines": {
++        "node": ">=12.0.0"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/SuperchupuDev"
++      }
++    },
++    "node_modules/typescript": {
++      "version": "6.0.3",
++      "resolved": "https://registry.npmjs.org/typescript/-/typescript-6.0.3.tgz",
++      "integrity": "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==",
++      "dev": true,
++      "license": "Apache-2.0",
++      "bin": {
++        "tsc": "bin/tsc",
++        "tsserver": "bin/tsserver"
++      },
++      "engines": {
++        "node": ">=14.17"
++      }
++    },
++    "node_modules/undici-types": {
++      "version": "7.18.2",
++      "resolved": "https://registry.npmjs.org/undici-types/-/undici-types-7.18.2.tgz",
++      "integrity": "sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/vite": {
++      "version": "8.2.2",
++      "resolved": "https://registry.npmjs.org/vite/-/vite-8.2.2.tgz",
++      "integrity": "sha512-cFKLV/PRgAUlIRm5WjMjJ86jrftzpqcgH+Us+DS8mI3CDNiH30Whrz8uHL3+MOLPAgqbMBAqWdAHAphOAM+z/Q==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "lightningcss": "^1.33.0",
++        "picomatch": "^4.0.5",
++        "postcss": "^8.5.26",
++        "rolldown": "~1.2.4",
++        "tinyglobby": "^0.2.17"
++      },
++      "bin": {
++        "vite": "bin/vite.js"
++      },
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      },
++      "funding": {
++        "url": "https://github.com/vitejs/vite?sponsor=1"
++      },
++      "optionalDependencies": {
++        "fsevents": "~2.3.3"
++      },
++      "peerDependencies": {
++        "@types/node": "^20.19.0 || >=22.12.0",
++        "@vitejs/devtools": "^0.4.0 || ^0.5.0",
++        "esbuild": "^0.27.0 || ^0.28.0",
++        "jiti": ">=1.21.0",
++        "less": "^4.0.0",
++        "sass": "^1.70.0",
++        "sass-embedded": "^1.70.0",
++        "stylus": ">=0.54.8",
++        "sugarss": "^5.0.0",
++        "terser": "^5.16.0",
++        "tsx": "^4.8.1",
++        "yaml": "^2.4.2"
++      },
++      "peerDependenciesMeta": {
++        "@types/node": {
++          "optional": true
++        },
++        "@vitejs/devtools": {
++          "optional": true
++        },
++        "esbuild": {
++          "optional": true
++        },
++        "jiti": {
++          "optional": true
++        },
++        "less": {
++          "optional": true
++        },
++        "sass": {
++          "optional": true
++        },
++        "sass-embedded": {
++          "optional": true
++        },
++        "stylus": {
++          "optional": true
++        },
++        "sugarss": {
++          "optional": true
++        },
++        "terser": {
++          "optional": true
++        },
++        "tsx": {
++          "optional": true
++        },
++        "yaml": {
++          "optional": true
++        }
++      }
++    }
++  }
++}
+diff --git a/package.json b/package.json
+new file mode 100644
+index 0000000..8885e42
+--- /dev/null
++++ b/package.json
+@@ -0,0 +1,27 @@
++{
++  "name": "customer-admin-console",
++  "private": true,
++  "version": "0.0.0",
++  "type": "module",
++  "scripts": {
++    "dev": "vite",
++    "build": "tsc -b && vite build",
++    "lint": "oxlint",
++    "preview": "vite preview"
++  },
++  "dependencies": {
++    "react": "^19.2.8",
++    "react-dom": "^19.2.8"
++  },
++  "devDependencies": {
++    "@tailwindcss/vite": "^4.3.3",
++    "@types/node": "^24.13.3",
++    "@types/react": "^19.2.18",
++    "@types/react-dom": "^19.2.4",
++    "@vitejs/plugin-react": "^6.1.0",
++    "oxlint": "^1.79.0",
++    "tailwindcss": "^4.3.3",
++    "typescript": "~6.0.2",
++    "vite": "^8.2.2"
++  }
++}
+diff --git a/src/App.tsx b/src/App.tsx
+new file mode 100644
+index 0000000..71039c2
+--- /dev/null
++++ b/src/App.tsx
+@@ -0,0 +1,266 @@
++import { useMemo, useState } from 'react'
++import { generateCustomers } from './data/generateCustomers'
++import type { Customer, CustomerStatus, PlanTier, Region, SortRule, SortableKey } from './types'
++import { sortCustomers, applySortClick } from './lib/sort'
++import { PLAN_LABELS, REGION_LABELS } from './lib/format'
++import { CustomerTable } from './components/CustomerTable'
++import { Pagination } from './components/Pagination'
++import { BulkActionsBar } from './components/BulkActionsBar'
++import { StatusFilter } from './components/StatusFilter'
++
++const INITIAL_ROW_COUNT = 220
++
++function toCsv(rows: Customer[]): string {
++  const header = ['ID', 'Company', 'Contact', 'Email', 'Status', 'Plan', 'MRR', 'Seats Used', 'Seats', 'Region', 'Owner', 'Health', 'Created', 'Last Activity']
++  const lines = rows.map((r) =>
++    [r.id, r.company, r.contactName, r.contactEmail, r.status, r.plan, r.mrr, r.seatsUsed, r.seats, r.region, r.owner, r.healthScore, r.createdAt, r.lastActivityAt]
++      .map((v) => `"${String(v).replace(/"/g, '""')}"`)
++      .join(','),
++  )
++  return [header.join(','), ...lines].join('\n')
++}
++
++function downloadCsv(csv: string, filename: string) {
++  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
++  const url = URL.createObjectURL(blob)
++  const link = document.createElement('a')
++  link.href = url
++  link.download = filename
++  document.body.appendChild(link)
++  link.click()
++  document.body.removeChild(link)
++  URL.revokeObjectURL(url)
++}
++
++export default function App() {
++  const [customers, setCustomers] = useState<Customer[]>(() => generateCustomers(INITIAL_ROW_COUNT))
++  const [search, setSearch] = useState('')
++  const [statusFilter, setStatusFilter] = useState<Set<CustomerStatus>>(new Set())
++  const [planFilter, setPlanFilter] = useState<PlanTier | 'all'>('all')
++  const [regionFilter, setRegionFilter] = useState<Region | 'all'>('all')
++  const [sortRules, setSortRules] = useState<SortRule[]>([{ key: 'mrr', direction: 'desc' }])
++  const [page, setPage] = useState(1)
++  const [pageSize, setPageSize] = useState(50)
++  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
++
++  const filtered = useMemo(() => {
++    const q = search.trim().toLowerCase()
++    return customers.filter((c) => {
++      if (statusFilter.size > 0 && !statusFilter.has(c.status)) return false
++      if (planFilter !== 'all' && c.plan !== planFilter) return false
++      if (regionFilter !== 'all' && c.region !== regionFilter) return false
++      if (!q) return true
++      return (
++        c.company.toLowerCase().includes(q) ||
++        c.contactName.toLowerCase().includes(q) ||
++        c.contactEmail.toLowerCase().includes(q) ||
++        c.id.toLowerCase().includes(q)
++      )
++    })
++  }, [customers, search, statusFilter, planFilter, regionFilter])
++
++  const sorted = useMemo(() => sortCustomers(filtered, sortRules), [filtered, sortRules])
++
++  const pageCount = Math.max(1, Math.ceil(sorted.length / pageSize))
++  const clampedPage = Math.min(page, pageCount)
++  const pageRows = useMemo(() => {
++    const start = (clampedPage - 1) * pageSize
++    return sorted.slice(start, start + pageSize)
++  }, [sorted, clampedPage, pageSize])
++
++  function resetToFirstPage() {
++    setPage(1)
++  }
++
++  function handleSort(key: SortableKey, additive: boolean) {
++    setSortRules((prev) => applySortClick(prev, key, additive))
++  }
++
++  function toggleRow(id: string) {
++    setSelectedIds((prev) => {
++      const next = new Set(prev)
++      if (next.has(id)) next.delete(id)
++      else next.add(id)
++      return next
++    })
++  }
++
++  function toggleAllOnPage() {
++    setSelectedIds((prev) => {
++      const allSelected = pageRows.every((r) => prev.has(r.id))
++      const next = new Set(prev)
++      if (allSelected) {
++        for (const r of pageRows) next.delete(r.id)
++      } else {
++        for (const r of pageRows) next.add(r.id)
++      }
++      return next
++    })
++  }
++
++  function clearSelection() {
++    setSelectedIds(new Set())
++  }
++
++  function handleBulkSetStatus(status: CustomerStatus) {
++    setCustomers((prev) =>
++      prev.map((c) => (selectedIds.has(c.id) ? { ...c, status } : c)),
++    )
++    clearSelection()
++  }
++
++  function handleBulkExport() {
++    const selectedRows = customers.filter((c) => selectedIds.has(c.id))
++    downloadCsv(toCsv(selectedRows), `customers-export-${selectedRows.length}.csv`)
++  }
++
++  function handleBulkDelete() {
++    const count = selectedIds.size
++    const ok = window.confirm(
++      `Delete ${count} customer${count > 1 ? 's' : ''}? This cannot be undone.`,
++    )
++    if (!ok) return
++    setCustomers((prev) => prev.filter((c) => !selectedIds.has(c.id)))
++    clearSelection()
++  }
++
++  const activeFilterCount =
++    (statusFilter.size > 0 ? 1 : 0) + (planFilter !== 'all' ? 1 : 0) + (regionFilter !== 'all' ? 1 : 0) + (search.trim() ? 1 : 0)
++
++  return (
++    <div className="flex h-screen flex-col bg-slate-100 text-slate-900">
++      <header className="flex h-12 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4">
++        <div className="flex items-center gap-2.5">
++          <div className="flex h-6 w-6 items-center justify-center rounded bg-slate-900 text-[11px] font-bold text-white">
++            OP
++          </div>
++          <span className="text-sm font-semibold text-slate-800">Orbit Ops Console</span>
++          <span className="text-slate-300">/</span>
++          <span className="text-sm text-slate-500">Customers</span>
++        </div>
++        <div className="flex items-center gap-3 text-xs text-slate-500">
++          <span className="tabular-nums">{customers.length.toLocaleString()} accounts</span>
++          <div className="h-6 w-6 rounded-full bg-slate-200" aria-hidden="true" />
++        </div>
++      </header>
++
++      <div className="flex flex-1 flex-col overflow-hidden px-4 py-3">
++        <div className="flex flex-1 flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
++          <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 px-3 py-2">
++            <div className="relative">
++              <svg
++                viewBox="0 0 16 16"
++                className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"
++                aria-hidden="true"
++              >
++                <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.3" fill="none" />
++                <path d="M10.5 10.5 14 14" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
++              </svg>
++              <input
++                type="text"
++                value={search}
++                onChange={(e) => {
++                  setSearch(e.target.value)
++                  resetToFirstPage()
++                }}
++                placeholder="Search company, contact, email, or ID"
++                className="w-72 rounded border border-slate-300 py-1 pl-7 pr-2 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400"
++              />
++            </div>
++
++            <StatusFilter
++              selected={statusFilter}
++              onChange={(next) => {
++                setStatusFilter(next)
++                resetToFirstPage()
++              }}
++            />
++
++            <select
++              value={planFilter}
++              onChange={(e) => {
++                setPlanFilter(e.target.value as PlanTier | 'all')
++                resetToFirstPage()
++              }}
++              className="rounded border border-slate-300 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400"
++            >
++              <option value="all">All plans</option>
++              {(Object.keys(PLAN_LABELS) as PlanTier[]).map((p) => (
++                <option key={p} value={p}>
++                  {PLAN_LABELS[p]}
++                </option>
++              ))}
++            </select>
++
++            <select
++              value={regionFilter}
++              onChange={(e) => {
++                setRegionFilter(e.target.value as Region | 'all')
++                resetToFirstPage()
++              }}
++              className="rounded border border-slate-300 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400"
++            >
++              <option value="all">All regions</option>
++              {(Object.keys(REGION_LABELS) as Region[]).map((r) => (
++                <option key={r} value={r}>
++                  {REGION_LABELS[r]}
++                </option>
++              ))}
++            </select>
++
++            {activeFilterCount > 0 && (
++              <button
++                type="button"
++                onClick={() => {
++                  setSearch('')
++                  setStatusFilter(new Set())
++                  setPlanFilter('all')
++                  setRegionFilter('all')
++                  resetToFirstPage()
++                }}
++                className="text-xs font-medium text-slate-500 underline decoration-slate-300 underline-offset-2 hover:text-slate-700"
++              >
++                Reset filters
++              </button>
++            )}
++
++            <span className="ml-auto text-xs text-slate-400 tabular-nums">
++              {sorted.length.toLocaleString()} match{sorted.length === 1 ? '' : 'es'}
++            </span>
++          </div>
++
++          <BulkActionsBar
++            selectedCount={selectedIds.size}
++            onClearSelection={clearSelection}
++            onSetStatus={handleBulkSetStatus}
++            onExport={handleBulkExport}
++            onDelete={handleBulkDelete}
++          />
++
++          <div className="flex-1 overflow-auto">
++            <CustomerTable
++              rows={pageRows}
++              sortRules={sortRules}
++              onSort={handleSort}
++              selectedIds={selectedIds}
++              onToggleRow={toggleRow}
++              onToggleAllOnPage={toggleAllOnPage}
++            />
++          </div>
++
++          <Pagination
++            page={clampedPage}
++            pageCount={pageCount}
++            pageSize={pageSize}
++            totalRows={sorted.length}
++            onPageChange={setPage}
++            onPageSizeChange={(size) => {
++              setPageSize(size)
++              resetToFirstPage()
++            }}
++          />
++        </div>
++      </div>
++    </div>
++  )
++}
+diff --git a/src/components/BulkActionsBar.tsx b/src/components/BulkActionsBar.tsx
+new file mode 100644
+index 0000000..f431dd4
+--- /dev/null
++++ b/src/components/BulkActionsBar.tsx
+@@ -0,0 +1,121 @@
++import { useEffect, useRef, useState } from 'react'
++import type { CustomerStatus } from '../types'
++
++interface BulkActionsBarProps {
++  selectedCount: number
++  onClearSelection: () => void
++  onSetStatus: (status: CustomerStatus) => void
++  onExport: () => void
++  onDelete: () => void
++}
++
++const STATUS_ACTIONS: { status: CustomerStatus; label: string }[] = [
++  { status: 'active', label: 'Mark active' },
++  { status: 'suspended', label: 'Suspend' },
++  { status: 'churned', label: 'Mark churned' },
++]
++
++export function BulkActionsBar({
++  selectedCount,
++  onClearSelection,
++  onSetStatus,
++  onExport,
++  onDelete,
++}: BulkActionsBarProps) {
++  const [statusMenuOpen, setStatusMenuOpen] = useState(false)
++  const menuRef = useRef<HTMLDivElement>(null)
++
++  useEffect(() => {
++    function handleClick(e: MouseEvent) {
++      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
++        setStatusMenuOpen(false)
++      }
++    }
++    function handleKey(e: KeyboardEvent) {
++      if (e.key === 'Escape') setStatusMenuOpen(false)
++    }
++    document.addEventListener('mousedown', handleClick)
++    document.addEventListener('keydown', handleKey)
++    return () => {
++      document.removeEventListener('mousedown', handleClick)
++      document.removeEventListener('keydown', handleKey)
++    }
++  }, [])
++
++  if (selectedCount === 0) return null
++
++  return (
++    <div
++      role="toolbar"
++      aria-label="Bulk actions"
++      className="flex items-center gap-3 border-b border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-100"
++    >
++      <span className="font-medium tabular-nums">
++        {selectedCount.toLocaleString()} selected
++      </span>
++      <div className="h-4 w-px bg-slate-700" />
++
++      <div className="relative" ref={menuRef}>
++        <button
++          type="button"
++          onClick={() => setStatusMenuOpen((v) => !v)}
++          aria-haspopup="menu"
++          aria-expanded={statusMenuOpen}
++          className="flex items-center gap-1 rounded px-2 py-1 font-medium hover:bg-slate-800"
++        >
++          Set status
++          <svg viewBox="0 0 12 12" className="h-3 w-3" aria-hidden="true">
++            <path d="M3 4.5 6 8l3-3.5" stroke="currentColor" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
++          </svg>
++        </button>
++        {statusMenuOpen && (
++          <div
++            role="menu"
++            className="absolute left-0 top-full z-20 mt-1 w-40 overflow-hidden rounded-md border border-slate-700 bg-slate-900 py-1 shadow-lg"
++          >
++            {STATUS_ACTIONS.map((action) => (
++              <button
++                key={action.status}
++                type="button"
++                role="menuitem"
++                onClick={() => {
++                  onSetStatus(action.status)
++                  setStatusMenuOpen(false)
++                }}
++                className="block w-full px-3 py-1.5 text-left text-xs text-slate-100 hover:bg-slate-800"
++              >
++                {action.label}
++              </button>
++            ))}
++          </div>
++        )}
++      </div>
++
++      <button
++        type="button"
++        onClick={onExport}
++        className="rounded px-2 py-1 font-medium hover:bg-slate-800"
++      >
++        Export CSV
++      </button>
++
++      <button
++        type="button"
++        onClick={onDelete}
++        className="rounded px-2 py-1 font-medium text-rose-300 hover:bg-slate-800"
++      >
++        Delete
++      </button>
++
++      <div className="ml-auto">
++        <button
++          type="button"
++          onClick={onClearSelection}
++          className="rounded px-2 py-1 font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200"
++        >
++          Clear selection
++        </button>
++      </div>
++    </div>
++  )
++}
+diff --git a/src/components/CustomerTable.tsx b/src/components/CustomerTable.tsx
+new file mode 100644
+index 0000000..e44dd4a
+--- /dev/null
++++ b/src/components/CustomerTable.tsx
+@@ -0,0 +1,126 @@
++import type { Customer, SortRule, SortableKey } from '../types'
++import { formatCurrency, formatDate, formatRelativeDays, PLAN_LABELS, REGION_LABELS } from '../lib/format'
++import { StatusBadge } from './StatusBadge'
++import { SortHeaderCell } from './SortHeaderCell'
++
++interface CustomerTableProps {
++  rows: Customer[]
++  sortRules: SortRule[]
++  onSort: (key: SortableKey, additive: boolean) => void
++  selectedIds: Set<string>
++  onToggleRow: (id: string) => void
++  onToggleAllOnPage: () => void
++}
++
++function healthTone(score: number): string {
++  if (score >= 70) return 'text-emerald-700'
++  if (score >= 40) return 'text-amber-700'
++  return 'text-rose-700'
++}
++
++export function CustomerTable({
++  rows,
++  sortRules,
++  onSort,
++  selectedIds,
++  onToggleRow,
++  onToggleAllOnPage,
++}: CustomerTableProps) {
++  const allOnPageSelected = rows.length > 0 && rows.every((r) => selectedIds.has(r.id))
++  const someOnPageSelected = rows.some((r) => selectedIds.has(r.id)) && !allOnPageSelected
++
++  return (
++    <div className="min-w-full overflow-x-auto">
++      <table className="w-full min-w-[1180px] border-collapse text-sm">
++        <thead className="sticky top-0 z-10 bg-slate-50 shadow-[inset_0_-1px_0_theme(colors.slate.200)]">
++          <tr>
++            <th scope="col" className="w-9 px-3 py-2">
++              <input
++                type="checkbox"
++                aria-label="Select all rows on this page"
++                checked={allOnPageSelected}
++                ref={(el) => {
++                  if (el) el.indeterminate = someOnPageSelected
++                }}
++                onChange={onToggleAllOnPage}
++                className="h-3.5 w-3.5 rounded border-slate-300 text-slate-800 focus:ring-slate-400"
++              />
++            </th>
++            <th scope="col" className="w-24 px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
++              ID
++            </th>
++            <SortHeaderCell label="Company" sortKey="company" rules={sortRules} onSort={onSort} className="min-w-[10rem] text-left" />
++            <th scope="col" className="min-w-[11rem] px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
++              Contact
++            </th>
++            <SortHeaderCell label="Status" sortKey="status" rules={sortRules} onSort={onSort} className="min-w-[6.5rem] text-left" />
++            <SortHeaderCell label="Plan" sortKey="plan" rules={sortRules} onSort={onSort} className="min-w-[7rem] text-left" />
++            <SortHeaderCell label="MRR" sortKey="mrr" rules={sortRules} onSort={onSort} align="right" className="min-w-[6rem] text-right" />
++            <SortHeaderCell label="Seats" sortKey="seats" rules={sortRules} onSort={onSort} align="right" className="min-w-[6rem] text-right" />
++            <SortHeaderCell label="Region" sortKey="region" rules={sortRules} onSort={onSort} className="min-w-[5rem] text-left" />
++            <SortHeaderCell label="Owner" sortKey="owner" rules={sortRules} onSort={onSort} className="min-w-[7rem] text-left" />
++            <SortHeaderCell label="Health" sortKey="healthScore" rules={sortRules} onSort={onSort} align="right" className="min-w-[5rem] text-right" />
++            <SortHeaderCell label="Created" sortKey="createdAt" rules={sortRules} onSort={onSort} className="min-w-[6.5rem] text-left" />
++            <SortHeaderCell label="Last activity" sortKey="lastActivityAt" rules={sortRules} onSort={onSort} className="min-w-[7rem] text-left" />
++          </tr>
++        </thead>
++        <tbody className="divide-y divide-slate-100">
++          {rows.map((customer) => {
++            const selected = selectedIds.has(customer.id)
++            return (
++              <tr
++                key={customer.id}
++                aria-selected={selected}
++                className={`h-9 ${selected ? 'bg-slate-100' : 'odd:bg-white even:bg-slate-50/40 hover:bg-slate-100/70'}`}
++              >
++                <td className="px-3 py-1.5">
++                  <input
++                    type="checkbox"
++                    aria-label={`Select ${customer.company}`}
++                    checked={selected}
++                    onChange={() => onToggleRow(customer.id)}
++                    className="h-3.5 w-3.5 rounded border-slate-300 text-slate-800 focus:ring-slate-400"
++                  />
++                </td>
++                <td className="whitespace-nowrap px-3 py-1.5 font-mono text-[11px] text-slate-400">{customer.id}</td>
++                <td className="whitespace-nowrap px-3 py-1.5 font-medium text-slate-800">{customer.company}</td>
++                <td className="px-3 py-1.5">
++                  <div className="flex flex-col leading-tight">
++                    <span className="whitespace-nowrap text-slate-700">{customer.contactName}</span>
++                    <span className="truncate text-[11px] text-slate-400">{customer.contactEmail}</span>
++                  </div>
++                </td>
++                <td className="whitespace-nowrap px-3 py-1.5">
++                  <StatusBadge status={customer.status} />
++                </td>
++                <td className="whitespace-nowrap px-3 py-1.5 text-slate-600">{PLAN_LABELS[customer.plan]}</td>
++                <td className="whitespace-nowrap px-3 py-1.5 text-right tabular-nums text-slate-700">
++                  {formatCurrency(customer.mrr)}
++                </td>
++                <td className="whitespace-nowrap px-3 py-1.5 text-right tabular-nums text-slate-600">
++                  {customer.seatsUsed.toLocaleString()}/{customer.seats.toLocaleString()}
++                </td>
++                <td className="whitespace-nowrap px-3 py-1.5 text-slate-600">{REGION_LABELS[customer.region]}</td>
++                <td className="whitespace-nowrap px-3 py-1.5 text-slate-600">{customer.owner}</td>
++                <td className={`whitespace-nowrap px-3 py-1.5 text-right tabular-nums font-medium ${healthTone(customer.healthScore)}`}>
++                  {customer.healthScore}
++                </td>
++                <td className="whitespace-nowrap px-3 py-1.5 text-slate-500">{formatDate(customer.createdAt)}</td>
++                <td className="whitespace-nowrap px-3 py-1.5 text-slate-500" title={formatDate(customer.lastActivityAt)}>
++                  {formatRelativeDays(customer.lastActivityAt)}
++                </td>
++              </tr>
++            )
++          })}
++          {rows.length === 0 && (
++            <tr>
++              <td colSpan={12} className="px-3 py-10 text-center text-sm text-slate-400">
++                No customers match the current filters.
++              </td>
++            </tr>
++          )}
++        </tbody>
++      </table>
++    </div>
++  )
++}
+diff --git a/src/components/Pagination.tsx b/src/components/Pagination.tsx
+new file mode 100644
+index 0000000..82bb0a4
+--- /dev/null
++++ b/src/components/Pagination.tsx
+@@ -0,0 +1,105 @@
++const PAGE_SIZE_OPTIONS = [25, 50, 100]
++
++interface PaginationProps {
++  page: number
++  pageCount: number
++  pageSize: number
++  totalRows: number
++  onPageChange: (page: number) => void
++  onPageSizeChange: (size: number) => void
++}
++
++function getPageList(page: number, pageCount: number): (number | 'ellipsis')[] {
++  if (pageCount <= 7) {
++    return Array.from({ length: pageCount }, (_, i) => i + 1)
++  }
++  const pages = new Set<number>([1, pageCount, page, page - 1, page + 1])
++  const sorted = [...pages].filter((p) => p >= 1 && p <= pageCount).sort((a, b) => a - b)
++  const result: (number | 'ellipsis')[] = []
++  let prev = 0
++  for (const p of sorted) {
++    if (prev && p - prev > 1) result.push('ellipsis')
++    result.push(p)
++    prev = p
++  }
++  return result
++}
++
++export function Pagination({
++  page,
++  pageCount,
++  pageSize,
++  totalRows,
++  onPageChange,
++  onPageSizeChange,
++}: PaginationProps) {
++  const startRow = totalRows === 0 ? 0 : (page - 1) * pageSize + 1
++  const endRow = Math.min(page * pageSize, totalRows)
++  const pageList = getPageList(page, pageCount)
++
++  return (
++    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-white px-3 py-2 text-xs text-slate-600">
++      <div className="flex items-center gap-3">
++        <span className="tabular-nums">
++          {totalRows === 0
++            ? 'No rows'
++            : `Showing ${startRow.toLocaleString()}–${endRow.toLocaleString()} of ${totalRows.toLocaleString()}`}
++        </span>
++        <label className="flex items-center gap-1.5">
++          <span className="text-slate-500">Rows per page</span>
++          <select
++            value={pageSize}
++            onChange={(e) => onPageSizeChange(Number(e.target.value))}
++            className="rounded border border-slate-300 bg-white px-1.5 py-0.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400"
++          >
++            {PAGE_SIZE_OPTIONS.map((size) => (
++              <option key={size} value={size}>
++                {size}
++              </option>
++            ))}
++          </select>
++        </label>
++      </div>
++
++      <nav className="flex items-center gap-1" aria-label="Pagination">
++        <button
++          type="button"
++          onClick={() => onPageChange(page - 1)}
++          disabled={page <= 1}
++          className="rounded border border-slate-300 px-2 py-1 font-medium text-slate-600 disabled:cursor-not-allowed disabled:opacity-40 hover:enabled:bg-slate-100"
++        >
++          Prev
++        </button>
++        {pageList.map((p, idx) =>
++          p === 'ellipsis' ? (
++            <span key={`e-${idx}`} className="px-1.5 text-slate-400">
++              &hellip;
++            </span>
++          ) : (
++            <button
++              key={p}
++              type="button"
++              onClick={() => onPageChange(p)}
++              aria-current={p === page ? 'page' : undefined}
++              className={`min-w-[1.75rem] rounded px-1.5 py-1 tabular-nums font-medium ${
++                p === page
++                  ? 'bg-slate-800 text-white'
++                  : 'text-slate-600 hover:bg-slate-100'
++              }`}
++            >
++              {p}
++            </button>
++          ),
++        )}
++        <button
++          type="button"
++          onClick={() => onPageChange(page + 1)}
++          disabled={page >= pageCount}
++          className="rounded border border-slate-300 px-2 py-1 font-medium text-slate-600 disabled:cursor-not-allowed disabled:opacity-40 hover:enabled:bg-slate-100"
++        >
++          Next
++        </button>
++      </nav>
++    </div>
++  )
++}
+diff --git a/src/components/SortHeaderCell.tsx b/src/components/SortHeaderCell.tsx
+new file mode 100644
+index 0000000..6841973
+--- /dev/null
++++ b/src/components/SortHeaderCell.tsx
+@@ -0,0 +1,68 @@
++import type { SortDirection, SortRule, SortableKey } from '../types'
++
++interface SortHeaderCellProps {
++  label: string
++  sortKey: SortableKey
++  rules: SortRule[]
++  onSort: (key: SortableKey, additive: boolean) => void
++  align?: 'left' | 'right'
++  className?: string
++}
++
++function ariaSortFor(direction: SortDirection | undefined): 'ascending' | 'descending' | 'none' {
++  if (direction === 'asc') return 'ascending'
++  if (direction === 'desc') return 'descending'
++  return 'none'
++}
++
++export function SortHeaderCell({
++  label,
++  sortKey,
++  rules,
++  onSort,
++  align = 'left',
++  className = '',
++}: SortHeaderCellProps) {
++  const ruleIndex = rules.findIndex((r) => r.key === sortKey)
++  const rule = ruleIndex >= 0 ? rules[ruleIndex] : undefined
++  const priority = ruleIndex >= 0 && rules.length > 1 ? ruleIndex + 1 : null
++
++  return (
++    <th
++      scope="col"
++      aria-sort={ariaSortFor(rule?.direction)}
++      className={`select-none px-3 py-2 text-xs font-semibold text-slate-500 ${className}`}
++    >
++      <button
++        type="button"
++        onClick={(e) => onSort(sortKey, e.shiftKey)}
++        title="Click to sort. Shift+click to add as a secondary sort column."
++        className={`group flex w-full items-center gap-1 uppercase tracking-wide hover:text-slate-800 ${
++          align === 'right' ? 'flex-row-reverse justify-start' : ''
++        }`}
++      >
++        <span>{label}</span>
++        <span className="flex items-center gap-0.5">
++          <svg
++            viewBox="0 0 12 12"
++            className={`h-3 w-3 shrink-0 transition-opacity ${
++              rule ? 'opacity-100' : 'opacity-0 group-hover:opacity-40'
++            }`}
++            aria-hidden="true"
++          >
++            {rule?.direction === 'desc' ? (
++              <path d="M3 4.5 6 8l3-3.5" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
++            ) : (
++              <path d="M3 7.5 6 4l3 3.5" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
++            )}
++          </svg>
++          {priority !== null && (
++            <span className="rounded-full bg-slate-200 px-1 text-[9px] font-bold leading-3.5 text-slate-600">
++              {priority}
++            </span>
++          )}
++        </span>
++      </button>
++    </th>
++  )
++}
+diff --git a/src/components/StatusBadge.tsx b/src/components/StatusBadge.tsx
+new file mode 100644
+index 0000000..194e1cc
+--- /dev/null
++++ b/src/components/StatusBadge.tsx
+@@ -0,0 +1,54 @@
++import type { CustomerStatus } from '../types'
++
++const STATUS_CONFIG: Record<
++  CustomerStatus,
++  { label: string; dot: string; text: string; bg: string; ring: string }
++> = {
++  active: {
++    label: 'Active',
++    dot: 'bg-emerald-500',
++    text: 'text-emerald-800',
++    bg: 'bg-emerald-50',
++    ring: 'ring-emerald-600/20',
++  },
++  trial: {
++    label: 'Trial',
++    dot: 'bg-sky-500',
++    text: 'text-sky-800',
++    bg: 'bg-sky-50',
++    ring: 'ring-sky-600/20',
++  },
++  past_due: {
++    label: 'Past due',
++    dot: 'bg-amber-500',
++    text: 'text-amber-800',
++    bg: 'bg-amber-50',
++    ring: 'ring-amber-600/20',
++  },
++  suspended: {
++    label: 'Suspended',
++    dot: 'bg-orange-500',
++    text: 'text-orange-800',
++    bg: 'bg-orange-50',
++    ring: 'ring-orange-600/20',
++  },
++  churned: {
++    label: 'Churned',
++    dot: 'bg-slate-400',
++    text: 'text-slate-600',
++    bg: 'bg-slate-100',
++    ring: 'ring-slate-500/15',
++  },
++}
++
++export function StatusBadge({ status }: { status: CustomerStatus }) {
++  const cfg = STATUS_CONFIG[status]
++  return (
++    <span
++      className={`inline-flex items-center gap-1.5 rounded px-1.5 py-0.5 text-[11px] font-medium leading-4 ring-1 ring-inset ${cfg.bg} ${cfg.text} ${cfg.ring}`}
++    >
++      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${cfg.dot}`} aria-hidden="true" />
++      {cfg.label}
++    </span>
++  )
++}
+diff --git a/src/components/StatusFilter.tsx b/src/components/StatusFilter.tsx
+new file mode 100644
+index 0000000..129b6b8
+--- /dev/null
++++ b/src/components/StatusFilter.tsx
+@@ -0,0 +1,82 @@
++import { useEffect, useRef, useState } from 'react'
++import type { CustomerStatus } from '../types'
++import { StatusBadge } from './StatusBadge'
++
++const ALL_STATUSES: CustomerStatus[] = ['active', 'trial', 'past_due', 'suspended', 'churned']
++
++interface StatusFilterProps {
++  selected: Set<CustomerStatus>
++  onChange: (next: Set<CustomerStatus>) => void
++}
++
++export function StatusFilter({ selected, onChange }: StatusFilterProps) {
++  const [open, setOpen] = useState(false)
++  const ref = useRef<HTMLDivElement>(null)
++
++  useEffect(() => {
++    function handleClick(e: MouseEvent) {
++      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
++    }
++    document.addEventListener('mousedown', handleClick)
++    return () => document.removeEventListener('mousedown', handleClick)
++  }, [])
++
++  function toggle(status: CustomerStatus) {
++    const next = new Set(selected)
++    if (next.has(status)) next.delete(status)
++    else next.add(status)
++    onChange(next)
++  }
++
++  const label =
++    selected.size === 0 || selected.size === ALL_STATUSES.length
++      ? 'All statuses'
++      : `${selected.size} status${selected.size > 1 ? 'es' : ''}`
++
++  return (
++    <div className="relative" ref={ref}>
++      <button
++        type="button"
++        onClick={() => setOpen((v) => !v)}
++        aria-haspopup="menu"
++        aria-expanded={open}
++        className="flex items-center gap-1.5 rounded border border-slate-300 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
++      >
++        {label}
++        <svg viewBox="0 0 12 12" className="h-3 w-3 text-slate-400" aria-hidden="true">
++          <path d="M3 4.5 6 8l3-3.5" stroke="currentColor" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
++        </svg>
++      </button>
++      {open && (
++        <div
++          role="menu"
++          className="absolute left-0 top-full z-20 mt-1 w-44 rounded-md border border-slate-200 bg-white py-1 shadow-lg"
++        >
++          {ALL_STATUSES.map((status) => (
++            <label
++              key={status}
++              className="flex cursor-pointer items-center gap-2 px-2.5 py-1.5 text-xs hover:bg-slate-50"
++            >
++              <input
++                type="checkbox"
++                checked={selected.size === 0 || selected.has(status)}
++                onChange={() => toggle(status)}
++                className="h-3.5 w-3.5 rounded border-slate-300 text-slate-800 focus:ring-slate-400"
++              />
++              <StatusBadge status={status} />
++            </label>
++          ))}
++          {selected.size > 0 && (
++            <button
++              type="button"
++              onClick={() => onChange(new Set())}
++              className="mt-1 block w-full border-t border-slate-100 px-2.5 py-1.5 text-left text-xs text-slate-500 hover:bg-slate-50"
++            >
++              Clear filter
++            </button>
++          )}
++        </div>
++      )}
++    </div>
++  )
++}
+diff --git a/src/data/generateCustomers.ts b/src/data/generateCustomers.ts
+new file mode 100644
+index 0000000..d9a6501
+--- /dev/null
++++ b/src/data/generateCustomers.ts
+@@ -0,0 +1,160 @@
++import type { Customer, CustomerStatus, PlanTier, Region } from '../types'
++
++// Deterministic PRNG (mulberry32) so the mock dataset is stable across
++// reloads within a session rather than reshuffling on every render.
++function mulberry32(seed: number) {
++  let a = seed
++  return function random() {
++    a |= 0
++    a = (a + 0x6d2b79f5) | 0
++    let t = Math.imul(a ^ (a >>> 15), 1 | a)
++    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
++    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
++  }
++}
++
++const rand = mulberry32(20260825)
++
++function pick<T>(arr: readonly T[]): T {
++  return arr[Math.floor(rand() * arr.length)]
++}
++
++function randInt(min: number, max: number): number {
++  return Math.floor(rand() * (max - min + 1)) + min
++}
++
++const FIRST_NAMES = [
++  'Alicia', 'Marcus', 'Priya', 'Tomás', 'Ingrid', 'Chen', 'Fatima', 'Declan',
++  'Yuki', 'Sven', 'Naledi', 'Renata', 'Omar', 'Sofia', 'Ravi', 'Camille',
++  'Jonas', 'Aiko', 'Kwame', 'Elin', 'Diego', 'Meera', 'Liam', 'Noor',
++  'Hana', 'Piotr', 'Zara', 'Theo', 'Amara', 'Lucas',
++]
++
++const LAST_NAMES = [
++  'Whitfield', 'Nakamura', 'Okafor', 'Bergström', 'Alvarado', 'Kowalski',
++  'Desai', 'Fontaine', 'Bracken', 'Osei', 'Lindqvist', 'Mercer', 'Abadi',
++  'Sørensen', 'Vasquez', 'Iyer', 'Novak', 'Farrow', 'Haddad', 'Lindgren',
++]
++
++const COMPANY_PREFIXES = [
++  'North', 'Summit', 'Cobalt', 'Vertex', 'Anchor', 'Lattice', 'Harbor',
++  'Beacon', 'Ridge', 'Foundry', 'Meridian', 'Cascade', 'Ironwood', 'Solstice',
++  'Granite', 'Delta', 'Pinnacle', 'Outland', 'Sterling', 'Quarry',
++]
++
++const COMPANY_SUFFIXES = [
++  'Logistics', 'Health Systems', 'Robotics', 'Analytics', 'Freight',
++  'Financial', 'Biotech', 'Energy', 'Retail Group', 'Manufacturing',
++  'Media', 'Insurance', 'Aerospace', 'Foods', 'Materials', 'Networks',
++  'Capital', 'Dynamics', 'Industries', 'Technologies',
++]
++
++const STATUSES: CustomerStatus[] = ['active', 'active', 'active', 'active', 'trial', 'past_due', 'suspended', 'churned']
++const PLANS: PlanTier[] = ['starter', 'growth', 'growth', 'enterprise', 'enterprise_plus']
++const REGIONS: Region[] = ['na', 'emea', 'apac', 'latam']
++
++const OWNERS = [
++  'D. Alvarez', 'S. Wren', 'K. Boateng', 'M. Ostrowski', 'J. Lindqvist',
++  'R. Chowdhury', 'T. Halvorsen', 'P. Anand',
++]
++
++function daysAgoIso(days: number): string {
++  const d = new Date('2026-08-25T09:00:00Z')
++  d.setUTCDate(d.getUTCDate() - days)
++  return d.toISOString().slice(0, 10)
++}
++
++function planSeatRange(plan: PlanTier): [number, number] {
++  switch (plan) {
++    case 'starter':
++      return [5, 25]
++    case 'growth':
++      return [20, 120]
++    case 'enterprise':
++      return [80, 600]
++    case 'enterprise_plus':
++      return [400, 2500]
++  }
++}
++
++function planMrrBase(plan: PlanTier): [number, number] {
++  switch (plan) {
++    case 'starter':
++      return [199, 900]
++    case 'growth':
++      return [900, 4500]
++    case 'enterprise':
++      return [4500, 22000]
++    case 'enterprise_plus':
++      return [20000, 96000]
++  }
++}
++
++export function generateCustomers(count: number): Customer[] {
++  const customers: Customer[] = []
++  const usedCompanyNames = new Set<string>()
++
++  for (let i = 0; i < count; i++) {
++    let company = `${pick(COMPANY_PREFIXES)} ${pick(COMPANY_SUFFIXES)}`
++    while (usedCompanyNames.has(company)) {
++      company = `${pick(COMPANY_PREFIXES)} ${pick(COMPANY_SUFFIXES)}`
++    }
++    usedCompanyNames.add(company)
++
++    const status = pick(STATUSES)
++    const plan = pick(PLANS)
++    const [seatMin, seatMax] = planSeatRange(plan)
++    const seats = randInt(seatMin, seatMax)
++    const seatsUsed =
++      status === 'churned'
++        ? 0
++        : Math.min(seats, Math.round(seats * (0.35 + rand() * 0.6)))
++    const [mrrMin, mrrMax] = planMrrBase(plan)
++    const mrr = status === 'churned' ? 0 : randInt(mrrMin, mrrMax)
++
++    const firstName = pick(FIRST_NAMES)
++    const lastName = pick(LAST_NAMES)
++    const domain = company
++      .toLowerCase()
++      .replace(/[^a-z0-9]+/g, '')
++      .slice(0, 14)
++
++    const healthScore =
++      status === 'churned'
++        ? randInt(0, 25)
++        : status === 'suspended'
++          ? randInt(5, 35)
++          : status === 'past_due'
++            ? randInt(20, 55)
++            : status === 'trial'
++              ? randInt(30, 80)
++              : randInt(45, 100)
++
++    const createdDaysAgo = randInt(30, 1460)
++    const lastActivityDaysAgo =
++      status === 'churned'
++        ? randInt(createdDaysAgo - 300 > 0 ? Math.min(200, createdDaysAgo) : 30, Math.min(createdDaysAgo, 400))
++        : status === 'suspended'
++          ? randInt(14, 90)
++          : randInt(0, 21)
++
++    customers.push({
++      id: `CUS-${String(10000 + i)}`,
++      company,
++      contactName: `${firstName} ${lastName}`,
++      contactEmail: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${domain}.com`,
++      status,
++      plan,
++      mrr,
++      seats,
++      seatsUsed,
++      region: pick(REGIONS),
++      owner: pick(OWNERS),
++      healthScore,
++      createdAt: daysAgoIso(createdDaysAgo),
++      lastActivityAt: daysAgoIso(Math.min(lastActivityDaysAgo, createdDaysAgo)),
++    })
++  }
++
++  return customers
++}
+diff --git a/src/index.css b/src/index.css
+new file mode 100644
+index 0000000..a354f9f
+--- /dev/null
++++ b/src/index.css
+@@ -0,0 +1,28 @@
++@import "tailwindcss";
++
++@theme {
++  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
++  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
++}
++
++:root {
++  color-scheme: light;
++}
++
++html,
++body,
++#root {
++  height: 100%;
++}
++
++body {
++  margin: 0;
++  font-family: var(--font-sans);
++  -webkit-font-smoothing: antialiased;
++  -moz-osx-font-smoothing: grayscale;
++}
++
++/* Tabular numerals for dense numeric columns (IDs, MRR, seat counts). */
++.tabular-nums {
++  font-variant-numeric: tabular-nums;
++}
+diff --git a/src/lib/format.ts b/src/lib/format.ts
+new file mode 100644
+index 0000000..4ea2124
+--- /dev/null
++++ b/src/lib/format.ts
+@@ -0,0 +1,45 @@
++import type { PlanTier, Region } from '../types'
++
++export const PLAN_LABELS: Record<PlanTier, string> = {
++  starter: 'Starter',
++  growth: 'Growth',
++  enterprise: 'Enterprise',
++  enterprise_plus: 'Enterprise+',
++}
++
++export const REGION_LABELS: Record<Region, string> = {
++  na: 'NA',
++  emea: 'EMEA',
++  apac: 'APAC',
++  latam: 'LATAM',
++}
++
++const currencyFormatter = new Intl.NumberFormat('en-US', {
++  style: 'currency',
++  currency: 'USD',
++  maximumFractionDigits: 0,
++})
++
++export function formatCurrency(value: number): string {
++  return currencyFormatter.format(value)
++}
++
++const dateFormatter = new Intl.DateTimeFormat('en-US', {
++  month: 'short',
++  day: 'numeric',
++  year: 'numeric',
++})
++
++export function formatDate(iso: string): string {
++  return dateFormatter.format(new Date(`${iso}T00:00:00Z`))
++}
++
++export function formatRelativeDays(iso: string, referenceIso = '2026-08-25'): string {
++  const ms = new Date(`${referenceIso}T00:00:00Z`).getTime() - new Date(`${iso}T00:00:00Z`).getTime()
++  const days = Math.round(ms / 86_400_000)
++  if (days <= 0) return 'Today'
++  if (days === 1) return 'Yesterday'
++  if (days < 30) return `${days}d ago`
++  if (days < 365) return `${Math.round(days / 30)}mo ago`
++  return `${Math.round(days / 365)}y ago`
++}
+diff --git a/src/lib/sort.ts b/src/lib/sort.ts
+new file mode 100644
+index 0000000..2d38c6b
+--- /dev/null
++++ b/src/lib/sort.ts
+@@ -0,0 +1,69 @@
++import type { Customer, SortDirection, SortRule, SortableKey } from '../types'
++
++const STATUS_ORDER = { active: 0, trial: 1, past_due: 2, suspended: 3, churned: 4 }
++const PLAN_ORDER = { starter: 0, growth: 1, enterprise: 2, enterprise_plus: 3 }
++
++function compareValues(a: Customer, b: Customer, key: SortableKey): number {
++  switch (key) {
++    case 'company':
++      return a.company.localeCompare(b.company)
++    case 'status':
++      return STATUS_ORDER[a.status] - STATUS_ORDER[b.status]
++    case 'plan':
++      return PLAN_ORDER[a.plan] - PLAN_ORDER[b.plan]
++    case 'mrr':
++      return a.mrr - b.mrr
++    case 'seats':
++      return a.seats - b.seats
++    case 'region':
++      return a.region.localeCompare(b.region)
++    case 'owner':
++      return a.owner.localeCompare(b.owner)
++    case 'healthScore':
++      return a.healthScore - b.healthScore
++    case 'createdAt':
++      return a.createdAt.localeCompare(b.createdAt)
++    case 'lastActivityAt':
++      return a.lastActivityAt.localeCompare(b.lastActivityAt)
++    default:
++      return 0
++  }
++}
++
++export function sortCustomers(rows: Customer[], rules: SortRule[]): Customer[] {
++  if (rules.length === 0) return rows
++  return [...rows].sort((a, b) => {
++    for (const rule of rules) {
++      const cmp = compareValues(a, b, rule.key)
++      if (cmp !== 0) return rule.direction === 'asc' ? cmp : -cmp
++    }
++    // Stable tiebreaker so equal sort keys don't jitter between renders.
++    return a.id.localeCompare(b.id)
++  })
++}
++
++/**
++ * Click cycles a column through asc -> desc -> off.
++ * Plain click replaces the sort with just this column.
++ * Shift+click adds/updates this column as an additional sort key,
++ * preserving existing rules (multi-column sort).
++ */
++export function applySortClick(
++  rules: SortRule[],
++  key: SortableKey,
++  additive: boolean,
++): SortRule[] {
++  const existing = rules.find((r) => r.key === key)
++  const nextDirection: SortDirection | null = !existing
++    ? 'asc'
++    : existing.direction === 'asc'
++      ? 'desc'
++      : null
++
++  if (!additive) {
++    return nextDirection ? [{ key, direction: nextDirection }] : []
++  }
++
++  const withoutKey = rules.filter((r) => r.key !== key)
++  return nextDirection ? [...withoutKey, { key, direction: nextDirection }] : withoutKey
++}
+diff --git a/src/main.tsx b/src/main.tsx
+new file mode 100644
+index 0000000..bef5202
+--- /dev/null
++++ b/src/main.tsx
+@@ -0,0 +1,10 @@
++import { StrictMode } from 'react'
++import { createRoot } from 'react-dom/client'
++import './index.css'
++import App from './App.tsx'
++
++createRoot(document.getElementById('root')!).render(
++  <StrictMode>
++    <App />
++  </StrictMode>,
++)
+diff --git a/src/types.ts b/src/types.ts
+new file mode 100644
+index 0000000..9bf53cd
+--- /dev/null
++++ b/src/types.ts
+@@ -0,0 +1,46 @@
++export type CustomerStatus =
++  | 'active'
++  | 'trial'
++  | 'past_due'
++  | 'suspended'
++  | 'churned'
++
++export type PlanTier = 'starter' | 'growth' | 'enterprise' | 'enterprise_plus'
++
++export type Region = 'na' | 'emea' | 'apac' | 'latam'
++
++export interface Customer {
++  id: string
++  company: string
++  contactName: string
++  contactEmail: string
++  status: CustomerStatus
++  plan: PlanTier
++  mrr: number
++  seats: number
++  seatsUsed: number
++  region: Region
++  owner: string
++  healthScore: number
++  createdAt: string // ISO date
++  lastActivityAt: string // ISO date
++}
++
++export type SortDirection = 'asc' | 'desc'
++
++export interface SortRule {
++  key: SortableKey
++  direction: SortDirection
++}
++
++export type SortableKey =
++  | 'company'
++  | 'status'
++  | 'plan'
++  | 'mrr'
++  | 'seats'
++  | 'region'
++  | 'owner'
++  | 'healthScore'
++  | 'createdAt'
++  | 'lastActivityAt'
+diff --git a/tsconfig.app.json b/tsconfig.app.json
+new file mode 100644
+index 0000000..6830b6f
+--- /dev/null
++++ b/tsconfig.app.json
+@@ -0,0 +1,26 @@
++{
++  "compilerOptions": {
++    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
++    "target": "es2023",
++    "lib": ["ES2023", "DOM"],
++    "module": "esnext",
++    "types": ["vite/client"],
++    "allowArbitraryExtensions": true,
++    "skipLibCheck": true,
++
++    /* Bundler mode */
++    "moduleResolution": "bundler",
++    "allowImportingTsExtensions": true,
++    "verbatimModuleSyntax": true,
++    "moduleDetection": "force",
++    "noEmit": true,
++    "jsx": "react-jsx",
++
++    /* Linting */
++    "noUnusedLocals": true,
++    "noUnusedParameters": true,
++    "erasableSyntaxOnly": true,
++    "noFallthroughCasesInSwitch": true
++  },
++  "include": ["src"]
++}
+diff --git a/tsconfig.json b/tsconfig.json
+new file mode 100644
+index 0000000..1ffef60
+--- /dev/null
++++ b/tsconfig.json
+@@ -0,0 +1,7 @@
++{
++  "files": [],
++  "references": [
++    { "path": "./tsconfig.app.json" },
++    { "path": "./tsconfig.node.json" }
++  ]
++}
+diff --git a/tsconfig.node.json b/tsconfig.node.json
+new file mode 100644
+index 0000000..8455dcb
+--- /dev/null
++++ b/tsconfig.node.json
+@@ -0,0 +1,23 @@
++{
++  "compilerOptions": {
++    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
++    "target": "es2023",
++    "lib": ["ES2023"],
++    "types": ["node"],
++    "skipLibCheck": true,
++
++    /* Bundler mode */
++    "module": "nodenext",
++    "allowImportingTsExtensions": true,
++    "verbatimModuleSyntax": true,
++    "moduleDetection": "force",
++    "noEmit": true,
++
++    /* Linting */
++    "noUnusedLocals": true,
++    "noUnusedParameters": true,
++    "erasableSyntaxOnly": true,
++    "noFallthroughCasesInSwitch": true
++  },
++  "include": ["vite.config.ts"]
++}
+diff --git a/vite.config.ts b/vite.config.ts
+new file mode 100644
+index 0000000..9f9b446
+--- /dev/null
++++ b/vite.config.ts
+@@ -0,0 +1,8 @@
++import tailwindcss from '@tailwindcss/vite'
++import react from '@vitejs/plugin-react'
++import { defineConfig } from 'vite'
++
++// https://vite.dev/config/
++export default defineConfig({
++  plugins: [react(), tailwindcss()],
++})
