@@ -1,0 +1,25 @@
+ .eval/worker-report.md             |   78 +
+ .gitignore                         |    1 +
+ eslint.config.js                   |   28 +
+ index.html                         |   14 +
+ package-lock.json                  | 3596 ++++++++++++++++++++++++++++++++++++
+ package.json                       |   30 +
+ src/App.tsx                        |  109 ++
+ src/components/ChartCard.tsx       |   38 +
+ src/components/EndpointTable.tsx   |  118 ++
+ src/components/ErrorRateChart.tsx  |   69 +
+ src/components/KpiCard.tsx         |   39 +
+ src/components/LatencyChart.tsx    |   86 +
+ src/components/MethodBadge.tsx     |    5 +
+ src/components/StatusBadge.tsx     |   16 +
+ src/components/ThroughputChart.tsx |   68 +
+ src/data/traffic.ts                |  167 ++
+ src/hooks/useTrafficFeed.ts        |   64 +
+ src/index.css                      |  551 ++++++
+ src/lib/format.ts                  |   13 +
+ src/main.tsx                       |   15 +
+ tsconfig.app.json                  |   22 +
+ tsconfig.json                      |    7 +
+ tsconfig.node.json                 |   17 +
+ vite.config.ts                     |    7 +
+ 24 files changed, 5158 insertions(+)
