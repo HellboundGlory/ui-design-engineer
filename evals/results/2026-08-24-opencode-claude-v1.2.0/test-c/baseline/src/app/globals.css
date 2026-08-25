@@ -1,0 +1,279 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  --color-bg: #f7f7f5;
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-border: #e3e2de;
+  --color-border-strong: #cfcdc7;
+  --color-text: #1c1b19;
+  --color-text-muted: #63615b;
+  --color-text-faint: #918f88;
+  --color-accent: #0f766e;
+  --color-accent-strong: #0d5f58;
+  --color-accent-contrast: #f4fbf9;
+  --color-user-bubble: #eef6f4;
+  --color-user-border: #bfe0da;
+  --color-status-pending: #8a8880;
+  --color-status-running: #b5750a;
+  --color-status-complete: #16794f;
+  --color-status-error: #b3273f;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --color-bg: #0b0c0d;
+  --color-surface: #131416;
+  --color-surface-raised: #191b1e;
+  --color-border: #26282c;
+  --color-border-strong: #35373c;
+  --color-text: #eceae4;
+  --color-text-muted: #a4a19a;
+  --color-text-faint: #706e68;
+  --color-accent: #2dd4bf;
+  --color-accent-strong: #5eead4;
+  --color-accent-contrast: #06110f;
+  --color-user-bubble: #12211f;
+  --color-user-border: #1f3d38;
+  --color-status-pending: #8b8981;
+  --color-status-running: #f0a83c;
+  --color-status-complete: #3ddc97;
+  --color-status-error: #f2607a;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-surface-raised: var(--color-surface-raised);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-text: var(--color-text);
+  --color-text-muted: var(--color-text-muted);
+  --color-text-faint: var(--color-text-faint);
+  --color-accent: var(--color-accent);
+  --color-accent-strong: var(--color-accent-strong);
+  --color-accent-contrast: var(--color-accent-contrast);
+  --color-user-bubble: var(--color-user-bubble);
+  --color-user-border: var(--color-user-border);
+  --color-status-pending: var(--color-status-pending);
+  --color-status-running: var(--color-status-running);
+  --color-status-complete: var(--color-status-complete);
+  --color-status-error: var(--color-status-error);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 35%, transparent);
+}
+
+/* Slim, theme-aware scrollbars */
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+.scroll-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 8px;
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Streaming caret shown at the end of in-progress assistant text */
+@keyframes caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+.streaming-caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 1px;
+  vertical-align: -0.15em;
+  background: var(--color-accent);
+  animation: caret-blink 0.9s steps(1) infinite;
+}
+
+@keyframes dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+}
+.status-dot-running {
+  animation: dot-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+
+/* Smooth collapse/expand for tool call card bodies using the grid-rows trick */
+.collapse-grid {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.collapse-grid.is-open {
+  grid-template-rows: 1fr;
+}
+.collapse-grid > div {
+  overflow: hidden;
+}
+
+@keyframes fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.enter-block {
+  animation: fade-slide-in 260ms ease-out both;
+}
+
+@keyframes progress-indeterminate {
+  0% {
+    transform: translateX(-60%);
+  }
+  100% {
+    transform: translateX(160%);
+  }
+}
+.progress-indeterminate {
+  animation: progress-indeterminate 1.1s ease-in-out infinite;
+}
+
+/* Markdown content rendered inside assistant messages */
+.md-content {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+.md-content > * + * {
+  margin-top: 0.85em;
+}
+.md-content h1,
+.md-content h2,
+.md-content h3 {
+  font-weight: 600;
+  line-height: 1.35;
+  margin-top: 1.3em;
+}
+.md-content h1 {
+  font-size: 1.2em;
+}
+.md-content h2 {
+  font-size: 1.1em;
+}
+.md-content h3 {
+  font-size: 1.02em;
+}
+.md-content ul,
+.md-content ol {
+  padding-left: 1.35em;
+}
+.md-content ul {
+  list-style: disc;
+}
+.md-content ol {
+  list-style: decimal;
+}
+.md-content li + li {
+  margin-top: 0.3em;
+}
+.md-content li::marker {
+  color: var(--color-text-faint);
+}
+.md-content a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.md-content strong {
+  font-weight: 600;
+}
+.md-content blockquote {
+  border-left: 2px solid var(--color-border-strong);
+  padding-left: 0.9em;
+  color: var(--color-text-muted);
+}
+.md-content code:not(pre code) {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+}
+.md-content pre {
+  border-radius: 10px;
+  overflow-x: auto;
+  max-width: 100%;
+}
+.md-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88em;
+  display: block;
+  overflow-x: auto;
+}
+.md-content th,
+.md-content td {
+  border: 1px solid var(--color-border);
+  padding: 0.45em 0.7em;
+  text-align: left;
+}
+.md-content th {
+  background: var(--color-surface-raised);
+  font-weight: 600;
+}
+.md-content hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+}

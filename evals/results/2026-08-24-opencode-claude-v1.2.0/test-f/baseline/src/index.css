@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@theme {
+  /* -- Palette: warm paper, near-black ink, restrained clay accent -- */
+  --color-paper: #f2ede1;
+  --color-paper-dim: #e9e1cd;
+  --color-paper-deep: #ddd2b4;
+  --color-ink: #1c1a16;
+  --color-ink-soft: #4a463c;
+  --color-ink-faint: #8a8474;
+  --color-line: #cfc4a4;
+  --color-line-soft: #ddd2b4;
+  --color-clay: #a8492d;
+  --color-clay-soft: #c0714f;
+  --color-pine: #37463c;
+
+  /* -- Type -- */
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+
+  --breakpoint-xs: 480px;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    background: var(--color-paper);
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-clay);
+    color: var(--color-paper);
+  }
+
+  a {
+    color: inherit;
+  }
+}
+
+@layer utilities {
+  /* Fine paper grain, applied once over the whole document */
+  .bg-grain {
+    position: relative;
+  }
+  .bg-grain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .font-feature-oldstyle {
+    font-feature-settings: "onum" 1, "kern" 1;
+  }
+}

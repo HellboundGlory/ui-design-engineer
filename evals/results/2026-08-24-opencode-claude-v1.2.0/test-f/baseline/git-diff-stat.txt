@@ -1,0 +1,34 @@
+ .eval/screenshot.cjs                               |   86 +
+ .eval/screenshot2.cjs                              |   32 +
+ .eval/screenshots/01-desktop-full.png              |  Bin 0 -> 886878 bytes
+ .eval/screenshots/02-desktop-hero-viewport.png     |  Bin 0 -> 264167 bytes
+ .eval/screenshots/03-tablet-full.png               |  Bin 0 -> 680913 bytes
+ .eval/screenshots/04-mobile-full.png               |  Bin 0 -> 502332 bytes
+ .eval/screenshots/05-desktop-gallery.png           |  Bin 0 -> 480486 bytes
+ .eval/screenshots/06-desktop-newsletter.png        |  Bin 0 -> 33741 bytes
+ .eval/screenshots/07-desktop-focus-skiplink.png    |  Bin 0 -> 266464 bytes
+ .../08-desktop-newsletter-submitted.png            |  Bin 0 -> 34989 bytes
+ .../09-desktop-newsletter-input-focus.png          |  Bin 0 -> 35062 bytes
+ .eval/worker-report.md                             |   66 +
+ .oxlintrc.json                                     |    8 +
+ README.md                                          |   25 +
+ index.html                                         |   24 +
+ package-lock.json                                  | 1990 ++++++++++++++++++++
+ package.json                                       |   28 +
+ public/favicon.svg                                 |    7 +
+ src/App.tsx                                        |   29 +
+ src/components/Footer.tsx                          |   54 +
+ src/components/Gallery.tsx                         |   89 +
+ src/components/Hero.tsx                            |   56 +
+ src/components/Lede.tsx                            |   37 +
+ src/components/Masthead.tsx                        |   41 +
+ src/components/Newsletter.tsx                      |   73 +
+ src/components/Plate.tsx                           |   64 +
+ src/components/motifs.tsx                          |   85 +
+ src/index.css                                      |   73 +
+ src/main.tsx                                       |   10 +
+ tsconfig.app.json                                  |   26 +
+ tsconfig.json                                      |    7 +
+ tsconfig.node.json                                 |   23 +
+ vite.config.ts                                     |    8 +
+ 33 files changed, 2941 insertions(+)

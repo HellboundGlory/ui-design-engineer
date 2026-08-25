@@ -1,0 +1,3121 @@
+diff --git a/.eval/screenshot.cjs b/.eval/screenshot.cjs
+new file mode 100644
+index 0000000..b7eb94e
+--- /dev/null
++++ b/.eval/screenshot.cjs
+@@ -0,0 +1,86 @@
++const { chromium } = require('playwright');
++
++async function main() {
++  const browser = await chromium.launch();
++
++  // 1. Desktop full page
++  {
++    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
++    await page.goto('http://localhost:4321/', { waitUntil: 'networkidle' });
++    await page.screenshot({ path: '.eval/screenshots/01-desktop-full.png', fullPage: true });
++    await page.close();
++  }
++
++  // 2. Desktop hero viewport only (above the fold)
++  {
++    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
++    await page.goto('http://localhost:4321/', { waitUntil: 'networkidle' });
++    await page.screenshot({ path: '.eval/screenshots/02-desktop-hero-viewport.png' });
++    await page.close();
++  }
++
++  // 3. Tablet full page
++  {
++    const page = await browser.newPage({ viewport: { width: 834, height: 1112 } });
++    await page.goto('http://localhost:4321/', { waitUntil: 'networkidle' });
++    await page.screenshot({ path: '.eval/screenshots/03-tablet-full.png', fullPage: true });
++    await page.close();
++  }
++
++  // 4. Mobile full page
++  {
++    const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
++    await page.goto('http://localhost:4321/', { waitUntil: 'networkidle' });
++    await page.screenshot({ path: '.eval/screenshots/04-mobile-full.png', fullPage: true });
++    await page.close();
++  }
++
++  // 5. Gallery section close-up (desktop)
++  {
++    const page = await browser.newPage({ viewport: { width: 1440, height: 1400 } });
++    await page.goto('http://localhost:4321/', { waitUntil: 'networkidle' });
++    const gallery = await page.$('#gallery');
++    await gallery.scrollIntoViewIfNeeded();
++    await page.screenshot({ path: '.eval/screenshots/05-desktop-gallery.png', clip: await gallery.boundingBox() });
++    await page.close();
++  }
++
++  // 6. Newsletter section close-up (desktop)
++  {
++    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
++    await page.goto('http://localhost:4321/', { waitUntil: 'networkidle' });
++    const newsletter = await page.$('#subscribe');
++    await newsletter.scrollIntoViewIfNeeded();
++    await page.screenshot({ path: '.eval/screenshots/06-desktop-newsletter.png', clip: await newsletter.boundingBox() });
++    await page.close();
++  }
++
++  // 7. Keyboard focus state check on skip link + nav
++  {
++    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
++    await page.goto('http://localhost:4321/', { waitUntil: 'networkidle' });
++    await page.keyboard.press('Tab');
++    await page.screenshot({ path: '.eval/screenshots/07-desktop-focus-skiplink.png' });
++    await page.close();
++  }
++
++  // 8. Newsletter form submitted state
++  {
++    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
++    await page.goto('http://localhost:4321/', { waitUntil: 'networkidle' });
++    await page.fill('#subscribe input[type=email]', 'reader@example.com');
++    await page.click('#subscribe button[type=submit]');
++    const newsletter = await page.$('#subscribe');
++    await newsletter.scrollIntoViewIfNeeded();
++    await page.screenshot({ path: '.eval/screenshots/08-desktop-newsletter-submitted.png', clip: await newsletter.boundingBox() });
++    await page.close();
++  }
++
++  await browser.close();
++  console.log('DONE');
++}
++
++main().catch((e) => {
++  console.error(e);
++  process.exit(1);
++});
+diff --git a/.eval/screenshot2.cjs b/.eval/screenshot2.cjs
+new file mode 100644
+index 0000000..aa5c6a8
+--- /dev/null
++++ b/.eval/screenshot2.cjs
+@@ -0,0 +1,32 @@
++const { chromium } = require('playwright');
++
++async function main() {
++  const browser = await chromium.launch();
++
++  // 9. Newsletter input focus ring
++  {
++    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
++    await page.goto('http://localhost:4321/', { waitUntil: 'networkidle' });
++    await page.click('#subscribe input[type=email]');
++    const newsletter = await page.$('#subscribe');
++    await newsletter.scrollIntoViewIfNeeded();
++    await page.screenshot({ path: '.eval/screenshots/09-desktop-newsletter-input-focus.png', clip: await newsletter.boundingBox() });
++    await page.close();
++  }
++
++  // 1 (refresh). Desktop full page after fix
++  {
++    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
++    await page.goto('http://localhost:4321/', { waitUntil: 'networkidle' });
++    await page.screenshot({ path: '.eval/screenshots/01-desktop-full.png', fullPage: true });
++    await page.close();
++  }
++
++  await browser.close();
++  console.log('DONE');
++}
++
++main().catch((e) => {
++  console.error(e);
++  process.exit(1);
++});
+diff --git a/.eval/screenshots/01-desktop-full.png b/.eval/screenshots/01-desktop-full.png
+new file mode 100644
+index 0000000..d1719a1
+Binary files /dev/null and b/.eval/screenshots/01-desktop-full.png differ
+diff --git a/.eval/screenshots/02-desktop-hero-viewport.png b/.eval/screenshots/02-desktop-hero-viewport.png
+new file mode 100644
+index 0000000..9c6af69
+Binary files /dev/null and b/.eval/screenshots/02-desktop-hero-viewport.png differ
+diff --git a/.eval/screenshots/03-tablet-full.png b/.eval/screenshots/03-tablet-full.png
+new file mode 100644
+index 0000000..5b25fc0
+Binary files /dev/null and b/.eval/screenshots/03-tablet-full.png differ
+diff --git a/.eval/screenshots/04-mobile-full.png b/.eval/screenshots/04-mobile-full.png
+new file mode 100644
+index 0000000..21c0097
+Binary files /dev/null and b/.eval/screenshots/04-mobile-full.png differ
+diff --git a/.eval/screenshots/05-desktop-gallery.png b/.eval/screenshots/05-desktop-gallery.png
+new file mode 100644
+index 0000000..a056968
+Binary files /dev/null and b/.eval/screenshots/05-desktop-gallery.png differ
+diff --git a/.eval/screenshots/06-desktop-newsletter.png b/.eval/screenshots/06-desktop-newsletter.png
+new file mode 100644
+index 0000000..a25bb30
+Binary files /dev/null and b/.eval/screenshots/06-desktop-newsletter.png differ
+diff --git a/.eval/screenshots/07-desktop-focus-skiplink.png b/.eval/screenshots/07-desktop-focus-skiplink.png
+new file mode 100644
+index 0000000..4204605
+Binary files /dev/null and b/.eval/screenshots/07-desktop-focus-skiplink.png differ
+diff --git a/.eval/screenshots/08-desktop-newsletter-submitted.png b/.eval/screenshots/08-desktop-newsletter-submitted.png
+new file mode 100644
+index 0000000..df9bb05
+Binary files /dev/null and b/.eval/screenshots/08-desktop-newsletter-submitted.png differ
+diff --git a/.eval/screenshots/09-desktop-newsletter-input-focus.png b/.eval/screenshots/09-desktop-newsletter-input-focus.png
+new file mode 100644
+index 0000000..c16447f
+Binary files /dev/null and b/.eval/screenshots/09-desktop-newsletter-input-focus.png differ
+diff --git a/.eval/worker-report.md b/.eval/worker-report.md
+new file mode 100644
+index 0000000..be83cc0
+--- /dev/null
++++ b/.eval/worker-report.md
+@@ -0,0 +1,66 @@
++# Worker report — Plinth editorial landing page
++
++## Run metadata
++
++- **Worktree:** `eval-test-f-baseline` (branch `eval-test-f-baseline-claude`), greenfield, only `.gitignore` and `.opencode/` present at start.
++- **Stack chosen:** Vite + React 19 + TypeScript, Tailwind CSS v4 (`@tailwindcss/vite` plugin, CSS-first `@theme` config — no `tailwind.config.js`). No component library (shadcn/etc.) — the page is small and bespoke enough that a component library would add indirection without payoff. No backend/CMS — the newsletter form is a client-side-only interaction (see Gaps).
++- **Fonts:** Google Fonts, self-hosted-via-CDN `<link>` tags: **Fraunces** (variable, optical-size axis, used for all display/editorial type) paired with **Inter** (UI chrome, captions, body/nav text). No system-font fallback used for headlines.
++- **Tooling added beyond the brief:** `playwright` as a devDependency, used only for local screenshot verification (see Verification below). It is not part of the shipped app.
++
++## The task, as given
++
++"Build an editorial landing page for a high-end architecture publication featuring a hero section, image gallery grid, and newsletter subscription form." Brand descriptor: "quiet, confident, print-magazine-inspired." Free stack choice, greenfield. Explicitly a no-skill baseline run — built from general front-end/design knowledge only, no design-assistance tooling consulted.
++
++## What I built
++
++A fictional quarterly, **Plinth — A Journal of Architecture & Place**, as a single long-scrolling page: masthead → hero → editor's note (lede) → gallery ("The Collection") → newsletter → footer.
++
++**Typography.** Fraunces at large sizes for headlines and pull-quotes, with its italic used deliberately (one word of the hero headline, the dek, the pull-quote, the newsletter confirmation message) rather than bold, to keep the page's loudest gesture typographic rather than chromatic. Inter carries everything functional — nav, captions, form, plate labels, uppercase tracked kickers. This is a real pairing decision, not a default: Fraunces was picked specifically for its editorial/print pedigree (it's designed to read like a serif from a well-set magazine, not a web-safe serif), and Inter was picked to stay out of its way.
++
++**Layout / composition.** Deliberately not the hero+3-cards+CTA shape:
++- **Masthead** is two stacked rows (issue/location meta bar, then wordmark + nav + subscribe), like a real magazine's front matter, not a single centered nav bar.
++- **Hero** is an asymmetric 7/5 split — headline block flush to the left margin, a full-bleed "photograph" (placeholder plate) occupying the right ~5/12 of the *viewport* (not the content container), so it genuinely bleeds to the browser edge rather than being boxed. No gradient-behind-text hero; the "photo" and the text never overlap.
++- **Lede** section breaks rhythm again: a classic drop-cap editorial paragraph on the left, a bordered pull-quote aside on the right — asymmetric 7/4 split, not centered.
++- **Gallery** ("The Collection") is a genuine mosaic, not a uniform 3-up card grid: one large 4×2 feature plate, two stacked half-width plates beside it, a 3/3 pair below, and a full-width closing banner plate. Sizes vary because captions call out "arranged as they ran in print — unevenly, on purpose," which is also literally true of the grid.
++- **Newsletter** is styled as a printed subscription insert: full-width dark band (only fully saturated dark section on the page, used once for contrast/pacing), asymmetric heading-left/form-right split mirroring the hero, underlined-not-boxed email input, plain-text submit link styling on the button.
++- **Footer** returns to a lighter neutral tone, wordmark repeated, three link columns, fine print — standard masthead-publication footer conventions.
++
++**Color.** Warm paper (`#f2ede1`) / near-black ink (`#1c1a16`) as the base pair, one restrained accent (clay/terracotta, `#a8492d`) used only for kickers, the hairline rule under the hero label, link-hover, and focus states — never as a fill or gradient. A second muted "pine" green and a "stone" tan appear only inside the gallery plates' duotone treatment, to vary the placeholder imagery the way a real photo editor would vary a shoot, not as UI chrome. No purple/blue anywhere.
++
++**Placeholder imagery.** Since there's no real photography, each "plate" (`src/components/Plate.tsx`) is a duotone CSS gradient with a small abstract architectural line-motif (colonnade, facade grid, stair, arch, skylight, tower — `src/components/motifs.tsx`) and a subtle SVG-noise grain overlay, captioned like a real plate ("Plate II," a location, a one-line description). The intent was to keep composition/rhythm honest under placeholder conditions rather than let flat color blocks excuse a generic grid.
++
++## Key decisions and reasoning
++
++- **Why no component library:** the page is ~6 components, all bespoke one-offs (a plate, a masthead, a form). shadcn/ui primitives (buttons, inputs) would have pulled in a rounded-corner, shadow-based visual language that fights the flat/hairline-rule print aesthetic I was going for.
++- **Why Tailwind v4 CSS-first config:** avoids a separate `tailwind.config.js`; theme tokens (`--color-*`, `--font-*`) live next to the base styles in `src/index.css`, which kept the design-token decisions in one legible place.
++- **Why full-bleed hero image:** the brief explicitly calls out "full-bleed treatment" as a way to avoid the generic template shape; implemented by *not* wrapping the hero section in the site's max-width container, so the grid's right column genuinely touches the viewport edge on wide screens.
++- **Why a working (if fake) newsletter interaction:** a static-looking form read as unfinished; the form is a controlled React input with local validation (`required`, `type=email`) and swaps to a confirmation message on submit, with no network call, since there's no backend in scope.
++
++## Verification performed
++
++- `npx tsc -b` — clean, no type errors.
++- `npm run lint` (oxlint, with the template's default React/TS rule set) — clean, no warnings or errors.
++- `npm run build` (`tsc -b && vite build`) — succeeds; output is a single ~206 KB JS bundle (~64 KB gzip) and ~20 KB CSS.
++- **Visual verification:** installed Playwright as a devDependency (chromium binary only, no system deps available/needed in this sandbox — confirmed it launches), served the production build with `vite preview`, and captured screenshots into `.eval/screenshots/`:
++  1. `01-desktop-full.png` — full page at 1440px.
++  2. `02-desktop-hero-viewport.png` — hero above the fold at 1440px.
++  3. `03-tablet-full.png` — full page at 834px (iPad-ish).
++  4. `04-mobile-full.png` — full page at 390px (iPhone-ish).
++  5. `05-desktop-gallery.png` — gallery section close-up.
++  6. `06-desktop-newsletter.png` — newsletter section close-up.
++  7. `07-desktop-focus-skiplink.png` — first Tab press, confirming the skip-link becomes visible.
++  8. `08-desktop-newsletter-submitted.png` — form after submit, confirming the confirmation-state swap works.
++  9. `09-desktop-newsletter-input-focus.png` — email input focus state.
++  - Also checked the browser console via Playwright (`page.on('console'/'pageerror')`) on load: **zero errors or warnings**.
++- **A real bug was caught and fixed by this screenshot pass:** the gallery plates initially rendered with zero visible height on mobile/tablet (only captions showed) because the placeholder image div's only content was absolutely-positioned (motif/grain/label), so it had no intrinsic height, and the responsive grid only defines an explicit row height at the `lg` breakpoint. Fixed by giving `Plate` a default `min-height` floor for base/`sm` that's removed again at `lg` (`src/components/Plate.tsx`, `imageMinHeight` prop). Re-verified with fresh screenshots after the fix (all three widths now show all seven plates correctly).
++- **Contrast:** manually computed WCAG relative-luminance contrast ratios (small Node script, not a tool) for every text/background color pairing actually used in the palette before wiring up components, rather than after. Two failures were caught this way *before* they shipped: `ink-faint` on `paper` (3.19:1) and on `paper-deep` (2.48:1) both failed AA for small text — fixed by swapping those two label/fine-print usages to `ink-soft` (6.25–8.05:1). `clay` on `paper-deep` (3.82:1) failed for the footer link hover state — fixed by switching that hover treatment to `ink` text + `clay` underline instead of `clay` text. Final pairings in use all clear 4.5:1 (or 3:1 for large/decorative-only text).
++- **Not verified:** no automated accessibility scan (axe or similar) was run — the accessibility work here is manual (semantic landmarks, one skip link, visible focus states, alt-text-free decorative SVGs marked `aria-hidden`, a labeled form input) but not tool-audited. No cross-browser testing beyond Chromium. No testing with an actual screen reader. No Lighthouse/performance audit. No real-content stress test (the copy is illustrative editorial copy I wrote, not tested against, e.g., a much longer real headline or a non-Latin script). No automated visual regression baseline was set up — the screenshots are one-time manual review artifacts, not a CI gate.
++
++## Known gaps / deliberately out of scope
++
++- **No routing / no other pages.** Nav links ("Features," "Criticism," "Archive," footer columns) and the "Read the Feature" CTA are `href="#"` or in-page anchors — there's nothing behind them. This is a landing page, not a site.
++- **No real backend for the newsletter form.** It's a client-only success-state simulation; wiring it to a real ESP (Mailchimp/Buttondown/etc.) is a follow-up.
++- **No dark mode.** The brand is print-inspired and light-first by design; a dark variant wasn't requested and would need its own duotone-plate retuning to look intentional rather than inverted.
++- **No animation/motion.** Hover states exist (opacity/color transitions) but there's no scroll-triggered reveal or page-load animation. Given "quiet, confident" as the brand descriptor, I judged restraint here to be the correct default rather than a gap, but a follow-up pass could add very subtle motion.
++- **Gallery grid is desktop-tuned; mobile/tablet fall back to a simpler uniform stack.** The asymmetric mosaic (large/small/wide plate variety) only activates at the `lg` breakpoint; below that, all seven plates get the same floor height in a single or two-column stack. This is a common, defensible editorial-responsive pattern, but it does mean the "arranged unevenly, on purpose" claim in the section's copy is only true on larger screens.
++- **Real typography kerning/optical-size tuning is approximate.** Fraunces has a wide optical-size axis (`opsz`) I'm relying on the browser's default interpolation for rather than hand-tuning per breakpoint.
+diff --git a/.oxlintrc.json b/.oxlintrc.json
+new file mode 100644
+index 0000000..6fa991d
+--- /dev/null
++++ b/.oxlintrc.json
+@@ -0,0 +1,8 @@
++{
++  "$schema": "./node_modules/oxlint/configuration_schema.json",
++  "plugins": ["react", "typescript", "oxc"],
++  "rules": {
++    "react/rules-of-hooks": "error",
++    "react/only-export-components": ["warn", { "allowConstantExport": true }]
++  }
++}
+diff --git a/README.md b/README.md
+new file mode 100644
+index 0000000..ed2c4a5
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1,25 @@
++# Plinth — editorial landing page
++
++A single-page editorial landing page for "Plinth," a fictional quarterly
++architecture publication. Built with React + TypeScript + Vite, styled with
++Tailwind CSS v4.
++
++See `.eval/worker-report.md` for the full build report: design rationale,
++verification performed, and known gaps.
++
++## Commands
++
++```bash
++npm install
++npm run dev       # local dev server
++npm run build     # type-check (tsc -b) + production build
++npm run lint      # oxlint
++npm run preview   # serve the production build locally
++```
++
++## Stack
++
++- Vite + React 19 + TypeScript
++- Tailwind CSS v4 (CSS-first `@theme` config in `src/index.css`)
++- Fonts: Fraunces (display serif) + Inter (UI/body sans), via Google Fonts
++- No component library, no backend — the newsletter form is client-side only
+diff --git a/index.html b/index.html
+new file mode 100644
+index 0000000..b1fa8bc
+--- /dev/null
++++ b/index.html
+@@ -0,0 +1,24 @@
++<!doctype html>
++<html lang="en">
++  <head>
++    <meta charset="UTF-8" />
++    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
++    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++    <meta
++      name="description"
++      content="Plinth — a quarterly journal of architecture and place. Essays, photography, and criticism on the built environment."
++    />
++    <meta name="theme-color" content="#f2ede1" />
++    <title>Plinth — A Journal of Architecture</title>
++    <link rel="preconnect" href="https://fonts.googleapis.com" />
++    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
++    <link
++      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,340;0,9..144,440;0,9..144,560;0,9..144,600;1,9..144,400;1,9..144,440&family=Inter:wght@400;500;600&display=swap"
++      rel="stylesheet"
++    />
++  </head>
++  <body>
++    <div id="root"></div>
++    <script type="module" src="/src/main.tsx"></script>
++  </body>
++</html>
+diff --git a/package-lock.json b/package-lock.json
+new file mode 100644
+index 0000000..dadf30b
+--- /dev/null
++++ b/package-lock.json
+@@ -0,0 +1,1990 @@
++{
++  "name": "app",
++  "version": "0.0.0",
++  "lockfileVersion": 3,
++  "requires": true,
++  "packages": {
++    "": {
++      "name": "app",
++      "version": "0.0.0",
++      "dependencies": {
++        "react": "^19.2.8",
++        "react-dom": "^19.2.8"
++      },
++      "devDependencies": {
++        "@tailwindcss/vite": "^4.3.3",
++        "@types/node": "^24.13.3",
++        "@types/react": "^19.2.18",
++        "@types/react-dom": "^19.2.4",
++        "@vitejs/plugin-react": "^6.1.0",
++        "oxlint": "^1.79.0",
++        "playwright": "^1.62.1",
++        "tailwindcss": "^4.3.3",
++        "typescript": "~6.0.2",
++        "vite": "^8.2.2"
++      }
++    },
++    "node_modules/@jridgewell/gen-mapping": {
++      "version": "0.3.13",
++      "resolved": "https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.3.13.tgz",
++      "integrity": "sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/sourcemap-codec": "^1.5.0",
++        "@jridgewell/trace-mapping": "^0.3.24"
++      }
++    },
++    "node_modules/@jridgewell/remapping": {
++      "version": "2.3.5",
++      "resolved": "https://registry.npmjs.org/@jridgewell/remapping/-/remapping-2.3.5.tgz",
++      "integrity": "sha512-LI9u/+laYG4Ds1TDKSJW2YPrIlcVYOwi2fUC6xB43lueCjgxV4lffOCZCtYFiH6TNOX+tQKXx97T4IKHbhyHEQ==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/gen-mapping": "^0.3.5",
++        "@jridgewell/trace-mapping": "^0.3.24"
++      }
++    },
++    "node_modules/@jridgewell/resolve-uri": {
++      "version": "3.1.2",
++      "resolved": "https://registry.npmjs.org/@jridgewell/resolve-uri/-/resolve-uri-3.1.2.tgz",
++      "integrity": "sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==",
++      "dev": true,
++      "license": "MIT",
++      "engines": {
++        "node": ">=6.0.0"
++      }
++    },
++    "node_modules/@jridgewell/sourcemap-codec": {
++      "version": "1.5.5",
++      "resolved": "https://registry.npmjs.org/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.5.5.tgz",
++      "integrity": "sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/@jridgewell/trace-mapping": {
++      "version": "0.3.31",
++      "resolved": "https://registry.npmjs.org/@jridgewell/trace-mapping/-/trace-mapping-0.3.31.tgz",
++      "integrity": "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/resolve-uri": "^3.1.0",
++        "@jridgewell/sourcemap-codec": "^1.4.14"
++      }
++    },
++    "node_modules/@oxc-project/types": {
++      "version": "0.146.0",
++      "resolved": "https://registry.npmjs.org/@oxc-project/types/-/types-0.146.0.tgz",
++      "integrity": "sha512-XC0QsnnhVe7sLIWmYmdPw7x5P0h4W8vUU3Nv1ySgWXtvCz8NizoAEpGXA0sOYoJQV2Rl13LgURAHQ5cI5ILCSA==",
++      "dev": true,
++      "license": "MIT",
++      "funding": {
++        "url": "https://github.com/sponsors/Boshen"
++      }
++    },
++    "node_modules/@oxlint/binding-android-arm-eabi": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-android-arm-eabi/-/binding-android-arm-eabi-1.80.0.tgz",
++      "integrity": "sha512-RM3Plj+biQpxa5d1GOOX6ciDlcUROmm4OZ/pLTpitkQt2mJv4jhtY4cbgaetOm5UKWZe05/TGQ6o1Vl8EOHkrA==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-android-arm64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-android-arm64/-/binding-android-arm64-1.80.0.tgz",
++      "integrity": "sha512-YlO5JEf0Yr2bUUlu8O8daVcUxtcGGbcSmyV7E7nSbJbfAdxTE0PFPwgnIlw7wXJaTYjb+qs5hI5q3jxUkI7cAw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-darwin-arm64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-darwin-arm64/-/binding-darwin-arm64-1.80.0.tgz",
++      "integrity": "sha512-BULDOyO3AhsmdWfQeIUCykDt3dd7XZBGLhp1eIh56skRv01O+cNjNPwXMIbeW1x4+pxcln5if72wcRgViVo7PA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-darwin-x64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-darwin-x64/-/binding-darwin-x64-1.80.0.tgz",
++      "integrity": "sha512-YJ4JzLw7N5TDSQFlA0hAQGHvnDZgyypm1yunObVWcWiF9KM7eGCJKYKLgTC2Fi/57OdnBhbj4OkzPGdFQJ6HyA==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-freebsd-x64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-freebsd-x64/-/binding-freebsd-x64-1.80.0.tgz",
++      "integrity": "sha512-AYUIk5QnL0s8oWAYsREZwkRYy1SupJTXALo93J1TgzHywxQtdM99FecRMQ87MXEdPQ0j1TmEpeeq3fGNkpvMqg==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm-gnueabihf": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.80.0.tgz",
++      "integrity": "sha512-9hBZVANupQ89W9dXyE0n8doCyaW5pDyGn3y6XlIMPZ+rIKuyqkr3SNUXmVJIhuvUq0NBU3RBiSXXE69l4XI6KA==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm-musleabihf": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm-musleabihf/-/binding-linux-arm-musleabihf-1.80.0.tgz",
++      "integrity": "sha512-SvS2uKqzY+pbfuvAHzH4338R6Zwo805GAwrIMVvK1KxoOWCIjZUdfzTCvilD7z6JK91v011+zYMryabhDo2AsQ==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm64-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.80.0.tgz",
++      "integrity": "sha512-tCLadyqRVL3pQTRPNg7cjXKvcvS4fbyXeQHhKk5BTJ1oftQln5/yIIWbu/Xom/DX41zv2P9QGt6+D/TtQVtY3A==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm64-musl": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.80.0.tgz",
++      "integrity": "sha512-XfpCNRlOPcLlJl4Bn/FUhjqlR6BVavEykERBf/MV7YA9VZDa5g5znVqYhyviMafcxS9Pe/i/kPvHNO0U6svEHQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-ppc64-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.80.0.tgz",
++      "integrity": "sha512-3I4yMwcFG9NeO8ioY6JBBuKsIm5GL/x7MATt1S4tVWaxPu5HcJ+XnLUbcVBTxG8q2Wu56HSj+NmXQiVYb1lp6A==",
++      "cpu": [
++        "ppc64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-riscv64-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-riscv64-gnu/-/binding-linux-riscv64-gnu-1.80.0.tgz",
++      "integrity": "sha512-E1wAKymkpe1/E8helzBKdm81OBOF+ezxRyXRMEuik3ZpWDER5CPOKZwF66RsdwW98uwZv8UTFremUQtC1CzdJA==",
++      "cpu": [
++        "riscv64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-riscv64-musl": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-riscv64-musl/-/binding-linux-riscv64-musl-1.80.0.tgz",
++      "integrity": "sha512-+gLRGD4sIo3+VA++iham5UxD9tKSoJ/VOrROCEXIcknrYtQg6iIQgvjN0cpiRF7N6UYC7pJbvHJlDnMge5LRpQ==",
++      "cpu": [
++        "riscv64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-s390x-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.80.0.tgz",
++      "integrity": "sha512-aR0PrzHj9leW3NmzBAAP4EzdoBNoJcs9sjnIQPIwyRnBGYrRbXUIpEB5Q39AqK3PLY5JK5uEhDQDiUa1QSAstw==",
++      "cpu": [
++        "s390x"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-x64-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.80.0.tgz",
++      "integrity": "sha512-vSVh5cSo3Xxs6ghBCcFJlpbkbENzDog1qXtoXLa/HC3aCrR4XO76GZbXmQoCPHnu99nQpdCeC3H9tdNICfDh7A==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-x64-musl": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-x64-musl/-/binding-linux-x64-musl-1.80.0.tgz",
++      "integrity": "sha512-FfzBXpNQ8u7/ZI/p8bl73MeZ508Ax3hxWp3SiJpEFiC+BB9XcXy5FAZHTLKDPSzrUpxQZSZJAVdDmuJp/+HDBQ==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-openharmony-arm64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-openharmony-arm64/-/binding-openharmony-arm64-1.80.0.tgz",
++      "integrity": "sha512-zMzbkumtmprCgRwoYNzcB3iC39fXdJIMLMU33KdCjEGLlJGOEt1+LwQ4LF8ndLzAEKVz4BR0y3V6Xrkk3Nm3yA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "openharmony"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-win32-arm64-msvc": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.80.0.tgz",
++      "integrity": "sha512-ib6iRcrXsk4t1fm3iKcwksyWh1ZkZXC/2mEzakl0ai2+6HZunf1WWMZ/xP9EJAvw9g9K4UVTC3NF/+G2qLrbTQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-win32-ia32-msvc": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-win32-ia32-msvc/-/binding-win32-ia32-msvc-1.80.0.tgz",
++      "integrity": "sha512-xhRWBMpLxZvgKAH6+DJZmpP+W8Y8UdQOSU1JfxSWNXsaBaRGW77j+1hCuNHlzj7OH4SPN8fYd1q0o2qrDtoVyw==",
++      "cpu": [
++        "ia32"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-win32-x64-msvc": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.80.0.tgz",
++      "integrity": "sha512-yAnO7lwBYQnz2pcfBPIGQQZWIX5zd5R/1aAKIF3oE+TVj7IhoHcROjOkz3sRDngzqhfPKfFaXqug5j5rE5dn6Q==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-android-arm-eabi": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-android-arm-eabi/-/binding-android-arm-eabi-1.2.5.tgz",
++      "integrity": "sha512-DLe/i+l8ynIBY7XEQ191TeZvCoowIGa18R+dIV30GW7DiOtp74i/xX8hs8GUjW5ARV7VZuie3d6AumSmCwbeRA==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-android-arm64": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-android-arm64/-/binding-android-arm64-1.2.5.tgz",
++      "integrity": "sha512-zXcwKlQApYAOELHd8PwKDFkagYF9Wy4e0RJ+0qnzl9Pjnpj75TEG8ufv40p2J7kCEfwZAsNiuzRIyNNMWT38ig==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-darwin-arm64": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-darwin-arm64/-/binding-darwin-arm64-1.2.5.tgz",
++      "integrity": "sha512-dK4QakI42nzWgJT5sm4y4y/O//D4OxM75/cH28RLV+nzIN9AY+YsbuUVrUTjlLjXR6vpyxFbSsbmNuJ6BP9sww==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-darwin-x64": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-darwin-x64/-/binding-darwin-x64-1.2.5.tgz",
++      "integrity": "sha512-fqSALaUu1Wjd1nK2uW2kJDWdLCc8lx1IcY+MTY26Aurfdx19anlzhqXOgCFbBFQnlFDTn4TC1/7Nz4Bl2mLP3A==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-freebsd-x64": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-freebsd-x64/-/binding-freebsd-x64-1.2.5.tgz",
++      "integrity": "sha512-/vCnNxlkxs9tKxNDcyWUePpJ/PgTzxIaVhoM5SmG8UV+GR/IcPam4VYxi7GIMo7PSDuNqlJqvprqii9NqqVCMw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-arm-gnueabihf": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.2.5.tgz",
++      "integrity": "sha512-abk0NLA519LxRCszmbE0jYKuQ9YPocOXTiOXOo6Yr+YAT95VH+PtqYAjOJvGKt3viEd/x4qzabAlwd5bHOOARg==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-arm64-gnu": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.2.5.tgz",
++      "integrity": "sha512-Y7eALiJ8lr0M2HH103Js+g7V34wf6snlpZLAsHI90uLhr3PVlNsbFVAXJC9d/V6BnPyKtpSwI+NcB/RLxsQxuA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-arm64-musl": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.2.5.tgz",
++      "integrity": "sha512-xMvZgnbZg4YVnR/AX2b3oOPDTFYJvUVaJg5FedA/LuvexAtXibZQej4cnTkw3rjsJ/ggUROB64TdtETiim+FYA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-ppc64-gnu": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.2.5.tgz",
++      "integrity": "sha512-GRjeqTUDHTo5GwntsLaAMcBahG3nlpjftXWZLN73HiYQlhwEowvarFgQnRnQZtIp4keXX7quXFbG38uPZBa2EA==",
++      "cpu": [
++        "ppc64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-s390x-gnu": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.2.5.tgz",
++      "integrity": "sha512-vLNTR45F2Uwc8AufkNXPmB4VliaXs+FvcheEogIzOXzO4l+LzieXF5A/TWxLy5HtqpsRCHUfd0lPVrrdgXdLHQ==",
++      "cpu": [
++        "s390x"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-x64-gnu": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.2.5.tgz",
++      "integrity": "sha512-Mgj59/HTuYeK9Gz2MA+mBWKnHsAgkBSec15ZMb1st3oIfFbX7gCjOae7GydHhzcyQi9Z/7M1QuN9bR3oFqF0jQ==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-x64-musl": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-x64-musl/-/binding-linux-x64-musl-1.2.5.tgz",
++      "integrity": "sha512-mY8AP0/ichsbhAxGnLa3d3+MwV0EfgrPND2bplI3Ym8T6R2pJ0N87bvrKVwNXmdy3jnr6eQBecdqx/HMknBmpA==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-openharmony-arm64": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-openharmony-arm64/-/binding-openharmony-arm64-1.2.5.tgz",
++      "integrity": "sha512-8SLssA2oweAxyRgDp789ACfRb/3P+zNRJpzZxSizxF9m8NUDQ4+3xjo8ttjhVGGw6Qxb70oZiEtIjaKikCO7Yw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "openharmony"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-win32-arm64-msvc": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.2.5.tgz",
++      "integrity": "sha512-vGbruD5zquhoc8D9SViXgN2FBJtNdTyQ4DtG+SWiEGlJiAzoKcZ2xp+xuXCffhubVdt0NJlTZqkeRuERy7g8Cw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-win32-x64-msvc": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.2.5.tgz",
++      "integrity": "sha512-e/SXpgISz+IoqVcSSI0rx/d/he8zqLex+/rCWpnHpmVfmPIUjag9H6P7zotf0gJHwPUhQxZ/mF8tr6acebT9yw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/pluginutils": {
++      "version": "1.0.1",
++      "resolved": "https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.0.1.tgz",
++      "integrity": "sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/@tailwindcss/node": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/node/-/node-4.3.3.tgz",
++      "integrity": "sha512-/T8IKEsf9VTU6tLjgC7+sv2mOPtQxzE2jMw7u4Tt40Tx+QSZxpzh95/H6cMKoja9XuW7iMdLJYBB0o9G1CaAgg==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/remapping": "^2.3.5",
++        "enhanced-resolve": "^5.24.1",
++        "jiti": "^2.7.0",
++        "lightningcss": "1.32.0",
++        "magic-string": "^0.30.21",
++        "source-map-js": "^1.2.1",
++        "tailwindcss": "4.3.3"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss/-/lightningcss-1.32.0.tgz",
++      "integrity": "sha512-NXYBzinNrblfraPGyrbPoD19C1h9lfI/1mzgWYvXUTe414Gz/X1FD2XBZSZM7rRTrMA8JL3OtAaGifrIKhQ5yQ==",
++      "dev": true,
++      "license": "MPL-2.0",
++      "dependencies": {
++        "detect-libc": "^2.0.3"
++      },
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      },
++      "optionalDependencies": {
++        "lightningcss-android-arm64": "1.32.0",
++        "lightningcss-darwin-arm64": "1.32.0",
++        "lightningcss-darwin-x64": "1.32.0",
++        "lightningcss-freebsd-x64": "1.32.0",
++        "lightningcss-linux-arm-gnueabihf": "1.32.0",
++        "lightningcss-linux-arm64-gnu": "1.32.0",
++        "lightningcss-linux-arm64-musl": "1.32.0",
++        "lightningcss-linux-x64-gnu": "1.32.0",
++        "lightningcss-linux-x64-musl": "1.32.0",
++        "lightningcss-win32-arm64-msvc": "1.32.0",
++        "lightningcss-win32-x64-msvc": "1.32.0"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-android-arm64": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-android-arm64/-/lightningcss-android-arm64-1.32.0.tgz",
++      "integrity": "sha512-YK7/ClTt4kAK0vo6w3X+Pnm0D2cf2vPHbhOXdoNti1Ga0al1P4TBZhwjATvjNwLEBCnKvjJc2jQgHXH0NEwlAg==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-darwin-arm64": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.32.0.tgz",
++      "integrity": "sha512-RzeG9Ju5bag2Bv1/lwlVJvBE3q6TtXskdZLLCyfg5pt+HLz9BqlICO7LZM7VHNTTn/5PRhHFBSjk5lc4cmscPQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-darwin-x64": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-darwin-x64/-/lightningcss-darwin-x64-1.32.0.tgz",
++      "integrity": "sha512-U+QsBp2m/s2wqpUYT/6wnlagdZbtZdndSmut/NJqlCcMLTWp5muCrID+K5UJ6jqD2BFshejCYXniPDbNh73V8w==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-freebsd-x64": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-freebsd-x64/-/lightningcss-freebsd-x64-1.32.0.tgz",
++      "integrity": "sha512-JCTigedEksZk3tHTTthnMdVfGf61Fky8Ji2E4YjUTEQX14xiy/lTzXnu1vwiZe3bYe0q+SpsSH/CTeDXK6WHig==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-linux-arm-gnueabihf": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm-gnueabihf/-/lightningcss-linux-arm-gnueabihf-1.32.0.tgz",
++      "integrity": "sha512-x6rnnpRa2GL0zQOkt6rts3YDPzduLpWvwAF6EMhXFVZXD4tPrBkEFqzGowzCsIWsPjqSK+tyNEODUBXeeVHSkw==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-linux-arm64-gnu": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-gnu/-/lightningcss-linux-arm64-gnu-1.32.0.tgz",
++      "integrity": "sha512-0nnMyoyOLRJXfbMOilaSRcLH3Jw5z9HDNGfT/gwCPgaDjnx0i8w7vBzFLFR1f6CMLKF8gVbebmkUN3fa/kQJpQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-linux-arm64-musl": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-musl/-/lightningcss-linux-arm64-musl-1.32.0.tgz",
++      "integrity": "sha512-UpQkoenr4UJEzgVIYpI80lDFvRmPVg6oqboNHfoH4CQIfNA+HOrZ7Mo7KZP02dC6LjghPQJeBsvXhJod/wnIBg==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-linux-x64-gnu": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.32.0.tgz",
++      "integrity": "sha512-V7Qr52IhZmdKPVr+Vtw8o+WLsQJYCTd8loIfpDaMRWGUZfBOYEJeyJIkqGIDMZPwPx24pUMfwSxxI8phr/MbOA==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-linux-x64-musl": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-musl/-/lightningcss-linux-x64-musl-1.32.0.tgz",
++      "integrity": "sha512-bYcLp+Vb0awsiXg/80uCRezCYHNg1/l3mt0gzHnWV9XP1W5sKa5/TCdGWaR/zBM2PeF/HbsQv/j2URNOiVuxWg==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-win32-arm64-msvc": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-win32-arm64-msvc/-/lightningcss-win32-arm64-msvc-1.32.0.tgz",
++      "integrity": "sha512-8SbC8BR40pS6baCM8sbtYDSwEVQd4JlFTOlaD3gWGHfThTcABnNDBda6eTZeqbofalIJhFx0qKzgHJmcPTnGdw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-win32-x64-msvc": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.32.0.tgz",
++      "integrity": "sha512-Amq9B/SoZYdDi1kFrojnoqPLxYhQ4Wo5XiL8EVJrVsB8ARoC1PWW6VGtT0WKCemjy8aC+louJnjS7U18x3b06Q==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/oxide": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide/-/oxide-4.3.3.tgz",
++      "integrity": "sha512-krXjAikiaFSPaK/FkAQT5UTx3VormQaiZ5hBFlJZ9UFQGB/rwg1MZIhHAG9smMQRTdyJxP6Qt5MwMtdyU5FWrA==",
++      "dev": true,
++      "license": "MIT",
++      "engines": {
++        "node": ">= 20"
++      },
++      "optionalDependencies": {
++        "@tailwindcss/oxide-android-arm64": "4.3.3",
++        "@tailwindcss/oxide-darwin-arm64": "4.3.3",
++        "@tailwindcss/oxide-darwin-x64": "4.3.3",
++        "@tailwindcss/oxide-freebsd-x64": "4.3.3",
++        "@tailwindcss/oxide-linux-arm-gnueabihf": "4.3.3",
++        "@tailwindcss/oxide-linux-arm64-gnu": "4.3.3",
++        "@tailwindcss/oxide-linux-arm64-musl": "4.3.3",
++        "@tailwindcss/oxide-linux-x64-gnu": "4.3.3",
++        "@tailwindcss/oxide-linux-x64-musl": "4.3.3",
++        "@tailwindcss/oxide-wasm32-wasi": "4.3.3",
++        "@tailwindcss/oxide-win32-arm64-msvc": "4.3.3",
++        "@tailwindcss/oxide-win32-x64-msvc": "4.3.3"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-android-arm64": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-android-arm64/-/oxide-android-arm64-4.3.3.tgz",
++      "integrity": "sha512-Y85A2gmPSkl5Ve5qR86GL4HT509cFqQh1aes9p3sSkyTPwt0Pppf3GkwGe4JPACcRYjgJIEhQgM6dBClnr0NYw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-darwin-arm64": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-darwin-arm64/-/oxide-darwin-arm64-4.3.3.tgz",
++      "integrity": "sha512-BiaWatpBcERQFDlOjRDpIVXuFK5PJez5SA4JMg6VYZdBYU+qKfV/vqjcIs+IYmtitf1xYQZTwXvU/8y4lfZUGw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-darwin-x64": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-darwin-x64/-/oxide-darwin-x64-4.3.3.tgz",
++      "integrity": "sha512-fAeUqfV5ndhxRwai8cXGzdLvul9utWOmeTkv69unv4ZXixjn61Z+p9lCWdwOwA3TYboG3BwdVuN/RDjhBRl0mw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-freebsd-x64": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-freebsd-x64/-/oxide-freebsd-x64-4.3.3.tgz",
++      "integrity": "sha512-iyf5bV6+wnAlflVeEy7R25dupxTNECZN5QMI0qNT6eT+EgaGdZcKhGkr5SdoaWiLJ3spLqIY9VCeSGrwmtg4kw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-arm-gnueabihf": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-arm-gnueabihf/-/oxide-linux-arm-gnueabihf-4.3.3.tgz",
++      "integrity": "sha512-aAYUprJAJQWWbRrPvtjdroZ56Md+JM8pMiopS6xGEwDfLhqj+2ver2p4nU4Mb3CRqcMmNBjo8KkUgcxhkzVQGQ==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-arm64-gnu": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-arm64-gnu/-/oxide-linux-arm64-gnu-4.3.3.tgz",
++      "integrity": "sha512-nDxldcEENOxZRzC2uu9jrutZdAAQtb+8WWDCSnWL1zvBk1+FN+x6MtDViPB5AJMfttVCUhehGWus3XBPgatM/w==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-arm64-musl": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-arm64-musl/-/oxide-linux-arm64-musl-4.3.3.tgz",
++      "integrity": "sha512-Md44bD6veX/PC5iyF8cDVnw4HBIANZepRZZ7a8DQOvkfo5WUBwcp6iAuCUz23u+4SUkhJlD3eL7hNdW8ezd/kA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-x64-gnu": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-x64-gnu/-/oxide-linux-x64-gnu-4.3.3.tgz",
++      "integrity": "sha512-tx7us1muwOKAKWao2v/GaafFeQboE6aj88vC6ziN2NCGcRm8gWUhwjzg+YdVB1e4boAtdtma4L43onunI6NS4w==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-x64-musl": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-x64-musl/-/oxide-linux-x64-musl-4.3.3.tgz",
++      "integrity": "sha512-SJxX60smvHgasZoBy11dX6YRjXJFovwWBoedhbQPOBzgFWBHGB+TVPWB9BxzR7TTxU8FQZAI2AyiNCMzFm8Img==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-wasm32-wasi": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-wasm32-wasi/-/oxide-wasm32-wasi-4.3.3.tgz",
++      "integrity": "sha512-jx1+rPhY/5Ympkktd656HBWEBLxP7dH06losBLjjf5vgCODXvi9KhtftWcMIwTFIDqBr7cRnQkdLnAG+IOlGvQ==",
++      "bundleDependencies": [
++        "@napi-rs/wasm-runtime",
++        "@emnapi/core",
++        "@emnapi/runtime",
++        "@tybys/wasm-util",
++        "@emnapi/wasi-threads",
++        "tslib"
++      ],
++      "cpu": [
++        "wasm32"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "dependencies": {
++        "@emnapi/core": "^1.11.1",
++        "@emnapi/runtime": "^1.11.1",
++        "@emnapi/wasi-threads": "^1.2.2",
++        "@napi-rs/wasm-runtime": "^1.1.4",
++        "@tybys/wasm-util": "^0.10.2",
++        "tslib": "^2.8.1"
++      },
++      "engines": {
++        "node": ">=14.0.0"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-win32-arm64-msvc": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-win32-arm64-msvc/-/oxide-win32-arm64-msvc-4.3.3.tgz",
++      "integrity": "sha512-3rc292Ca2ceK6Ulcc/bAVnTs/3nDtoPhyEKlgPv+yQJQi/JS/AMJlqzxvlDacL1nekbrcf6bTqp/jV4qgnPxNQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-win32-x64-msvc": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-win32-x64-msvc/-/oxide-win32-x64-msvc-4.3.3.tgz",
++      "integrity": "sha512-yJ0pwIVc/nYeGoV02WtsN8KYyLQv7kyI2wDnkezyJlGGjkd4QLwDGAwl47YpPJeuI0M0ObaXGSPjvWDPeTPggw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/vite": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/vite/-/vite-4.3.3.tgz",
++      "integrity": "sha512-yYU8cogLeSh/ms2jh8Fj7jaba/EWa7Ja6GoUqYZaraEuCI5YS6ms6ObZgjjedm+jm6XZjdNRWBpPP6Z86oOxcw==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@tailwindcss/node": "4.3.3",
++        "@tailwindcss/oxide": "4.3.3",
++        "tailwindcss": "4.3.3"
++      },
++      "peerDependencies": {
++        "vite": "^5.2.0 || ^6 || ^7 || ^8"
++      }
++    },
++    "node_modules/@types/node": {
++      "version": "24.13.3",
++      "resolved": "https://registry.npmjs.org/@types/node/-/node-24.13.3.tgz",
++      "integrity": "sha512-Dh8vAsV36ig5wa9OX4pXvMc9D3Veibfw2wix0CUwYODLD8nkj9UsLjASr49nPg+2eKzxhBV+v7L8pXvT4e639Q==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "undici-types": "~7.18.0"
++      }
++    },
++    "node_modules/@types/react": {
++      "version": "19.2.18",
++      "resolved": "https://registry.npmjs.org/@types/react/-/react-19.2.18.tgz",
++      "integrity": "sha512-AnzbBERsrLKtk2XSfTbYRLjQPdy116Sty4q+T+Bp3IC4l6jNBvreVPAHmpq9qhXQM7CXZPjLVmGMw9sy+hxQ3w==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "csstype": "^3.2.2"
++      }
++    },
++    "node_modules/@types/react-dom": {
++      "version": "19.2.5",
++      "resolved": "https://registry.npmjs.org/@types/react-dom/-/react-dom-19.2.5.tgz",
++      "integrity": "sha512-fMPwH9v7r/pp43yUd2/Mbiex5KouJwwR3dzHkhLREUC6764VyDsqxhAxv6OFEYR1RhjOyD1naqba8ECDBe7ZQg==",
++      "dev": true,
++      "license": "MIT",
++      "peerDependencies": {
++        "@types/react": "^19.2.0"
++      }
++    },
++    "node_modules/@vitejs/plugin-react": {
++      "version": "6.1.0",
++      "resolved": "https://registry.npmjs.org/@vitejs/plugin-react/-/plugin-react-6.1.0.tgz",
++      "integrity": "sha512-qd2BzUBehkov86WFhg0JkEFEYyCLG9uPCe6qWTY/kRlss9OvJrOF2UbIWT7p+8IzZHkEu0DNGHc4HSv+JdDLsw==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@rolldown/pluginutils": "^1.0.1"
++      },
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      },
++      "peerDependencies": {
++        "@rolldown/plugin-babel": "^0.1.7 || ^0.2.0",
++        "babel-plugin-react-compiler": "^1.0.0",
++        "oxc-transform-react": "^0.145.0",
++        "vite": "^8.0.0"
++      },
++      "peerDependenciesMeta": {
++        "@rolldown/plugin-babel": {
++          "optional": true
++        },
++        "babel-plugin-react-compiler": {
++          "optional": true
++        },
++        "oxc-transform-react": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/csstype": {
++      "version": "3.2.3",
++      "resolved": "https://registry.npmjs.org/csstype/-/csstype-3.2.3.tgz",
++      "integrity": "sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/detect-libc": {
++      "version": "2.1.2",
++      "resolved": "https://registry.npmjs.org/detect-libc/-/detect-libc-2.1.2.tgz",
++      "integrity": "sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==",
++      "dev": true,
++      "license": "Apache-2.0",
++      "engines": {
++        "node": ">=8"
++      }
++    },
++    "node_modules/enhanced-resolve": {
++      "version": "5.24.5",
++      "resolved": "https://registry.npmjs.org/enhanced-resolve/-/enhanced-resolve-5.24.5.tgz",
++      "integrity": "sha512-L1l8TNvomm6UVW5B253AGxQagSQr+vGwhMlrrfRS2qmhx46AMpMVJKQYLvWYbysTMY8VoicOvzHzoHMbyzB+4A==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "graceful-fs": "^4.2.4",
++        "tapable": "^2.3.3"
++      },
++      "engines": {
++        "node": ">=10.13.0"
++      }
++    },
++    "node_modules/fdir": {
++      "version": "6.5.0",
++      "resolved": "https://registry.npmjs.org/fdir/-/fdir-6.5.0.tgz",
++      "integrity": "sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==",
++      "dev": true,
++      "license": "MIT",
++      "engines": {
++        "node": ">=12.0.0"
++      },
++      "peerDependencies": {
++        "picomatch": "^3 || ^4"
++      },
++      "peerDependenciesMeta": {
++        "picomatch": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/fsevents": {
++      "version": "2.3.3",
++      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz",
++      "integrity": "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==",
++      "dev": true,
++      "hasInstallScript": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^8.16.0 || ^10.6.0 || >=11.0.0"
++      }
++    },
++    "node_modules/graceful-fs": {
++      "version": "4.2.11",
++      "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz",
++      "integrity": "sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==",
++      "dev": true,
++      "license": "ISC"
++    },
++    "node_modules/jiti": {
++      "version": "2.7.0",
++      "resolved": "https://registry.npmjs.org/jiti/-/jiti-2.7.0.tgz",
++      "integrity": "sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ==",
++      "dev": true,
++      "license": "MIT",
++      "bin": {
++        "jiti": "lib/jiti-cli.mjs"
++      }
++    },
++    "node_modules/lightningcss": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss/-/lightningcss-1.33.0.tgz",
++      "integrity": "sha512-WkUDrojuJs0xkgGf2udWxa3yGBRxPtxUkB79i6aCZLRgc7PM8fZe9TosfPDcvEpQZbuFASnHYmRLBLUbmLOIIA==",
++      "dev": true,
++      "license": "MPL-2.0",
++      "dependencies": {
++        "detect-libc": "^2.0.3"
++      },
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      },
++      "optionalDependencies": {
++        "lightningcss-android-arm64": "1.33.0",
++        "lightningcss-darwin-arm64": "1.33.0",
++        "lightningcss-darwin-x64": "1.33.0",
++        "lightningcss-freebsd-x64": "1.33.0",
++        "lightningcss-linux-arm-gnueabihf": "1.33.0",
++        "lightningcss-linux-arm64-gnu": "1.33.0",
++        "lightningcss-linux-arm64-musl": "1.33.0",
++        "lightningcss-linux-x64-gnu": "1.33.0",
++        "lightningcss-linux-x64-musl": "1.33.0",
++        "lightningcss-win32-arm64-msvc": "1.33.0",
++        "lightningcss-win32-x64-msvc": "1.33.0"
++      }
++    },
++    "node_modules/lightningcss-android-arm64": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-android-arm64/-/lightningcss-android-arm64-1.33.0.tgz",
++      "integrity": "sha512-gEpRTalKdosp4Bb8qWtc2iOgE5SeIHlpS1up9bFq2wAyYhl1UdTObYiHe98zEM9SQvSoqQZ1IQD0JNpg3Ml5pg==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-darwin-arm64": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.33.0.tgz",
++      "integrity": "sha512-Sciaz8eenNTKn9b3t7+xr0ipTp9YxKQY4npwQ3mrRuL0BAVHBLyZxofhaKBAVtzmtRZ/zTyo0/to4B1uWG/Djg==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-darwin-x64": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-darwin-x64/-/lightningcss-darwin-x64-1.33.0.tgz",
++      "integrity": "sha512-Z5UPAxzrjlWNNyGy6i65cJzzvgJ5D3T6wMvs+gWpY9d7qRhANrxqAp6LhxIgZhWEw18RfJTGcRxjuLIBr+m8XQ==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-freebsd-x64": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-freebsd-x64/-/lightningcss-freebsd-x64-1.33.0.tgz",
++      "integrity": "sha512-QQM/Ti/hQajJwCY+RiWuCZ9sdtI/XQk7nDK5vC8kkdwixezOlDgvDx7+RT+QjK6FcFT4MpsuoBnHIo/O3StRRg==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-arm-gnueabihf": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm-gnueabihf/-/lightningcss-linux-arm-gnueabihf-1.33.0.tgz",
++      "integrity": "sha512-N7FVBe6iS24MlM6R/4RBTxGhQheZGs7tiQ9U32UtF75NzP5Q7xWPRqLBCKxlRQRk3rY1jCIPLzx7WzOhuUIRLQ==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-arm64-gnu": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-gnu/-/lightningcss-linux-arm64-gnu-1.33.0.tgz",
++      "integrity": "sha512-j2v/itmy4HlNxlc6voKXYgBqNi0Ng2LShg4z7GufpEgs05P+2suBVyi9I6YHq5uoVFx9ETin3eCEhLVyXGQnKg==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-arm64-musl": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-musl/-/lightningcss-linux-arm64-musl-1.33.0.tgz",
++      "integrity": "sha512-yiO5ROMuYQgXbC60yjZU5CYSFZGKXL0HFATXt9mHJn1+zW55oCtMI9NfcVhYLMFDL7gV7oBPon/EmMMGg2OvtQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-x64-gnu": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.33.0.tgz",
++      "integrity": "sha512-ar+Ju7LmcN0Jo4FpL4hpFybwNG9/3A/Br5KW2n2jyODg3MEZXaDYADdemoNS+BDNfMgKvylJLj4S5tyRActuAg==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-x64-musl": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-musl/-/lightningcss-linux-x64-musl-1.33.0.tgz",
++      "integrity": "sha512-RYiYbkokw0trfKqqzfF55lginwEPrD3OJDfTuJzFs1MK6iFnDenaz1fqLLtX4ITG3OktJQXOeTaw1awrBAlZPw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-win32-arm64-msvc": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-win32-arm64-msvc/-/lightningcss-win32-arm64-msvc-1.33.0.tgz",
++      "integrity": "sha512-1K+MPfLSFVpphzpdbfkhlWk6wBrTObBzS2T6db10PNOZgR9GoVsAWzwNyuhUYYbTp23j+4RrncfujZ4uAzXvwA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-win32-x64-msvc": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.33.0.tgz",
++      "integrity": "sha512-OlEICDx/Xl0FqSp4bry8zFnCvGpig3Gl4gCquvYwHuqJKEC1+n9NgDniFvqHGmMv1ZkqDJrDqKKSykTDX+ehuA==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/magic-string": {
++      "version": "0.30.21",
++      "resolved": "https://registry.npmjs.org/magic-string/-/magic-string-0.30.21.tgz",
++      "integrity": "sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/sourcemap-codec": "^1.5.5"
++      }
++    },
++    "node_modules/nanoid": {
++      "version": "3.3.18",
++      "resolved": "https://registry.npmjs.org/nanoid/-/nanoid-3.3.18.tgz",
++      "integrity": "sha512-DTg4MJbGMWkfi6VZFdNt2/caMbQy4Ou+Op/hJQvGEWcnVfoA1QA+xzRKAzw9jD6+GVOOeYr/mIcuDSdug6F6+w==",
++      "dev": true,
++      "funding": [
++        {
++          "type": "github",
++          "url": "https://github.com/sponsors/ai"
++        }
++      ],
++      "license": "MIT",
++      "bin": {
++        "nanoid": "bin/nanoid.cjs"
++      },
++      "engines": {
++        "node": "^10 || ^12 || ^13.7 || ^14 || >=15.0.1"
++      }
++    },
++    "node_modules/oxlint": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/oxlint/-/oxlint-1.80.0.tgz",
++      "integrity": "sha512-5nTiSps4qdbCWLbxzuO00alHkEO2exR9YMN/ig6QXWrLsYSG0KaObOAM+l6oU2LcKPWoSAGYbkZIGEu1ViiWKA==",
++      "dev": true,
++      "license": "MIT",
++      "bin": {
++        "oxlint": "bin/oxlint"
++      },
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/Boshen"
++      },
++      "optionalDependencies": {
++        "@oxlint/binding-android-arm-eabi": "1.80.0",
++        "@oxlint/binding-android-arm64": "1.80.0",
++        "@oxlint/binding-darwin-arm64": "1.80.0",
++        "@oxlint/binding-darwin-x64": "1.80.0",
++        "@oxlint/binding-freebsd-x64": "1.80.0",
++        "@oxlint/binding-linux-arm-gnueabihf": "1.80.0",
++        "@oxlint/binding-linux-arm-musleabihf": "1.80.0",
++        "@oxlint/binding-linux-arm64-gnu": "1.80.0",
++        "@oxlint/binding-linux-arm64-musl": "1.80.0",
++        "@oxlint/binding-linux-ppc64-gnu": "1.80.0",
++        "@oxlint/binding-linux-riscv64-gnu": "1.80.0",
++        "@oxlint/binding-linux-riscv64-musl": "1.80.0",
++        "@oxlint/binding-linux-s390x-gnu": "1.80.0",
++        "@oxlint/binding-linux-x64-gnu": "1.80.0",
++        "@oxlint/binding-linux-x64-musl": "1.80.0",
++        "@oxlint/binding-openharmony-arm64": "1.80.0",
++        "@oxlint/binding-win32-arm64-msvc": "1.80.0",
++        "@oxlint/binding-win32-ia32-msvc": "1.80.0",
++        "@oxlint/binding-win32-x64-msvc": "1.80.0"
++      },
++      "peerDependencies": {
++        "oxlint-tsgolint": ">=7.0.2001",
++        "vite-plus": "*"
++      },
++      "peerDependenciesMeta": {
++        "oxlint-tsgolint": {
++          "optional": true
++        },
++        "vite-plus": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/picocolors": {
++      "version": "1.1.1",
++      "resolved": "https://registry.npmjs.org/picocolors/-/picocolors-1.1.1.tgz",
++      "integrity": "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==",
++      "dev": true,
++      "license": "ISC"
++    },
++    "node_modules/picomatch": {
++      "version": "4.0.7",
++      "resolved": "https://registry.npmjs.org/picomatch/-/picomatch-4.0.7.tgz",
++      "integrity": "sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==",
++      "dev": true,
++      "license": "MIT",
++      "engines": {
++        "node": ">=12"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/jonschlinkert"
++      }
++    },
++    "node_modules/playwright": {
++      "version": "1.62.1",
++      "resolved": "https://registry.npmjs.org/playwright/-/playwright-1.62.1.tgz",
++      "integrity": "sha512-0M+L3LAD8/nm554LOla9Ayx0j0tmFZ0FBcoQ7F1VuVHpM/XpiC8RcDzBQB8W5+hA8L22THxELzeF+2WcUzvcLg==",
++      "dev": true,
++      "license": "Apache-2.0",
++      "dependencies": {
++        "playwright-core": "1.62.1"
++      },
++      "bin": {
++        "playwright": "cli.js"
++      },
++      "engines": {
++        "node": ">=20"
++      },
++      "optionalDependencies": {
++        "fsevents": "2.3.2"
++      }
++    },
++    "node_modules/playwright-core": {
++      "version": "1.62.1",
++      "resolved": "https://registry.npmjs.org/playwright-core/-/playwright-core-1.62.1.tgz",
++      "integrity": "sha512-wPYSwEBJY9GHraISXqyqtx0na0LpO3XEX7jNDhntbex7tzUS7kLnZsOlFruFJB4Hi/rhDMjXGqHewDZ68nYZVw==",
++      "dev": true,
++      "license": "Apache-2.0",
++      "bin": {
++        "playwright-core": "cli.js"
++      },
++      "engines": {
++        "node": ">=20"
++      }
++    },
++    "node_modules/playwright/node_modules/fsevents": {
++      "version": "2.3.2",
++      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.2.tgz",
++      "integrity": "sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==",
++      "dev": true,
++      "hasInstallScript": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^8.16.0 || ^10.6.0 || >=11.0.0"
++      }
++    },
++    "node_modules/postcss": {
++      "version": "8.5.26",
++      "resolved": "https://registry.npmjs.org/postcss/-/postcss-8.5.26.tgz",
++      "integrity": "sha512-u82N74LFzG8ca+dD8puPnplTXoGH4fTPpVGuIbt36G3qvNlkvfD0lEAZSxaly3KX8TS/L1A1gsCEmvKmBcVbkQ==",
++      "dev": true,
++      "funding": [
++        {
++          "type": "opencollective",
++          "url": "https://opencollective.com/postcss/"
++        },
++        {
++          "type": "tidelift",
++          "url": "https://tidelift.com/funding/github/npm/postcss"
++        },
++        {
++          "type": "github",
++          "url": "https://github.com/sponsors/ai"
++        }
++      ],
++      "license": "MIT",
++      "dependencies": {
++        "nanoid": "^3.3.17",
++        "picocolors": "^1.1.1",
++        "source-map-js": "^1.2.1"
++      },
++      "engines": {
++        "node": "^10 || ^12 || >=14"
++      }
++    },
++    "node_modules/react": {
++      "version": "19.2.8",
++      "resolved": "https://registry.npmjs.org/react/-/react-19.2.8.tgz",
++      "integrity": "sha512-PWaYA1L/q9u2u7xYQi+Y3L3Yfnie7XyLeaJICV1MGD6LprsBxcAqGjYyr0eY3p+QdsA+x/Irkt4Qif8D63+Sbw==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=0.10.0"
++      }
++    },
++    "node_modules/react-dom": {
++      "version": "19.2.8",
++      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-19.2.8.tgz",
++      "integrity": "sha512-rVprimfGBG3DR+Tq0IQG2DT5PxKth1WIGDmj5yPmlzr4YBe7uyE+Du4oVqTDXZSHGGGXRtTJEGSSePyQCMBglQ==",
++      "license": "MIT",
++      "dependencies": {
++        "scheduler": "^0.27.0"
++      },
++      "peerDependencies": {
++        "react": "^19.2.8"
++      }
++    },
++    "node_modules/rolldown": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/rolldown/-/rolldown-1.2.5.tgz",
++      "integrity": "sha512-VD2IE5PUG4Oj8zz2VGykiYd5wbnjdIiSsNQb8Qu5B+noEp+A78mu2iVvpp27g8es14Tk9rofNs5Tku9iQCS4fA==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@oxc-project/types": "=0.146.0",
++        "@rolldown/pluginutils": "^1.0.0"
++      },
++      "bin": {
++        "rolldown": "bin/cli.mjs"
++      },
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      },
++      "optionalDependencies": {
++        "@rolldown/binding-android-arm-eabi": "1.2.5",
++        "@rolldown/binding-android-arm64": "1.2.5",
++        "@rolldown/binding-darwin-arm64": "1.2.5",
++        "@rolldown/binding-darwin-x64": "1.2.5",
++        "@rolldown/binding-freebsd-x64": "1.2.5",
++        "@rolldown/binding-linux-arm-gnueabihf": "1.2.5",
++        "@rolldown/binding-linux-arm64-gnu": "1.2.5",
++        "@rolldown/binding-linux-arm64-musl": "1.2.5",
++        "@rolldown/binding-linux-ppc64-gnu": "1.2.5",
++        "@rolldown/binding-linux-s390x-gnu": "1.2.5",
++        "@rolldown/binding-linux-x64-gnu": "1.2.5",
++        "@rolldown/binding-linux-x64-musl": "1.2.5",
++        "@rolldown/binding-openharmony-arm64": "1.2.5",
++        "@rolldown/binding-win32-arm64-msvc": "1.2.5",
++        "@rolldown/binding-win32-x64-msvc": "1.2.5"
++      }
++    },
++    "node_modules/scheduler": {
++      "version": "0.27.0",
++      "resolved": "https://registry.npmjs.org/scheduler/-/scheduler-0.27.0.tgz",
++      "integrity": "sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==",
++      "license": "MIT"
++    },
++    "node_modules/source-map-js": {
++      "version": "1.2.1",
++      "resolved": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.1.tgz",
++      "integrity": "sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==",
++      "dev": true,
++      "license": "BSD-3-Clause",
++      "engines": {
++        "node": ">=0.10.0"
++      }
++    },
++    "node_modules/tailwindcss": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/tailwindcss/-/tailwindcss-4.3.3.tgz",
++      "integrity": "sha512-gOhV3P7ufE62QDGg1zVaTgCR+EtPv92k2nIhVcVKcLmxT1sUBsQGhnZj175j+MqRt4zLF7ic+sCYjfhxMxj7YQ==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/tapable": {
++      "version": "2.3.3",
++      "resolved": "https://registry.npmjs.org/tapable/-/tapable-2.3.3.tgz",
++      "integrity": "sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==",
++      "dev": true,
++      "license": "MIT",
++      "engines": {
++        "node": ">=6"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/webpack"
++      }
++    },
++    "node_modules/tinyglobby": {
++      "version": "0.2.17",
++      "resolved": "https://registry.npmjs.org/tinyglobby/-/tinyglobby-0.2.17.tgz",
++      "integrity": "sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "fdir": "^6.5.0",
++        "picomatch": "^4.0.4"
++      },
++      "engines": {
++        "node": ">=12.0.0"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/SuperchupuDev"
++      }
++    },
++    "node_modules/typescript": {
++      "version": "6.0.3",
++      "resolved": "https://registry.npmjs.org/typescript/-/typescript-6.0.3.tgz",
++      "integrity": "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==",
++      "dev": true,
++      "license": "Apache-2.0",
++      "bin": {
++        "tsc": "bin/tsc",
++        "tsserver": "bin/tsserver"
++      },
++      "engines": {
++        "node": ">=14.17"
++      }
++    },
++    "node_modules/undici-types": {
++      "version": "7.18.2",
++      "resolved": "https://registry.npmjs.org/undici-types/-/undici-types-7.18.2.tgz",
++      "integrity": "sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/vite": {
++      "version": "8.2.2",
++      "resolved": "https://registry.npmjs.org/vite/-/vite-8.2.2.tgz",
++      "integrity": "sha512-cFKLV/PRgAUlIRm5WjMjJ86jrftzpqcgH+Us+DS8mI3CDNiH30Whrz8uHL3+MOLPAgqbMBAqWdAHAphOAM+z/Q==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "lightningcss": "^1.33.0",
++        "picomatch": "^4.0.5",
++        "postcss": "^8.5.26",
++        "rolldown": "~1.2.4",
++        "tinyglobby": "^0.2.17"
++      },
++      "bin": {
++        "vite": "bin/vite.js"
++      },
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      },
++      "funding": {
++        "url": "https://github.com/vitejs/vite?sponsor=1"
++      },
++      "optionalDependencies": {
++        "fsevents": "~2.3.3"
++      },
++      "peerDependencies": {
++        "@types/node": "^20.19.0 || >=22.12.0",
++        "@vitejs/devtools": "^0.4.0 || ^0.5.0",
++        "esbuild": "^0.27.0 || ^0.28.0",
++        "jiti": ">=1.21.0",
++        "less": "^4.0.0",
++        "sass": "^1.70.0",
++        "sass-embedded": "^1.70.0",
++        "stylus": ">=0.54.8",
++        "sugarss": "^5.0.0",
++        "terser": "^5.16.0",
++        "tsx": "^4.8.1",
++        "yaml": "^2.4.2"
++      },
++      "peerDependenciesMeta": {
++        "@types/node": {
++          "optional": true
++        },
++        "@vitejs/devtools": {
++          "optional": true
++        },
++        "esbuild": {
++          "optional": true
++        },
++        "jiti": {
++          "optional": true
++        },
++        "less": {
++          "optional": true
++        },
++        "sass": {
++          "optional": true
++        },
++        "sass-embedded": {
++          "optional": true
++        },
++        "stylus": {
++          "optional": true
++        },
++        "sugarss": {
++          "optional": true
++        },
++        "terser": {
++          "optional": true
++        },
++        "tsx": {
++          "optional": true
++        },
++        "yaml": {
++          "optional": true
++        }
++      }
++    }
++  }
++}
+diff --git a/package.json b/package.json
+new file mode 100644
+index 0000000..141b7e4
+--- /dev/null
++++ b/package.json
+@@ -0,0 +1,28 @@
++{
++  "name": "plinth-landing",
++  "private": true,
++  "version": "0.0.0",
++  "type": "module",
++  "scripts": {
++    "dev": "vite",
++    "build": "tsc -b && vite build",
++    "lint": "oxlint",
++    "preview": "vite preview"
++  },
++  "dependencies": {
++    "react": "^19.2.8",
++    "react-dom": "^19.2.8"
++  },
++  "devDependencies": {
++    "@tailwindcss/vite": "^4.3.3",
++    "@types/node": "^24.13.3",
++    "@types/react": "^19.2.18",
++    "@types/react-dom": "^19.2.4",
++    "@vitejs/plugin-react": "^6.1.0",
++    "oxlint": "^1.79.0",
++    "playwright": "^1.62.1",
++    "tailwindcss": "^4.3.3",
++    "typescript": "~6.0.2",
++    "vite": "^8.2.2"
++  }
++}
+diff --git a/public/favicon.svg b/public/favicon.svg
+new file mode 100644
+index 0000000..4c21886
+--- /dev/null
++++ b/public/favicon.svg
+@@ -0,0 +1,7 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
++  <rect width="32" height="32" fill="#F2EDE1"/>
++  <rect x="6" y="8" width="20" height="2" fill="#1C1A16"/>
++  <rect x="9" y="10" width="2" height="14" fill="#1C1A16"/>
++  <rect x="21" y="10" width="2" height="14" fill="#1C1A16"/>
++  <rect x="6" y="24" width="20" height="2" fill="#1C1A16"/>
++</svg>
+diff --git a/src/App.tsx b/src/App.tsx
+new file mode 100644
+index 0000000..3c04098
+--- /dev/null
++++ b/src/App.tsx
+@@ -0,0 +1,29 @@
++import { Masthead } from './components/Masthead'
++import { Hero } from './components/Hero'
++import { Lede } from './components/Lede'
++import { Gallery } from './components/Gallery'
++import { Newsletter } from './components/Newsletter'
++import { Footer } from './components/Footer'
++
++function App() {
++  return (
++    <div className="min-h-screen bg-paper">
++      <a
++        href="#gallery"
++        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-ink focus:px-4 focus:py-2 focus:text-paper"
++      >
++        Skip to gallery
++      </a>
++      <Masthead />
++      <main>
++        <Hero />
++        <Lede />
++        <Gallery />
++        <Newsletter />
++      </main>
++      <Footer />
++    </div>
++  )
++}
++
++export default App
+diff --git a/src/components/Footer.tsx b/src/components/Footer.tsx
+new file mode 100644
+index 0000000..5a7dffb
+--- /dev/null
++++ b/src/components/Footer.tsx
+@@ -0,0 +1,54 @@
++const COLUMNS: { heading: string; links: string[] }[] = [
++  { heading: 'Read', links: ['Features', 'Criticism', 'Gallery', 'Archive'] },
++  { heading: 'About', links: ['Masthead', 'Contributors', 'Contact', 'Advertise'] },
++  { heading: 'Elsewhere', links: ['Instagram', 'RSS', 'Newsstand'] },
++]
++
++export function Footer() {
++  return (
++    <footer className="border-t border-ink/90 bg-paper-deep">
++      <div className="mx-auto max-w-[1440px] px-6 py-14 sm:px-10 lg:py-16">
++        <div className="grid grid-cols-2 gap-10 gap-y-10 sm:grid-cols-4 lg:gap-12">
++          <div className="col-span-2 sm:col-span-1">
++            <span className="block font-display text-[26px] font-medium text-ink">
++              Plinth
++            </span>
++            <p className="mt-3 max-w-[220px] text-[13px] leading-[1.6] text-ink-soft">
++              A quarterly journal of architecture and place, since 2013.
++            </p>
++          </div>
++
++          {COLUMNS.map((column) => (
++            <div key={column.heading}>
++              <p className="mb-4 text-[11.5px] tracking-[0.14em] text-ink-soft uppercase">
++                {column.heading}
++              </p>
++              <ul className="space-y-2.5 text-[14px] text-ink-soft">
++                {column.links.map((link) => (
++                  <li key={link}>
++                    <a
++                      href="#"
++                      className="transition-colors hover:text-ink hover:underline hover:decoration-clay hover:decoration-2 hover:underline-offset-4"
++                    >
++                      {link}
++                    </a>
++                  </li>
++                ))}
++              </ul>
++            </div>
++          ))}
++        </div>
++
++        <div className="mt-14 flex flex-col gap-4 border-t border-line pt-6 text-[12px] tracking-[0.02em] text-ink-soft sm:flex-row sm:items-center sm:justify-between">
++          <p>&copy; 2026 Plinth Journal. All rights reserved.</p>
++          <a
++            href="#top"
++            className="text-ink-soft transition-colors hover:text-ink hover:underline hover:decoration-clay hover:decoration-2 hover:underline-offset-4"
++          >
++            Back to top &uarr;
++          </a>
++        </div>
++      </div>
++    </footer>
++  )
++}
+diff --git a/src/components/Gallery.tsx b/src/components/Gallery.tsx
+new file mode 100644
+index 0000000..818b636
+--- /dev/null
++++ b/src/components/Gallery.tsx
+@@ -0,0 +1,89 @@
++import { Plate } from './Plate'
++import {
++  MotifArch,
++  MotifFacadeGrid,
++  MotifSkylight,
++  MotifStair,
++  MotifTower,
++} from './motifs'
++
++const PLATES = [
++  {
++    tone: 'pine' as const,
++    motif: <MotifFacadeGrid />,
++    index: 'Plate II',
++    caption: 'Vertical court, Kyoto — light shafts at midday',
++    span: 'lg:col-span-4 lg:row-span-2',
++  },
++  {
++    tone: 'stone' as const,
++    motif: <MotifSkylight />,
++    index: 'Plate III',
++    caption: 'Glazing detail, Atelier Voss',
++    span: 'lg:col-span-2',
++  },
++  {
++    tone: 'ink' as const,
++    motif: <MotifStair />,
++    index: 'Plate IV',
++    caption: 'Service stair, Lisbon terminal',
++    span: 'lg:col-span-2',
++  },
++  {
++    tone: 'clay' as const,
++    motif: <MotifArch />,
++    index: 'Plate V',
++    caption: 'Threshold, Chapel of Rest',
++    span: 'lg:col-span-3',
++  },
++  {
++    tone: 'pine' as const,
++    motif: <MotifTower />,
++    index: 'Plate VI',
++    caption: 'Water tower, Douro Valley',
++    span: 'lg:col-span-3',
++  },
++  {
++    tone: 'stone' as const,
++    motif: <MotifFacadeGrid />,
++    index: 'Plate VII',
++    caption: 'Curtain wall, Meridian House — full elevation',
++    span: 'lg:col-span-6',
++  },
++]
++
++export function Gallery() {
++  return (
++    <section id="gallery" className="border-t border-ink/90 bg-paper-dim">
++      <div className="mx-auto max-w-[1440px] px-6 py-16 sm:px-10 sm:py-20 lg:py-24">
++        <div className="mb-12 flex flex-col justify-between gap-4 border-b border-line pb-8 sm:flex-row sm:items-end lg:mb-16">
++          <div>
++            <p className="mb-4 text-[12px] tracking-[0.18em] text-clay uppercase">
++              Selected Works
++            </p>
++            <h2 className="font-display text-[36px] leading-[1.1] font-medium text-ink sm:text-[44px]">
++              The Collection
++            </h2>
++          </div>
++          <p className="max-w-[360px] text-[14px] leading-[1.6] text-ink-soft">
++            Seven plates from this quarter&rsquo;s field work, arranged as they
++            ran in print &mdash; unevenly, on purpose.
++          </p>
++        </div>
++
++        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-8 lg:grid-cols-6 lg:auto-rows-[200px] lg:gap-x-6 lg:gap-y-12">
++          {PLATES.map((plate) => (
++            <Plate
++              key={plate.index}
++              tone={plate.tone}
++              motif={plate.motif}
++              index={plate.index}
++              caption={plate.caption}
++              className={plate.span}
++            />
++          ))}
++        </div>
++      </div>
++    </section>
++  )
++}
+diff --git a/src/components/Hero.tsx b/src/components/Hero.tsx
+new file mode 100644
+index 0000000..0641cad
+--- /dev/null
++++ b/src/components/Hero.tsx
+@@ -0,0 +1,56 @@
++import { Plate } from './Plate'
++import { MotifColonnade } from './motifs'
++
++export function Hero() {
++  return (
++    <section id="top" className="w-full">
++      <div className="grid grid-cols-1 lg:grid-cols-12 lg:items-stretch">
++        <div className="order-2 flex flex-col justify-center px-6 py-12 sm:px-10 sm:py-16 lg:order-1 lg:col-span-7 lg:py-24 lg:pr-14">
++          <div className="max-w-[640px]">
++            <p className="mb-6 flex items-center gap-3 text-[12px] tracking-[0.18em] text-clay uppercase">
++              <span className="h-px w-8 bg-clay" aria-hidden="true" />
++              Issue No. 47 &mdash; Feature
++            </p>
++
++            <h1 className="font-display text-[44px] leading-[1.04] font-medium tracking-[-0.015em] text-ink text-balance sm:text-[58px] lg:text-[68px]">
++              The Grammar of{' '}
++              <span className="italic font-normal">Light</span> and Weight
++            </h1>
++
++            <p className="mt-7 max-w-[480px] font-display text-[19px] leading-[1.55] text-ink-soft italic sm:text-[21px]">
++              Ten essays on the architecture of restraint &mdash; how mass, shadow, and
++              silence still shape the rooms we live in.
++            </p>
++
++            <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-line pt-6 text-[12.5px] tracking-[0.03em] text-ink-soft">
++              <span>Words by Elena Marchetti</span>
++              <span className="h-1 w-1 rounded-full bg-ink-faint" aria-hidden="true" />
++              <span>Photography by Tomas Reyes</span>
++              <span className="h-1 w-1 rounded-full bg-ink-faint" aria-hidden="true" />
++              <span>14 min read</span>
++            </div>
++
++            <a
++              href="#gallery"
++              className="mt-10 inline-flex items-center gap-2 text-[14px] font-medium tracking-[0.02em] text-ink underline decoration-clay decoration-2 underline-offset-[6px] transition-colors hover:text-clay"
++            >
++              Read the Feature
++              <span aria-hidden="true">&rarr;</span>
++            </a>
++          </div>
++        </div>
++
++        <div className="order-1 min-h-[52vw] sm:min-h-[420px] lg:order-2 lg:col-span-5 lg:min-h-[calc(100vh-140px)]">
++          <Plate
++            tone="clay"
++            motif={<MotifColonnade />}
++            index="Plate I"
++            caption="Portico, Casa Serralves — study in repetition"
++            className="h-full"
++            imageMinHeight="min-h-0"
++          />
++        </div>
++      </div>
++    </section>
++  )
++}
+diff --git a/src/components/Lede.tsx b/src/components/Lede.tsx
+new file mode 100644
+index 0000000..4ba2938
+--- /dev/null
++++ b/src/components/Lede.tsx
+@@ -0,0 +1,37 @@
++export function Lede() {
++  return (
++    <section className="border-t border-ink/90 bg-paper">
++      <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-10 px-6 py-16 sm:px-10 sm:py-20 lg:grid-cols-12 lg:gap-8 lg:py-24">
++        <div className="lg:col-span-7 lg:col-start-1">
++          <p className="mb-5 text-[12px] tracking-[0.18em] text-clay uppercase">From the Editor</p>
++          <p className="font-display text-[21px] leading-[1.6] text-ink sm:text-[23px]">
++            <span className="float-left mr-3 font-display text-[68px] leading-[0.85] font-medium text-ink sm:text-[80px]">
++              W
++            </span>
++            e have spent this issue in the company of buildings that decline to
++            announce themselves. Not monuments so much as manners &mdash; a
++            weight-bearing wall left honest, a corridor that narrows before it
++            opens, a window sized to the hand rather than the skyline. There is
++            a confidence in a structure that stops arguing for your attention.
++          </p>
++          <p className="mt-6 max-w-[620px] font-display text-[21px] leading-[1.6] text-ink sm:text-[23px]">
++            Elena Marchetti spent three weeks with the archive of Casa
++            Serralves for our lead feature; Tomas Reyes returned with plates
++            that read more like weather reports than photographs. Elsewhere,
++            a portfolio on load-bearing brick, and a shorter piece on the
++            architecture of waiting rooms, of all things.
++          </p>
++        </div>
++
++        <aside className="border-t border-ink pt-6 lg:col-span-4 lg:col-start-9 lg:border-t-0 lg:border-l lg:pt-1 lg:pl-8">
++          <p className="font-display text-[26px] leading-[1.4] text-ink italic sm:text-[28px]">
++            &ldquo;A building that whispers outlives the one that shouts.&rdquo;
++          </p>
++          <p className="mt-4 text-[12px] tracking-[0.1em] text-ink-soft uppercase">
++            Elena Marchetti, p. 42
++          </p>
++        </aside>
++      </div>
++    </section>
++  )
++}
+diff --git a/src/components/Masthead.tsx b/src/components/Masthead.tsx
+new file mode 100644
+index 0000000..734dbd5
+--- /dev/null
++++ b/src/components/Masthead.tsx
+@@ -0,0 +1,41 @@
++const NAV_LINKS = ['Features', 'Criticism', 'Gallery', 'Archive']
++
++export function Masthead() {
++  return (
++    <header className="border-b border-ink/90">
++      <div className="mx-auto flex max-w-[1440px] items-center justify-between px-6 py-2 text-[10.5px] tracking-[0.16em] text-ink-soft uppercase sm:px-10">
++        <span>No. 47 &mdash; Autumn 2026</span>
++        <span className="hidden sm:inline">Edinburgh &middot; Lisbon &middot; Kyoto</span>
++      </div>
++      <div className="mx-auto flex max-w-[1440px] items-end justify-between gap-6 border-t border-line px-6 py-5 sm:px-10">
++        <a href="#top" className="leading-none">
++          <span className="block font-display text-[34px] font-medium tracking-[-0.01em] text-ink sm:text-[40px]">
++            Plinth
++          </span>
++          <span className="mt-1 block text-[10.5px] tracking-[0.2em] text-ink-soft uppercase font-medium">
++            A Journal of Architecture &amp; Place
++          </span>
++        </a>
++
++        <nav className="hidden items-center gap-8 pb-1 text-[13px] tracking-[0.02em] text-ink md:flex">
++          {NAV_LINKS.map((link) => (
++            <a
++              key={link}
++              href="#"
++              className="border-b border-transparent pb-0.5 transition-colors hover:border-clay hover:text-clay"
++            >
++              {link}
++            </a>
++          ))}
++        </nav>
++
++        <a
++          href="#subscribe"
++          className="shrink-0 border border-ink px-4 py-2 text-[12px] tracking-[0.1em] text-ink uppercase transition-colors hover:border-clay hover:bg-clay hover:text-paper"
++        >
++          Subscribe
++        </a>
++      </div>
++    </header>
++  )
++}
+diff --git a/src/components/Newsletter.tsx b/src/components/Newsletter.tsx
+new file mode 100644
+index 0000000..89800d4
+--- /dev/null
++++ b/src/components/Newsletter.tsx
+@@ -0,0 +1,73 @@
++import { useId, useState } from 'react'
++
++export function Newsletter() {
++  const [status, setStatus] = useState<'idle' | 'submitted'>('idle')
++  const [email, setEmail] = useState('')
++  const emailId = useId()
++
++  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
++    event.preventDefault()
++    if (!email) return
++    setStatus('submitted')
++  }
++
++  return (
++    <section id="subscribe" className="border-t border-ink/90 bg-ink text-paper">
++      <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-10 px-6 py-16 sm:px-10 sm:py-20 lg:grid-cols-12 lg:gap-8 lg:py-24">
++        <div className="lg:col-span-5">
++          <p className="mb-5 text-[12px] tracking-[0.18em] text-clay-soft uppercase">
++            The Newsletter
++          </p>
++          <h2 className="font-display text-[34px] leading-[1.1] font-medium text-paper sm:text-[42px]">
++            Four issues a year. Nothing in between.
++          </h2>
++          <p className="mt-5 max-w-[420px] text-[15px] leading-[1.65] text-paper-dim">
++            A short dispatch when a new issue ships — a lead essay, the
++            plates we couldn&rsquo;t fit in print, and nothing else. No
++            algorithm, no daily digest.
++          </p>
++        </div>
++
++        <div className="lg:col-span-6 lg:col-start-8">
++          {status === 'idle' ? (
++            <form onSubmit={handleSubmit} noValidate>
++              <label htmlFor={emailId} className="sr-only">
++                Email address
++              </label>
++              <div className="flex flex-col gap-4 border-b border-paper-dim/40 pb-4 sm:flex-row sm:items-end sm:gap-6">
++                <input
++                  id={emailId}
++                  type="email"
++                  name="email"
++                  required
++                  autoComplete="email"
++                  placeholder="your@email.com"
++                  value={email}
++                  onChange={(event) => setEmail(event.target.value)}
++                  className="w-full flex-1 rounded-sm border-0 border-b border-paper/70 bg-transparent pb-3 font-display text-[22px] text-paper italic placeholder:text-paper/40 focus:border-clay-soft focus:outline-2 focus:outline-offset-4 focus:outline-clay-soft sm:border-b-0 sm:pb-0"
++                />
++                <button
++                  type="submit"
++                  className="shrink-0 border border-paper px-6 py-3 text-[12.5px] font-medium tracking-[0.12em] text-paper uppercase transition-colors hover:border-clay-soft hover:bg-clay-soft hover:text-ink"
++                >
++                  Subscribe &rarr;
++                </button>
++              </div>
++              <p className="mt-4 text-[12px] leading-[1.6] text-paper-dim/80">
++                One email, four times a year. Unsubscribe whenever you like.
++              </p>
++            </form>
++          ) : (
++            <div
++              role="status"
++              className="border-b border-paper-dim/40 pb-6 font-display text-[22px] leading-[1.5] text-paper italic"
++            >
++              You&rsquo;re on the list — the next issue lands in your inbox
++              when it ships.
++            </div>
++          )}
++        </div>
++      </div>
++    </section>
++  )
++}
+diff --git a/src/components/Plate.tsx b/src/components/Plate.tsx
+new file mode 100644
+index 0000000..2b10310
+--- /dev/null
++++ b/src/components/Plate.tsx
+@@ -0,0 +1,64 @@
++import type { ReactNode } from 'react'
++
++export type PlateTone = 'clay' | 'pine' | 'ink' | 'stone'
++
++const TONE_STYLES: Record<PlateTone, { bg: string; fg: string }> = {
++  clay: { bg: 'linear-gradient(155deg, #c47a52 0%, #a8492d 55%, #6e2c19 100%)', fg: '#f2ede1' },
++  pine: { bg: 'linear-gradient(155deg, #5a6b5c 0%, #37463c 55%, #202a22 100%)', fg: '#f2ede1' },
++  ink: { bg: 'linear-gradient(155deg, #46433a 0%, #24221c 55%, #100f0c 100%)', fg: '#e9e1cd' },
++  stone: { bg: 'linear-gradient(155deg, #ddd2b4 0%, #c7b98f 55%, #a8965f 100%)', fg: '#1c1a16' },
++}
++
++interface PlateProps {
++  tone: PlateTone
++  motif: ReactNode
++  index: string
++  caption: string
++  className?: string
++  /**
++   * The image div's only content is absolutely positioned (motif, grain,
++   * label), so it has no intrinsic height of its own — it needs either a
++   * definite height from an ancestor (grid track, or a parent with h-full
++   * driven by its own explicit height) or an explicit floor here. Callers
++   * that fully control height elsewhere (e.g. Hero's wrapper) can pass
++   * "min-h-0"; the default gives every plate a sane floor at breakpoints
++   * where no grid row height is defined (below lg in the Gallery grid).
++   */
++  imageMinHeight?: string
++}
++
++/**
++ * Stand-in for editorial photography: a duotone gradient field with a
++ * restrained architectural line motif and a plate number, styled the way a
++ * printed plate caption would sit under a real photograph. Keeps the layout
++ * legible for composition/typography review without real images.
++ */
++export function Plate({
++  tone,
++  motif,
++  index,
++  caption,
++  className = '',
++  imageMinHeight = 'min-h-[240px] sm:min-h-[280px] lg:min-h-0',
++}: PlateProps) {
++  const { bg, fg } = TONE_STYLES[tone]
++  return (
++    <figure className={`group flex flex-col ${className}`}>
++      <div
++        className={`relative flex-1 overflow-hidden ${imageMinHeight}`}
++        style={{ background: bg, color: fg }}
++      >
++        <div className="absolute inset-0 opacity-25 transition-opacity duration-500 group-hover:opacity-40">
++          {motif}
++        </div>
++        <div className="absolute inset-0 bg-grain" />
++        <span className="absolute left-3 top-3 font-sans text-[11px] tracking-[0.18em] uppercase" style={{ color: fg, opacity: 0.85 }}>
++          {index}
++        </span>
++      </div>
++      <figcaption className="mt-2.5 flex items-baseline justify-between gap-4 border-t border-line pt-2 font-sans text-[11px] tracking-[0.06em] text-ink-soft">
++        <span>{caption}</span>
++      </figcaption>
++    </figure>
++  )
++}
+diff --git a/src/components/motifs.tsx b/src/components/motifs.tsx
+new file mode 100644
+index 0000000..fb3d127
+--- /dev/null
++++ b/src/components/motifs.tsx
+@@ -0,0 +1,85 @@
++// Minimal line-art motifs used to give placeholder "photography" plates a
++// considered, architectural character instead of a flat gradient block.
++// Rendered with currentColor so each plate can tint them to its duotone.
++
++export function MotifColonnade() {
++  return (
++    <svg viewBox="0 0 200 200" className="h-full w-full" preserveAspectRatio="none" aria-hidden="true">
++      <line x1="0" y1="150" x2="200" y2="150" stroke="currentColor" strokeWidth="1" />
++      {[20, 52, 84, 116, 148, 180].map((x) => (
++        <rect key={x} x={x - 4} y="60" width="8" height="90" fill="currentColor" opacity="0.9" />
++      ))}
++      <line x1="0" y1="56" x2="200" y2="56" stroke="currentColor" strokeWidth="6" />
++    </svg>
++  )
++}
++
++export function MotifFacadeGrid() {
++  return (
++    <svg viewBox="0 0 200 200" className="h-full w-full" preserveAspectRatio="none" aria-hidden="true">
++      {Array.from({ length: 6 }).map((_, row) =>
++        Array.from({ length: 5 }).map((_, col) => (
++          <rect
++            key={`${row}-${col}`}
++            x={12 + col * 38}
++            y={16 + row * 30}
++            width="26"
++            height="18"
++            fill="currentColor"
++            opacity={(row + col) % 3 === 0 ? 0.95 : 0.35}
++          />
++        )),
++      )}
++    </svg>
++  )
++}
++
++export function MotifStair() {
++  return (
++    <svg viewBox="0 0 200 200" className="h-full w-full" preserveAspectRatio="none" aria-hidden="true">
++      <polyline
++        points="10,190 10,160 60,160 60,130 110,130 110,100 160,100 160,70 190,70"
++        fill="none"
++        stroke="currentColor"
++        strokeWidth="3"
++      />
++      <line x1="0" y1="190" x2="200" y2="190" stroke="currentColor" strokeWidth="1" opacity="0.6" />
++    </svg>
++  )
++}
++
++export function MotifArch() {
++  return (
++    <svg viewBox="0 0 200 200" className="h-full w-full" preserveAspectRatio="none" aria-hidden="true">
++      <path
++        d="M 30 190 L 30 100 A 70 70 0 0 1 170 100 L 170 190"
++        fill="none"
++        stroke="currentColor"
++        strokeWidth="4"
++      />
++      <line x1="0" y1="190" x2="200" y2="190" stroke="currentColor" strokeWidth="1" opacity="0.6" />
++    </svg>
++  )
++}
++
++export function MotifSkylight() {
++  return (
++    <svg viewBox="0 0 200 200" className="h-full w-full" preserveAspectRatio="none" aria-hidden="true">
++      <line x1="0" y1="20" x2="200" y2="180" stroke="currentColor" strokeWidth="1.5" opacity="0.7" />
++      <line x1="0" y1="70" x2="200" y2="230" stroke="currentColor" strokeWidth="1.5" opacity="0.7" />
++      <line x1="0" y1="230" x2="200" y2="70" stroke="currentColor" strokeWidth="1.5" opacity="0.7" />
++      <line x1="0" y1="180" x2="200" y2="20" stroke="currentColor" strokeWidth="1.5" opacity="0.7" />
++    </svg>
++  )
++}
++
++export function MotifTower() {
++  return (
++    <svg viewBox="0 0 200 200" className="h-full w-full" preserveAspectRatio="none" aria-hidden="true">
++      <rect x="70" y="20" width="60" height="170" fill="currentColor" opacity="0.85" />
++      {Array.from({ length: 8 }).map((_, i) => (
++        <rect key={i} x="76" y={30 + i * 20} width="48" height="8" fill="var(--color-paper)" opacity="0.5" />
++      ))}
++    </svg>
++  )
++}
+diff --git a/src/index.css b/src/index.css
+new file mode 100644
+index 0000000..248bba8
+--- /dev/null
++++ b/src/index.css
+@@ -0,0 +1,73 @@
++@import "tailwindcss";
++
++@theme {
++  /* -- Palette: warm paper, near-black ink, restrained clay accent -- */
++  --color-paper: #f2ede1;
++  --color-paper-dim: #e9e1cd;
++  --color-paper-deep: #ddd2b4;
++  --color-ink: #1c1a16;
++  --color-ink-soft: #4a463c;
++  --color-ink-faint: #8a8474;
++  --color-line: #cfc4a4;
++  --color-line-soft: #ddd2b4;
++  --color-clay: #a8492d;
++  --color-clay-soft: #c0714f;
++  --color-pine: #37463c;
++
++  /* -- Type -- */
++  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
++  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
++
++  --breakpoint-xs: 480px;
++}
++
++@layer base {
++  * {
++    border-color: var(--color-line);
++  }
++
++  html {
++    background: var(--color-paper);
++  }
++
++  body {
++    background: var(--color-paper);
++    color: var(--color-ink);
++    font-family: var(--font-sans);
++    -webkit-font-smoothing: antialiased;
++    text-rendering: optimizeLegibility;
++  }
++
++  ::selection {
++    background: var(--color-clay);
++    color: var(--color-paper);
++  }
++
++  a {
++    color: inherit;
++  }
++}
++
++@layer utilities {
++  /* Fine paper grain, applied once over the whole document */
++  .bg-grain {
++    position: relative;
++  }
++  .bg-grain::before {
++    content: "";
++    position: absolute;
++    inset: 0;
++    pointer-events: none;
++    opacity: 0.05;
++    mix-blend-mode: multiply;
++    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
++  }
++
++  .text-balance {
++    text-wrap: balance;
++  }
++
++  .font-feature-oldstyle {
++    font-feature-settings: "onum" 1, "kern" 1;
++  }
++}
+diff --git a/src/main.tsx b/src/main.tsx
+new file mode 100644
+index 0000000..bef5202
+--- /dev/null
++++ b/src/main.tsx
+@@ -0,0 +1,10 @@
++import { StrictMode } from 'react'
++import { createRoot } from 'react-dom/client'
++import './index.css'
++import App from './App.tsx'
++
++createRoot(document.getElementById('root')!).render(
++  <StrictMode>
++    <App />
++  </StrictMode>,
++)
+diff --git a/tsconfig.app.json b/tsconfig.app.json
+new file mode 100644
+index 0000000..6830b6f
+--- /dev/null
++++ b/tsconfig.app.json
+@@ -0,0 +1,26 @@
++{
++  "compilerOptions": {
++    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
++    "target": "es2023",
++    "lib": ["ES2023", "DOM"],
++    "module": "esnext",
++    "types": ["vite/client"],
++    "allowArbitraryExtensions": true,
++    "skipLibCheck": true,
++
++    /* Bundler mode */
++    "moduleResolution": "bundler",
++    "allowImportingTsExtensions": true,
++    "verbatimModuleSyntax": true,
++    "moduleDetection": "force",
++    "noEmit": true,
++    "jsx": "react-jsx",
++
++    /* Linting */
++    "noUnusedLocals": true,
++    "noUnusedParameters": true,
++    "erasableSyntaxOnly": true,
++    "noFallthroughCasesInSwitch": true
++  },
++  "include": ["src"]
++}
+diff --git a/tsconfig.json b/tsconfig.json
+new file mode 100644
+index 0000000..1ffef60
+--- /dev/null
++++ b/tsconfig.json
+@@ -0,0 +1,7 @@
++{
++  "files": [],
++  "references": [
++    { "path": "./tsconfig.app.json" },
++    { "path": "./tsconfig.node.json" }
++  ]
++}
+diff --git a/tsconfig.node.json b/tsconfig.node.json
+new file mode 100644
+index 0000000..8455dcb
+--- /dev/null
++++ b/tsconfig.node.json
+@@ -0,0 +1,23 @@
++{
++  "compilerOptions": {
++    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
++    "target": "es2023",
++    "lib": ["ES2023"],
++    "types": ["node"],
++    "skipLibCheck": true,
++
++    /* Bundler mode */
++    "module": "nodenext",
++    "allowImportingTsExtensions": true,
++    "verbatimModuleSyntax": true,
++    "moduleDetection": "force",
++    "noEmit": true,
++
++    /* Linting */
++    "noUnusedLocals": true,
++    "noUnusedParameters": true,
++    "erasableSyntaxOnly": true,
++    "noFallthroughCasesInSwitch": true
++  },
++  "include": ["vite.config.ts"]
++}
+diff --git a/vite.config.ts b/vite.config.ts
+new file mode 100644
+index 0000000..a3a6628
+--- /dev/null
++++ b/vite.config.ts
+@@ -0,0 +1,8 @@
++import react from '@vitejs/plugin-react'
++import tailwindcss from '@tailwindcss/vite'
++import { defineConfig } from 'vite'
++
++// https://vite.dev/config/
++export default defineConfig({
++  plugins: [react(), tailwindcss()],
++})

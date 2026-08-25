@@ -1,0 +1,37 @@
+On branch eval-test-f-baseline-claude
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	new file:   .eval/screenshot.cjs
+	new file:   .eval/screenshot2.cjs
+	new file:   .eval/screenshots/01-desktop-full.png
+	new file:   .eval/screenshots/02-desktop-hero-viewport.png
+	new file:   .eval/screenshots/03-tablet-full.png
+	new file:   .eval/screenshots/04-mobile-full.png
+	new file:   .eval/screenshots/05-desktop-gallery.png
+	new file:   .eval/screenshots/06-desktop-newsletter.png
+	new file:   .eval/screenshots/07-desktop-focus-skiplink.png
+	new file:   .eval/screenshots/08-desktop-newsletter-submitted.png
+	new file:   .eval/screenshots/09-desktop-newsletter-input-focus.png
+	new file:   .eval/worker-report.md
+	new file:   .oxlintrc.json
+	new file:   README.md
+	new file:   index.html
+	new file:   package-lock.json
+	new file:   package.json
+	new file:   public/favicon.svg
+	new file:   src/App.tsx
+	new file:   src/components/Footer.tsx
+	new file:   src/components/Gallery.tsx
+	new file:   src/components/Hero.tsx
+	new file:   src/components/Lede.tsx
+	new file:   src/components/Masthead.tsx
+	new file:   src/components/Newsletter.tsx
+	new file:   src/components/Plate.tsx
+	new file:   src/components/motifs.tsx
+	new file:   src/index.css
+	new file:   src/main.tsx
+	new file:   tsconfig.app.json
+	new file:   tsconfig.json
+	new file:   tsconfig.node.json
+	new file:   vite.config.ts
+

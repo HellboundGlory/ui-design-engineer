@@ -1,0 +1,49 @@
+ .eval/screenshots/01-empty-state-light.png         |  Bin 0 -> 33564 bytes
+ .eval/screenshots/02-empty-state-dark.png          |  Bin 0 -> 34196 bytes
+ ...03-composer-attachments-uploading-and-error.png |  Bin 0 -> 43528 bytes
+ .../screenshots/04-composer-attachments-ready.png  |  Bin 0 -> 39298 bytes
+ .../05-streaming-tool-call-pending-running.png     |  Bin 0 -> 33292 bytes
+ .../06-streaming-tool-call-error-state.png         |  Bin 0 -> 44526 bytes
+ .../07-streaming-markdown-code-block.png           |  Bin 0 -> 56507 bytes
+ .eval/screenshots/08-final-response-complete.png   |  Bin 0 -> 73932 bytes
+ .eval/screenshots/09-expanded-tool-call-card.png   |  Bin 0 -> 53465 bytes
+ .eval/screenshots/10-full-conversation-light.png   |  Bin 0 -> 52223 bytes
+ .eval/scripts/shoot.mjs                            |   77 +
+ .eval/worker-report.md                             |   45 +
+ .gitignore                                         |    1 +
+ README.md                                          |   36 +
+ eslint.config.mjs                                  |   18 +
+ next-env.d.ts                                      |    7 +
+ next.config.ts                                     |    7 +
+ package-lock.json                                  | 8456 ++++++++++++++++++++
+ package.json                                       |   32 +
+ postcss.config.mjs                                 |    7 +
+ public/file.svg                                    |    1 +
+ public/globe.svg                                   |    1 +
+ public/next.svg                                    |    1 +
+ public/vercel.svg                                  |    1 +
+ public/window.svg                                  |    1 +
+ src/app/favicon.ico                                |  Bin 0 -> 25931 bytes
+ src/app/globals.css                                |  279 +
+ src/app/layout.tsx                                 |   48 +
+ src/app/page.tsx                                   |    5 +
+ src/components/chat/AssistantMessage.tsx           |   50 +
+ src/components/chat/AttachmentChip.tsx             |   85 +
+ src/components/chat/ChatApp.tsx                    |  171 +
+ src/components/chat/CodeBlock.tsx                  |   97 +
+ src/components/chat/EmptyState.tsx                 |   33 +
+ src/components/chat/MarkdownContent.tsx            |   33 +
+ src/components/chat/MessageList.tsx                |   67 +
+ src/components/chat/PromptInputBar.tsx             |  205 +
+ src/components/chat/ToolCallCard.tsx               |  212 +
+ src/components/chat/UserMessage.tsx                |   29 +
+ src/components/theme/ThemeProvider.tsx             |   49 +
+ src/components/theme/ThemeToggle.tsx               |   20 +
+ src/lib/attachments.ts                             |   97 +
+ src/lib/chat-reducer.ts                            |   94 +
+ src/lib/format.ts                                  |   30 +
+ src/lib/mock-agent.ts                              |  299 +
+ src/lib/status-meta.ts                             |   27 +
+ src/lib/types.ts                                   |   72 +
+ tsconfig.json                                      |   34 +
+ 48 files changed, 10727 insertions(+)
