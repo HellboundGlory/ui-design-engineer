@@ -1,0 +1,33 @@
+ .eval/screenshots/01-desktop-overview.jpg          |  Bin 0 -> 57045 bytes
+ .../02-desktop-table-sorted-error-rate.jpg         |  Bin 0 -> 53571 bytes
+ .eval/screenshots/03-mobile-390px-overview.jpg     |  Bin 0 -> 26976 bytes
+ .eval/screenshots/04-mobile-390px-charts.jpg       |  Bin 0 -> 21697 bytes
+ .eval/screenshots/05-desktop-paused-state.jpg      |  Bin 0 -> 57374 bytes
+ .eval/worker-report.md                             |   87 +
+ .gitignore                                         |   22 +-
+ .oxlintrc.json                                     |    8 +
+ README.md                                          |   32 +
+ index.html                                         |   13 +
+ package-lock.json                                  | 2341 ++++++++++++++++++++
+ package.json                                       |   28 +
+ public/favicon.svg                                 |    1 +
+ public/icons.svg                                   |   24 +
+ src/App.tsx                                        |   95 +
+ src/components/ChartPanel.tsx                      |   20 +
+ src/components/EndpointTable.tsx                   |  222 ++
+ src/components/ErrorRateChart.tsx                  |   70 +
+ src/components/Header.tsx                          |   62 +
+ src/components/LatencyChart.tsx                    |   55 +
+ src/components/Sparkline.tsx                       |   26 +
+ src/components/StatTile.tsx                        |   36 +
+ src/components/ThroughputChart.tsx                 |   92 +
+ src/hooks/useTrafficSimulator.ts                   |  177 ++
+ src/index.css                                      |   33 +
+ src/lib/simulator.ts                               |  119 +
+ src/main.tsx                                       |   10 +
+ src/types.ts                                       |   55 +
+ tsconfig.app.json                                  |   26 +
+ tsconfig.json                                      |    7 +
+ tsconfig.node.json                                 |   23 +
+ vite.config.ts                                     |    8 +
+ 32 files changed, 3688 insertions(+), 4 deletions(-)
