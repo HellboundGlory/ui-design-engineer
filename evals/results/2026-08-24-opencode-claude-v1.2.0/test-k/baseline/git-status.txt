@@ -1,0 +1,11 @@
+ A .eval/screenshots/01-task-board-desktop.jpg
+ A .eval/screenshots/02-task-board-tablet-1024.jpg
+ A .eval/worker-report.md
+ A src/components/DeleteTaskModal.tsx
+ M src/components/Layout.tsx
+ A src/components/TaskCard.tsx
+ A src/components/TaskFormModal.tsx
+ A src/data.ts
+ M src/main.tsx
+ A src/pages/TaskBoard.tsx
+ A src/types.ts
