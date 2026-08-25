@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Neutral scale: cool slate, kept desaturated so the single accent reads clearly */
+  --color-canvas: #f7f7f8;
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-border: #e4e4e9;
+  --color-border-strong: #d3d3da;
+
+  --color-ink-900: #16161d;
+  --color-ink-700: #3c3c46;
+  --color-ink-500: #6b6b76;
+  --color-ink-400: #8c8c96;
+
+  /* Accent: teal — deliberately not the default indigo/purple/blue SaaS accent */
+  --color-accent-50: #edfaf7;
+  --color-accent-100: #d2f2ea;
+  --color-accent-400: #23a891;
+  --color-accent-500: #178a77;
+  --color-accent-600: #106e5f;
+  --color-accent-700: #0d5a4e;
+
+  --color-danger-50: #fdf1f0;
+  --color-danger-100: #fbdedb;
+  --color-danger-500: #c8402f;
+  --color-danger-600: #ab3324;
+
+  --color-warn-50: #fdf6e8;
+  --color-warn-500: #b0791b;
+
+  --shadow-panel: 0 1px 2px rgba(20, 20, 30, 0.04), 0 8px 24px -8px rgba(20, 20, 30, 0.08);
+  --shadow-popover: 0 4px 12px rgba(20, 20, 30, 0.08), 0 12px 32px -8px rgba(20, 20, 30, 0.16);
+}
+
+/*
+ * Tailwind v4 puts its own rules inside CSS cascade layers (base/utilities).
+ * Unlayered rules always win over layered ones regardless of specificity, so
+ * any plain (non-@layer) selector here would silently beat utility classes
+ * like `bg-white` on the same element. Everything below is layered into
+ * `base` for that reason — it stays overridable by our own utility classes.
+ */
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    color-scheme: light;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-canvas);
+    color: var(--color-ink-900);
+  }
+
+  /* Native <dialog> backdrop, used by ConfirmDialog */
+  dialog::backdrop {
+    background: rgba(15, 15, 20, 0.44);
+    backdrop-filter: blur(1px);
+  }
+
+  dialog {
+    border: none;
+    padding: 0;
+    background: transparent;
+    overflow: visible;
+  }
+
+  /* Tailwind's preflight resets margin to 0 on every element, which quietly
+     breaks the browser's native `margin: auto` centering for dialog:modal.
+     Restore it explicitly so showModal() centers the dialog in the viewport. */
+  dialog[open] {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+  }
+
+  /* Consistent focus ring across native + custom controls */
+  :focus-visible {
+    outline: 2px solid var(--color-accent-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--color-accent-100);
+  }
+
+  /* Scrollable table containers should not clip the focus ring */
+  .table-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-strong) transparent;
+  }
+}

@@ -1,0 +1,57 @@
+ .eval/screenshots/01-account-profile.jpg           |  Bin 0 -> 41433 bytes
+ .eval/screenshots/02-account-validation-errors.jpg |  Bin 0 -> 42269 bytes
+ .eval/screenshots/03-password-validation.jpg       |  Bin 0 -> 43289 bytes
+ .../04-delete-account-dialog-centered.jpg          |  Bin 0 -> 34158 bytes
+ .eval/screenshots/05-delete-account-confirmed.jpg  |  Bin 0 -> 44603 bytes
+ .eval/screenshots/06-api-keys-tab.jpg              |  Bin 0 -> 27048 bytes
+ .../07-reveal-key-BEFORE-fix-transparent-bug.jpg   |  Bin 0 -> 25652 bytes
+ .eval/screenshots/08-reveal-key-copy-and-toast.jpg |  Bin 0 -> 42256 bytes
+ .eval/screenshots/09-api-key-revoked.jpg           |  Bin 0 -> 45032 bytes
+ .eval/screenshots/10-billing-tab.jpg               |  Bin 0 -> 39618 bytes
+ .eval/screenshots/11-billing-cancelled.jpg         |  Bin 0 -> 45723 bytes
+ .eval/screenshots/12-billing-invoices.jpg          |  Bin 0 -> 36799 bytes
+ .../screenshots/13-billing-download-stub-toast.jpg |  Bin 0 -> 40796 bytes
+ .eval/screenshots/14-team-tab.jpg                  |  Bin 0 -> 38350 bytes
+ .eval/screenshots/15-team-members-and-pending.jpg  |  Bin 0 -> 40021 bytes
+ .eval/screenshots/16-team-role-change-toast.jpg    |  Bin 0 -> 42177 bytes
+ .eval/screenshots/17-team-remove-confirm.jpg       |  Bin 0 -> 34097 bytes
+ .eval/screenshots/18-team-member-removed.jpg       |  Bin 0 -> 40490 bytes
+ .../screenshots/19-team-invite-duplicate-error.jpg |  Bin 0 -> 37691 bytes
+ .eval/screenshots/20-team-invite-sent.jpg          |  Bin 0 -> 40650 bytes
+ .eval/screenshots/21-team-invite-revoked.jpg       |  Bin 0 -> 40149 bytes
+ .eval/screenshots/22-keyboard-arrow-nav-tabs.jpg   |  Bin 0 -> 43183 bytes
+ .../23-keyboard-escape-closes-dialog.jpg           |  Bin 0 -> 37730 bytes
+ .eval/screenshots/24-mobile-account-tab.jpg        |  Bin 0 -> 26694 bytes
+ .../25-mobile-api-keys-table-scroll.jpg            |  Bin 0 -> 26998 bytes
+ .../26-mobile-tabs-scroll-and-create-button.jpg    |  Bin 0 -> 25990 bytes
+ .eval/worker-report.md                             |   74 +
+ .oxlintrc.json                                     |    8 +
+ README.md                                          |   32 +
+ index.html                                         |   19 +
+ package-lock.json                                  | 1942 ++++++++++++++++++++
+ package.json                                       |   27 +
+ public/favicon.svg                                 |    1 +
+ src/App.tsx                                        |   82 +
+ src/components/Badge.tsx                           |   21 +
+ src/components/ConfirmDialog.tsx                   |  129 ++
+ src/components/FormField.tsx                       |   93 +
+ src/components/SectionCard.tsx                     |   34 +
+ src/components/Tabs.tsx                            |   74 +
+ src/components/Toast.tsx                           |   80 +
+ src/features/account/AccountProfileTab.tsx         |  284 +++
+ src/features/apiKeys/ApiKeysTab.tsx                |  317 ++++
+ src/features/billing/BillingTab.tsx                |  219 +++
+ src/features/billing/UsageMeter.tsx                |   32 +
+ src/features/billing/plans.ts                      |   39 +
+ src/features/team/TeamTab.tsx                      |  287 +++
+ src/index.css                                      |   96 +
+ src/lib/format.ts                                  |   30 +
+ src/lib/id.ts                                      |   16 +
+ src/lib/validation.ts                              |   29 +
+ src/main.tsx                                       |   10 +
+ src/types.ts                                       |   61 +
+ tsconfig.app.json                                  |   26 +
+ tsconfig.json                                      |    7 +
+ tsconfig.node.json                                 |   23 +
+ vite.config.ts                                     |    8 +
+ 56 files changed, 4100 insertions(+)

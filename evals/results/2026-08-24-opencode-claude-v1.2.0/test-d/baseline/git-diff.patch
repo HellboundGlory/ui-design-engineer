@@ -1,0 +1,4385 @@
+diff --git a/.eval/screenshots/01-account-profile.jpg b/.eval/screenshots/01-account-profile.jpg
+new file mode 100644
+index 0000000..088344a
+Binary files /dev/null and b/.eval/screenshots/01-account-profile.jpg differ
+diff --git a/.eval/screenshots/02-account-validation-errors.jpg b/.eval/screenshots/02-account-validation-errors.jpg
+new file mode 100644
+index 0000000..844c1fa
+Binary files /dev/null and b/.eval/screenshots/02-account-validation-errors.jpg differ
+diff --git a/.eval/screenshots/03-password-validation.jpg b/.eval/screenshots/03-password-validation.jpg
+new file mode 100644
+index 0000000..fd66948
+Binary files /dev/null and b/.eval/screenshots/03-password-validation.jpg differ
+diff --git a/.eval/screenshots/04-delete-account-dialog-centered.jpg b/.eval/screenshots/04-delete-account-dialog-centered.jpg
+new file mode 100644
+index 0000000..3a4c2e0
+Binary files /dev/null and b/.eval/screenshots/04-delete-account-dialog-centered.jpg differ
+diff --git a/.eval/screenshots/05-delete-account-confirmed.jpg b/.eval/screenshots/05-delete-account-confirmed.jpg
+new file mode 100644
+index 0000000..3680e62
+Binary files /dev/null and b/.eval/screenshots/05-delete-account-confirmed.jpg differ
+diff --git a/.eval/screenshots/06-api-keys-tab.jpg b/.eval/screenshots/06-api-keys-tab.jpg
+new file mode 100644
+index 0000000..b354eb6
+Binary files /dev/null and b/.eval/screenshots/06-api-keys-tab.jpg differ
+diff --git a/.eval/screenshots/07-reveal-key-BEFORE-fix-transparent-bug.jpg b/.eval/screenshots/07-reveal-key-BEFORE-fix-transparent-bug.jpg
+new file mode 100644
+index 0000000..1ec1e60
+Binary files /dev/null and b/.eval/screenshots/07-reveal-key-BEFORE-fix-transparent-bug.jpg differ
+diff --git a/.eval/screenshots/08-reveal-key-copy-and-toast.jpg b/.eval/screenshots/08-reveal-key-copy-and-toast.jpg
+new file mode 100644
+index 0000000..35dc144
+Binary files /dev/null and b/.eval/screenshots/08-reveal-key-copy-and-toast.jpg differ
+diff --git a/.eval/screenshots/09-api-key-revoked.jpg b/.eval/screenshots/09-api-key-revoked.jpg
+new file mode 100644
+index 0000000..a5a9468
+Binary files /dev/null and b/.eval/screenshots/09-api-key-revoked.jpg differ
+diff --git a/.eval/screenshots/10-billing-tab.jpg b/.eval/screenshots/10-billing-tab.jpg
+new file mode 100644
+index 0000000..a6fa8ee
+Binary files /dev/null and b/.eval/screenshots/10-billing-tab.jpg differ
+diff --git a/.eval/screenshots/11-billing-cancelled.jpg b/.eval/screenshots/11-billing-cancelled.jpg
+new file mode 100644
+index 0000000..74ddcd9
+Binary files /dev/null and b/.eval/screenshots/11-billing-cancelled.jpg differ
+diff --git a/.eval/screenshots/12-billing-invoices.jpg b/.eval/screenshots/12-billing-invoices.jpg
+new file mode 100644
+index 0000000..aa4961f
+Binary files /dev/null and b/.eval/screenshots/12-billing-invoices.jpg differ
+diff --git a/.eval/screenshots/13-billing-download-stub-toast.jpg b/.eval/screenshots/13-billing-download-stub-toast.jpg
+new file mode 100644
+index 0000000..e5b2c53
+Binary files /dev/null and b/.eval/screenshots/13-billing-download-stub-toast.jpg differ
+diff --git a/.eval/screenshots/14-team-tab.jpg b/.eval/screenshots/14-team-tab.jpg
+new file mode 100644
+index 0000000..ff93726
+Binary files /dev/null and b/.eval/screenshots/14-team-tab.jpg differ
+diff --git a/.eval/screenshots/15-team-members-and-pending.jpg b/.eval/screenshots/15-team-members-and-pending.jpg
+new file mode 100644
+index 0000000..b4dff64
+Binary files /dev/null and b/.eval/screenshots/15-team-members-and-pending.jpg differ
+diff --git a/.eval/screenshots/16-team-role-change-toast.jpg b/.eval/screenshots/16-team-role-change-toast.jpg
+new file mode 100644
+index 0000000..cf614ac
+Binary files /dev/null and b/.eval/screenshots/16-team-role-change-toast.jpg differ
+diff --git a/.eval/screenshots/17-team-remove-confirm.jpg b/.eval/screenshots/17-team-remove-confirm.jpg
+new file mode 100644
+index 0000000..083df85
+Binary files /dev/null and b/.eval/screenshots/17-team-remove-confirm.jpg differ
+diff --git a/.eval/screenshots/18-team-member-removed.jpg b/.eval/screenshots/18-team-member-removed.jpg
+new file mode 100644
+index 0000000..1eb1b53
+Binary files /dev/null and b/.eval/screenshots/18-team-member-removed.jpg differ
+diff --git a/.eval/screenshots/19-team-invite-duplicate-error.jpg b/.eval/screenshots/19-team-invite-duplicate-error.jpg
+new file mode 100644
+index 0000000..e79f24f
+Binary files /dev/null and b/.eval/screenshots/19-team-invite-duplicate-error.jpg differ
+diff --git a/.eval/screenshots/20-team-invite-sent.jpg b/.eval/screenshots/20-team-invite-sent.jpg
+new file mode 100644
+index 0000000..30385dc
+Binary files /dev/null and b/.eval/screenshots/20-team-invite-sent.jpg differ
+diff --git a/.eval/screenshots/21-team-invite-revoked.jpg b/.eval/screenshots/21-team-invite-revoked.jpg
+new file mode 100644
+index 0000000..a5b6f06
+Binary files /dev/null and b/.eval/screenshots/21-team-invite-revoked.jpg differ
+diff --git a/.eval/screenshots/22-keyboard-arrow-nav-tabs.jpg b/.eval/screenshots/22-keyboard-arrow-nav-tabs.jpg
+new file mode 100644
+index 0000000..3a2151b
+Binary files /dev/null and b/.eval/screenshots/22-keyboard-arrow-nav-tabs.jpg differ
+diff --git a/.eval/screenshots/23-keyboard-escape-closes-dialog.jpg b/.eval/screenshots/23-keyboard-escape-closes-dialog.jpg
+new file mode 100644
+index 0000000..7958755
+Binary files /dev/null and b/.eval/screenshots/23-keyboard-escape-closes-dialog.jpg differ
+diff --git a/.eval/screenshots/24-mobile-account-tab.jpg b/.eval/screenshots/24-mobile-account-tab.jpg
+new file mode 100644
+index 0000000..e08fec0
+Binary files /dev/null and b/.eval/screenshots/24-mobile-account-tab.jpg differ
+diff --git a/.eval/screenshots/25-mobile-api-keys-table-scroll.jpg b/.eval/screenshots/25-mobile-api-keys-table-scroll.jpg
+new file mode 100644
+index 0000000..626f5bb
+Binary files /dev/null and b/.eval/screenshots/25-mobile-api-keys-table-scroll.jpg differ
+diff --git a/.eval/screenshots/26-mobile-tabs-scroll-and-create-button.jpg b/.eval/screenshots/26-mobile-tabs-scroll-and-create-button.jpg
+new file mode 100644
+index 0000000..1e44884
+Binary files /dev/null and b/.eval/screenshots/26-mobile-tabs-scroll-and-create-button.jpg differ
+diff --git a/.eval/worker-report.md b/.eval/worker-report.md
+new file mode 100644
+index 0000000..4f05961
+--- /dev/null
++++ b/.eval/worker-report.md
+@@ -0,0 +1,74 @@
++# Worker Report — Settings Workspace (Baseline, no skill)
++
++## 1. Run metadata
++
++- **Worker**: Claude (Sonnet 5), Claude Code CLI
++- **Mode**: Baseline (no skill) — `/ui-design-engineer` was never invoked, and no file under the skill's own repo (`/home/james/Downloads/Projects/ui-design-engineer`), `.opencode/command/ui-design-engineer.md`, or any `SKILL.md`/`references/`/`checklists/`/`archetypes/`/`scripts/` path was read.
++- **Branch**: `eval-test-d-baseline-claude`, based on commit `e4f0a0f` ("Add ui-design-engineer opencode bridge command")
++- **Worktree**: `/home/james/orca/workspaces/ui-design-engineer-eval-greenfield/eval-test-d-baseline`
++- **Stack**: React 19 + TypeScript + Tailwind CSS v4, scaffolded via `npm create vite@latest -- --template react-ts` (fixed constraint of the test). Tailwind installed as `tailwindcss` + `@tailwindcss/vite` (v4's CSS-first config via `@theme`, no `tailwind.config.js`/PostCSS needed). Linter: `oxlint` (the scaffold's default, kept as-is rather than swapping in ESLint). No routing library — tab state is plain `useState` synced to `location.hash` for shareable/bookmarkable tab links.
++- **Dependencies added beyond the scaffold**: only `tailwindcss` and `@tailwindcss/vite`. No dialog/modal library, no date library, no form library, no icon package. See §4 for why.
++
++## 2. Task as given
++
++"Build a multi-tab application settings workspace covering Account Profile, API Key Management, Billing Plan, and Team Permissions." No further product context — greenfield, own design direction, required to be substantial and functionally real (real validation/error states, real destructive-action flows, real in-memory state for API keys and team members), not just a happy-path mock.
++
++## 3. What I built
++
++Named the fictional product "Meridian" (workspace: "Acme Robotics") purely for UI flavor/realism — no real brand. Neutral cool-slate palette with a single teal accent (deliberately not the default indigo/purple SaaS look), Inter for UI text, JetBrains Mono for keys/code.
++
++**Shell**: header + page title + a horizontal ARIA `tablist` (`src/components/Tabs.tsx`) with roving `tabindex`, full arrow-key/Home/End navigation, and the active tab mirrored into `location.hash` (`#account`, `#api-keys`, `#billing`, `#team`) so a tab is directly linkable/bookmarkable and survives a refresh.
++
++**Account Profile** (`src/features/account/AccountProfileTab.tsx`) — three stacked sections, because the tab groups three genuinely different lifecycles:
++- *Profile form*: dirty-state tracked separately from saved state (Save/Discard only enabled once something actually changed), inline validation (required name, email format, 280-char bio limit with live counter), simulated async save with a disabled/loading button state.
++- *Change password*: three fields validated together (required, ≥10 chars, new≠current, confirm must match) — all three errors can and do fire simultaneously.
++- *Danger zone*: Delete account, gated by **type-your-email-to-confirm** in the destructive dialog (the highest-consequence action in the whole app, so it gets the heaviest confirmation friction of anywhere in the build).
++
++**API Key Management** (`src/features/apiKeys/ApiKeysTab.tsx`) — a `useReducer`-backed in-memory key list (name, scope badge, masked value, created/last-used dates). Deliberately modeled the real-world pattern used by Stripe/GitHub/etc.: the full secret is generated client-side with `crypto.getRandomValues`, shown **exactly once** in a "copy it now" dialog immediately after creation, and only the last 4 characters are ever retained/displayed afterward (`ApiKey.last4` — the full string is never put in state). Revoke is a plain confirm dialog (no type-to-confirm — losing one key is recoverable by making a new one, so it doesn't need the heaviest friction).
++
++**Billing Plan** (`src/features/billing/BillingTab.tsx`) — current-plan card with two usage meters (seats, API calls) that shift green→amber→red as they approach the limit; a 3-card plan picker (Free/Pro/Enterprise) that only surfaces a "Switch" action once a *different* plan is selected, with the confirm dialog's copy and tone changing for downgrades vs. upgrades (downgrade warns about losing access, styled danger; upgrade is styled neutral); mocked payment method and invoice history table. Cancel-plan uses the same type-to-confirm dialog as account deletion (type `CANCEL`) since it's a meaningful, if reversible-by-resubscribing, action — one step down from account deletion's friction. "Update payment method" and invoice "Download" are honestly stubbed with an info toast ("isn't wired up in this demo build") rather than silently doing nothing or faking success.
++
++**Team Permissions** (`src/features/team/TeamTab.tsx`) — active members table + separate "Pending invitations" list. Business rules actually enforced, not just decorative: the Owner role can't be reassigned via the UI (no select rendered for that row, only a static badge) and the last remaining Owner can't be removed (Remove button disabled with an explanatory `title` tooltip) — removing a member is caught by a confirm dialog. Inviting validates email format *and* rejects duplicates against both active members and existing invites. Revoking a **pending invite**, deliberately, is immediate with just a toast and no confirm dialog — this is the one intentional asymmetry in the app's destructive-action design: an unaccepted invite carries no data-loss risk, so gating it behind a modal would just be friction for friction's sake, whereas removing an active member (who has real access/data) gets the modal.
++
++**Why the four tabs differ structurally**: Account is single-owner CRUD-with-validation; API Keys is a create/reveal-once/revoke lifecycle around a secret that must never be re-displayed; Billing is state-machine-ish (plan tiers, cancellation windows, usage limits) with no user-authored input at all; Team is multi-entity relationship management (roles, invites, self-protection rules). Reusing one generic "settings form" pattern across all four would have been the "AI slop" failure mode the task is implicitly testing for, so each tab's IA follows its own domain instead.
++
++**Shared primitives** (`src/components/`): `ConfirmDialog` (native `<dialog>`, optional type-to-confirm gate, busy state), `Toast` (context + `aria-live="polite"` region, auto-dismiss), `FormField`/`Select` (label+error+hint wired via `aria-describedby`/`aria-invalid`), `Badge`, `SectionCard`.
++
++## 4. Approach / reasoning
++
++- **Native `<dialog>` over a modal library**: `showModal()` gives focus trapping, Escape-to-close, and top-layer stacking for free, in every evergreen browser, with zero dependency weight. For a settings page with half a dozen distinct dialogs, that seemed like the right trade for a baseline build. This choice surfaced two real bugs I had to fix myself (see below) — a fair trade-off to disclose.
++- **`useReducer` for the two "real" in-memory datasets** (API keys, team members) rather than plain `useState`, since both have multiple named mutations (add/revoke, setRole/remove/invite) that read clearer as actions than as ad hoc setter calls.
++- **Hash-based tab routing** instead of pulling in a router, since the app is a single route with four panels — `location.hash` gives shareable/bookmarkable/back-button-friendly tabs without adding `react-router` for one screen.
++- **Honest stubs over fake success**: anywhere I didn't build real functionality (payment method editing, invoice download), the UI says so via a toast rather than pretending to succeed or silently doing nothing.
++
++## 5. Checks actually performed
++
++**Build / lint** (ground truth, re-run at the very end after all fixes):
++- `npm run build` (`tsc -b && vite build`) — **passes clean**, no errors.
++- `npm run lint` (`oxlint`) — **passes**, one harmless warning (`Toast.tsx` exports both the `ToastProvider` component and the `useToast` hook from one file, which trips the "fast refresh wants only components per file" rule; this is the standard context+hook co-location pattern and not worth splitting for a baseline app).
++- Verified no console errors/exceptions during the entire live browser session (`read_console_messages`, `onlyErrors: true` → clean; full log shows only Vite HMR debug lines).
++
++**Live browser verification** — ran `vite --port 5183` and drove it with the Chrome MCP tools (`navigate`, `computer`, `find`, `form_input`, `read_console_messages`, `get_page_text`, `javascript_tool`). Screenshots saved under `.eval/screenshots/` (26 total, referenced by number below):
++
++- **Account Profile**: baseline render (`01`); submitted with empty name + invalid email → both inline errors fire, Save stays disabled (`02`); password form with empty current password + too-short new password + mismatched confirmation → all three errors fire together (`03`); opened Delete-account dialog, confirmed the button stays disabled with wrong text typed into the confirm field, then with the correct email typed the button enables and turns red (`04`), confirmed deletion → dialog closes, "Deletion scheduled" badge appears, Delete button disables (`05`).
++- **API Keys**: baseline table (`06`); created a new key — empty-name validation blocks submit, then filled in a name and submitted; **found and fixed a real bug** where the reveal-once dialog was rendering with a transparent background (table content bled through the text) — root cause and fix below; verified the fix visually (`07` before, then the corrected render), copied the key (button flips to "Copied", toast fires) (`08`); revoked a key via its confirm dialog and verified the list updates with a confirmation toast (`09`).
++- **Billing Plan**: baseline render including a live usage meter in the amber "warning" zone (`10`); ran the full Cancel-plan flow (type `CANCEL` to confirm) and verified the resulting banner, "Cancels soon" badge, and that Cancel button disappears (`11`); scrolled through payment method + invoice history table with correct paid/failed status colors (`12`); clicked "Download" on an invoice and confirmed the honest "isn't wired up" toast (`13`).
++- **Team Permissions**: baseline roster + pending invite (`14`, `15`); changed a member's role via the select and confirmed the toast (`16`); opened the Remove-member confirm dialog (`17`) and confirmed removal, verifying the member count and list update (`18`); tried inviting an email that's already pending and got the duplicate-detection error (`19`); sent a fresh valid invite and confirmed the toast (`20`); revoked a pending invite and confirmed it disappears immediately with a toast and **no** confirmation dialog — the intentional lighter-weight pattern described in §3 (`21`).
++- **Keyboard/focus**: clicked a tab, then used `ArrowRight` to move focus+selection to the next tab per the ARIA tabs pattern, confirming a visible focus ring and panel-content update (`22`); tabbed three times inside the "Create API key" dialog and confirmed focus wrapped back to the first field (native focus trap working, since the dialog only has 4 focusable elements) then confirmed `Escape` closes it (`23`).
++- **Responsive**: verified at the default desktop width (~1390px) throughout, plus a genuinely narrow width. I attempted to use `resize_window` to hit both a phone (~390px) and tablet (~768px) width; **the tool did not reliably resize the shared browser window in this environment** — I confirmed via `window.innerWidth` that repeated resize calls on the original tab had no effect at all, and a fresh tab only settled at 500px regardless of further resize requests. 500px is still genuinely below my `sm:` (640px) Tailwind breakpoint, so it does exercise the mobile-first styles: the tab bar becomes horizontally scrollable with a visible scrollbar rather than wrapping or overflowing the page (`24`, `26`), the Account form grid collapses from two columns to one (`24`), and the API Keys table clips into its own `overflow-x-auto` container instead of blowing out the page width (`25`). I was not able to verify an intermediate tablet-width layout live, which I'm flagging honestly rather than claiming full coverage — see §6.
++
++**Two real bugs found and fixed during verification** (both are worth calling out since they're the kind of thing that's easy to ship silently broken):
++1. **Dialogs rendered top-left instead of centered.** Tailwind's Preflight resets `margin: 0` on every element, which quietly kills the browser's native `margin: auto` centering rule for `dialog:modal`. Fixed in `src/index.css` by explicitly restoring `dialog[open] { position: fixed; inset: 0; margin: auto; }`.
++2. **The API-key reveal dialog rendered with a transparent background**, letting the table row behind it bleed through and overlap the dialog's own text (visible in `07`, captured before the fix). Root cause: Tailwind v4 ships its utilities inside CSS cascade layers, and *unlayered* CSS always wins over *layered* CSS regardless of selector specificity or source order — so my plain `dialog { background: transparent; }` reset (written as ordinary global CSS) was silently beating the `bg-white` utility class on the same element. Fixed by wrapping all of my custom base-level CSS in `@layer base { … }` in `src/index.css`, which is the correct Tailwind v4 idiom and restores normal utility-class overriding behavior.
++
++Both fixes are live in the current `src/index.css` and were re-verified visually after the change (screenshots `04` and `08` were taken post-fix).
++
++## 6. Known gaps / deliberately out of scope
++
++- **Payment method editing and invoice PDF download** are UI stubs (buttons exist, produce an honest "not wired up" toast) — building real payment form handling felt out of scope for a settings-workspace exercise and risked encouraging fake-looking credit card input handling.
++- **Profile photo upload** is not implemented — the avatar is generated from initials, and the UI says so explicitly rather than pretending there's an upload control.
++- **Ownership transfer** is not implemented — the Owner role is effectively fixed in this build (can't be reassigned or removed as the last owner), which is realistic but means there's no path to changing who owns the workspace.
++- **No persistence** — all state (profile edits, keys, plan, team) is in-memory only and resets on page reload, as expected for a scoped front-end exercise with mocked data.
++- **Tablet-width (~640–1024px) responsive behavior was not visually verified live** — the browser-resize tool in this environment did not reliably change the viewport beyond ~500px, so I could only confirm the mobile (`sm:` breakpoint and below) and desktop layouts directly; I did not fabricate a tablet screenshot. The `sm:` breakpoint classes are in place and used consistently across all four tabs, but that's a code-level claim, not a verified-in-browser one.
++- **No automated tests** (unit or e2e) were written — verification was manual, live-browser interaction as described in §5, per the task's ask to actually run and check the app rather than assert correctness from code alone.
++- **Color contrast / full WCAG audit was not run through a dedicated tool** (e.g. axe) — I used a deliberately non-washed-out palette (`--color-ink-500: #6b6b76` on white, `--color-danger-500`/`--color-accent-500` chosen to look reasonably AA-ish) and relied on visible focus rings + semantic HTML + ARIA roles throughout, but I did not run an automated contrast checker, so I can't claim a verified WCAG AA pass.
+diff --git a/.oxlintrc.json b/.oxlintrc.json
+new file mode 100644
+index 0000000..6fa991d
+--- /dev/null
++++ b/.oxlintrc.json
+@@ -0,0 +1,8 @@
++{
++  "$schema": "./node_modules/oxlint/configuration_schema.json",
++  "plugins": ["react", "typescript", "oxc"],
++  "rules": {
++    "react/rules-of-hooks": "error",
++    "react/only-export-components": ["warn", { "allowConstantExport": true }]
++  }
++}
+diff --git a/README.md b/README.md
+new file mode 100644
+index 0000000..d6af7e3
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1,32 @@
++# React + TypeScript + Vite
++
++This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
++
++Currently, two official plugins are available:
++
++- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
++- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
++
++## React Compiler
++
++The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
++
++## Expanding the Oxlint configuration
++
++If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
++
++```json
++{
++  "$schema": "./node_modules/oxlint/configuration_schema.json",
++  "plugins": ["react", "typescript", "oxc"],
++  "options": {
++    "typeAware": true
++  },
++  "rules": {
++    "react/rules-of-hooks": "error",
++    "react/only-export-components": ["warn", { "allowConstantExport": true }]
++  }
++}
++```
++
++See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+diff --git a/index.html b/index.html
+new file mode 100644
+index 0000000..79d93ad
+--- /dev/null
++++ b/index.html
+@@ -0,0 +1,19 @@
++<!doctype html>
++<html lang="en">
++  <head>
++    <meta charset="UTF-8" />
++    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
++    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++    <link rel="preconnect" href="https://fonts.googleapis.com" />
++    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
++    <link
++      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..700;1,14..32,400..700&family=JetBrains+Mono:wght@400;500&display=swap"
++      rel="stylesheet"
++    />
++    <title>Settings · Meridian</title>
++  </head>
++  <body>
++    <div id="root"></div>
++    <script type="module" src="/src/main.tsx"></script>
++  </body>
++</html>
+diff --git a/package-lock.json b/package-lock.json
+new file mode 100644
+index 0000000..c9912d8
+--- /dev/null
++++ b/package-lock.json
+@@ -0,0 +1,1942 @@
++{
++  "name": "settings-workspace",
++  "version": "0.0.0",
++  "lockfileVersion": 3,
++  "requires": true,
++  "packages": {
++    "": {
++      "name": "settings-workspace",
++      "version": "0.0.0",
++      "dependencies": {
++        "react": "^19.2.8",
++        "react-dom": "^19.2.8"
++      },
++      "devDependencies": {
++        "@tailwindcss/vite": "^4.3.3",
++        "@types/node": "^24.13.3",
++        "@types/react": "^19.2.18",
++        "@types/react-dom": "^19.2.4",
++        "@vitejs/plugin-react": "^6.1.0",
++        "oxlint": "^1.79.0",
++        "tailwindcss": "^4.3.3",
++        "typescript": "~6.0.2",
++        "vite": "^8.2.2"
++      }
++    },
++    "node_modules/@jridgewell/gen-mapping": {
++      "version": "0.3.13",
++      "resolved": "https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.3.13.tgz",
++      "integrity": "sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/sourcemap-codec": "^1.5.0",
++        "@jridgewell/trace-mapping": "^0.3.24"
++      }
++    },
++    "node_modules/@jridgewell/remapping": {
++      "version": "2.3.5",
++      "resolved": "https://registry.npmjs.org/@jridgewell/remapping/-/remapping-2.3.5.tgz",
++      "integrity": "sha512-LI9u/+laYG4Ds1TDKSJW2YPrIlcVYOwi2fUC6xB43lueCjgxV4lffOCZCtYFiH6TNOX+tQKXx97T4IKHbhyHEQ==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/gen-mapping": "^0.3.5",
++        "@jridgewell/trace-mapping": "^0.3.24"
++      }
++    },
++    "node_modules/@jridgewell/resolve-uri": {
++      "version": "3.1.2",
++      "resolved": "https://registry.npmjs.org/@jridgewell/resolve-uri/-/resolve-uri-3.1.2.tgz",
++      "integrity": "sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==",
++      "dev": true,
++      "license": "MIT",
++      "engines": {
++        "node": ">=6.0.0"
++      }
++    },
++    "node_modules/@jridgewell/sourcemap-codec": {
++      "version": "1.5.5",
++      "resolved": "https://registry.npmjs.org/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.5.5.tgz",
++      "integrity": "sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/@jridgewell/trace-mapping": {
++      "version": "0.3.31",
++      "resolved": "https://registry.npmjs.org/@jridgewell/trace-mapping/-/trace-mapping-0.3.31.tgz",
++      "integrity": "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/resolve-uri": "^3.1.0",
++        "@jridgewell/sourcemap-codec": "^1.4.14"
++      }
++    },
++    "node_modules/@oxc-project/types": {
++      "version": "0.146.0",
++      "resolved": "https://registry.npmjs.org/@oxc-project/types/-/types-0.146.0.tgz",
++      "integrity": "sha512-XC0QsnnhVe7sLIWmYmdPw7x5P0h4W8vUU3Nv1ySgWXtvCz8NizoAEpGXA0sOYoJQV2Rl13LgURAHQ5cI5ILCSA==",
++      "dev": true,
++      "license": "MIT",
++      "funding": {
++        "url": "https://github.com/sponsors/Boshen"
++      }
++    },
++    "node_modules/@oxlint/binding-android-arm-eabi": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-android-arm-eabi/-/binding-android-arm-eabi-1.80.0.tgz",
++      "integrity": "sha512-RM3Plj+biQpxa5d1GOOX6ciDlcUROmm4OZ/pLTpitkQt2mJv4jhtY4cbgaetOm5UKWZe05/TGQ6o1Vl8EOHkrA==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-android-arm64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-android-arm64/-/binding-android-arm64-1.80.0.tgz",
++      "integrity": "sha512-YlO5JEf0Yr2bUUlu8O8daVcUxtcGGbcSmyV7E7nSbJbfAdxTE0PFPwgnIlw7wXJaTYjb+qs5hI5q3jxUkI7cAw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-darwin-arm64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-darwin-arm64/-/binding-darwin-arm64-1.80.0.tgz",
++      "integrity": "sha512-BULDOyO3AhsmdWfQeIUCykDt3dd7XZBGLhp1eIh56skRv01O+cNjNPwXMIbeW1x4+pxcln5if72wcRgViVo7PA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-darwin-x64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-darwin-x64/-/binding-darwin-x64-1.80.0.tgz",
++      "integrity": "sha512-YJ4JzLw7N5TDSQFlA0hAQGHvnDZgyypm1yunObVWcWiF9KM7eGCJKYKLgTC2Fi/57OdnBhbj4OkzPGdFQJ6HyA==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-freebsd-x64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-freebsd-x64/-/binding-freebsd-x64-1.80.0.tgz",
++      "integrity": "sha512-AYUIk5QnL0s8oWAYsREZwkRYy1SupJTXALo93J1TgzHywxQtdM99FecRMQ87MXEdPQ0j1TmEpeeq3fGNkpvMqg==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm-gnueabihf": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.80.0.tgz",
++      "integrity": "sha512-9hBZVANupQ89W9dXyE0n8doCyaW5pDyGn3y6XlIMPZ+rIKuyqkr3SNUXmVJIhuvUq0NBU3RBiSXXE69l4XI6KA==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm-musleabihf": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm-musleabihf/-/binding-linux-arm-musleabihf-1.80.0.tgz",
++      "integrity": "sha512-SvS2uKqzY+pbfuvAHzH4338R6Zwo805GAwrIMVvK1KxoOWCIjZUdfzTCvilD7z6JK91v011+zYMryabhDo2AsQ==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm64-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.80.0.tgz",
++      "integrity": "sha512-tCLadyqRVL3pQTRPNg7cjXKvcvS4fbyXeQHhKk5BTJ1oftQln5/yIIWbu/Xom/DX41zv2P9QGt6+D/TtQVtY3A==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm64-musl": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.80.0.tgz",
++      "integrity": "sha512-XfpCNRlOPcLlJl4Bn/FUhjqlR6BVavEykERBf/MV7YA9VZDa5g5znVqYhyviMafcxS9Pe/i/kPvHNO0U6svEHQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-ppc64-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.80.0.tgz",
++      "integrity": "sha512-3I4yMwcFG9NeO8ioY6JBBuKsIm5GL/x7MATt1S4tVWaxPu5HcJ+XnLUbcVBTxG8q2Wu56HSj+NmXQiVYb1lp6A==",
++      "cpu": [
++        "ppc64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-riscv64-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-riscv64-gnu/-/binding-linux-riscv64-gnu-1.80.0.tgz",
++      "integrity": "sha512-E1wAKymkpe1/E8helzBKdm81OBOF+ezxRyXRMEuik3ZpWDER5CPOKZwF66RsdwW98uwZv8UTFremUQtC1CzdJA==",
++      "cpu": [
++        "riscv64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-riscv64-musl": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-riscv64-musl/-/binding-linux-riscv64-musl-1.80.0.tgz",
++      "integrity": "sha512-+gLRGD4sIo3+VA++iham5UxD9tKSoJ/VOrROCEXIcknrYtQg6iIQgvjN0cpiRF7N6UYC7pJbvHJlDnMge5LRpQ==",
++      "cpu": [
++        "riscv64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-s390x-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.80.0.tgz",
++      "integrity": "sha512-aR0PrzHj9leW3NmzBAAP4EzdoBNoJcs9sjnIQPIwyRnBGYrRbXUIpEB5Q39AqK3PLY5JK5uEhDQDiUa1QSAstw==",
++      "cpu": [
++        "s390x"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-x64-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.80.0.tgz",
++      "integrity": "sha512-vSVh5cSo3Xxs6ghBCcFJlpbkbENzDog1qXtoXLa/HC3aCrR4XO76GZbXmQoCPHnu99nQpdCeC3H9tdNICfDh7A==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-x64-musl": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-x64-musl/-/binding-linux-x64-musl-1.80.0.tgz",
++      "integrity": "sha512-FfzBXpNQ8u7/ZI/p8bl73MeZ508Ax3hxWp3SiJpEFiC+BB9XcXy5FAZHTLKDPSzrUpxQZSZJAVdDmuJp/+HDBQ==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-openharmony-arm64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-openharmony-arm64/-/binding-openharmony-arm64-1.80.0.tgz",
++      "integrity": "sha512-zMzbkumtmprCgRwoYNzcB3iC39fXdJIMLMU33KdCjEGLlJGOEt1+LwQ4LF8ndLzAEKVz4BR0y3V6Xrkk3Nm3yA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "openharmony"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-win32-arm64-msvc": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.80.0.tgz",
++      "integrity": "sha512-ib6iRcrXsk4t1fm3iKcwksyWh1ZkZXC/2mEzakl0ai2+6HZunf1WWMZ/xP9EJAvw9g9K4UVTC3NF/+G2qLrbTQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-win32-ia32-msvc": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-win32-ia32-msvc/-/binding-win32-ia32-msvc-1.80.0.tgz",
++      "integrity": "sha512-xhRWBMpLxZvgKAH6+DJZmpP+W8Y8UdQOSU1JfxSWNXsaBaRGW77j+1hCuNHlzj7OH4SPN8fYd1q0o2qrDtoVyw==",
++      "cpu": [
++        "ia32"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-win32-x64-msvc": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.80.0.tgz",
++      "integrity": "sha512-yAnO7lwBYQnz2pcfBPIGQQZWIX5zd5R/1aAKIF3oE+TVj7IhoHcROjOkz3sRDngzqhfPKfFaXqug5j5rE5dn6Q==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-android-arm-eabi": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-android-arm-eabi/-/binding-android-arm-eabi-1.2.5.tgz",
++      "integrity": "sha512-DLe/i+l8ynIBY7XEQ191TeZvCoowIGa18R+dIV30GW7DiOtp74i/xX8hs8GUjW5ARV7VZuie3d6AumSmCwbeRA==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-android-arm64": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-android-arm64/-/binding-android-arm64-1.2.5.tgz",
++      "integrity": "sha512-zXcwKlQApYAOELHd8PwKDFkagYF9Wy4e0RJ+0qnzl9Pjnpj75TEG8ufv40p2J7kCEfwZAsNiuzRIyNNMWT38ig==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-darwin-arm64": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-darwin-arm64/-/binding-darwin-arm64-1.2.5.tgz",
++      "integrity": "sha512-dK4QakI42nzWgJT5sm4y4y/O//D4OxM75/cH28RLV+nzIN9AY+YsbuUVrUTjlLjXR6vpyxFbSsbmNuJ6BP9sww==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-darwin-x64": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-darwin-x64/-/binding-darwin-x64-1.2.5.tgz",
++      "integrity": "sha512-fqSALaUu1Wjd1nK2uW2kJDWdLCc8lx1IcY+MTY26Aurfdx19anlzhqXOgCFbBFQnlFDTn4TC1/7Nz4Bl2mLP3A==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-freebsd-x64": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-freebsd-x64/-/binding-freebsd-x64-1.2.5.tgz",
++      "integrity": "sha512-/vCnNxlkxs9tKxNDcyWUePpJ/PgTzxIaVhoM5SmG8UV+GR/IcPam4VYxi7GIMo7PSDuNqlJqvprqii9NqqVCMw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-arm-gnueabihf": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.2.5.tgz",
++      "integrity": "sha512-abk0NLA519LxRCszmbE0jYKuQ9YPocOXTiOXOo6Yr+YAT95VH+PtqYAjOJvGKt3viEd/x4qzabAlwd5bHOOARg==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-arm64-gnu": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.2.5.tgz",
++      "integrity": "sha512-Y7eALiJ8lr0M2HH103Js+g7V34wf6snlpZLAsHI90uLhr3PVlNsbFVAXJC9d/V6BnPyKtpSwI+NcB/RLxsQxuA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-arm64-musl": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.2.5.tgz",
++      "integrity": "sha512-xMvZgnbZg4YVnR/AX2b3oOPDTFYJvUVaJg5FedA/LuvexAtXibZQej4cnTkw3rjsJ/ggUROB64TdtETiim+FYA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-ppc64-gnu": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.2.5.tgz",
++      "integrity": "sha512-GRjeqTUDHTo5GwntsLaAMcBahG3nlpjftXWZLN73HiYQlhwEowvarFgQnRnQZtIp4keXX7quXFbG38uPZBa2EA==",
++      "cpu": [
++        "ppc64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-s390x-gnu": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.2.5.tgz",
++      "integrity": "sha512-vLNTR45F2Uwc8AufkNXPmB4VliaXs+FvcheEogIzOXzO4l+LzieXF5A/TWxLy5HtqpsRCHUfd0lPVrrdgXdLHQ==",
++      "cpu": [
++        "s390x"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-x64-gnu": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.2.5.tgz",
++      "integrity": "sha512-Mgj59/HTuYeK9Gz2MA+mBWKnHsAgkBSec15ZMb1st3oIfFbX7gCjOae7GydHhzcyQi9Z/7M1QuN9bR3oFqF0jQ==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-x64-musl": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-x64-musl/-/binding-linux-x64-musl-1.2.5.tgz",
++      "integrity": "sha512-mY8AP0/ichsbhAxGnLa3d3+MwV0EfgrPND2bplI3Ym8T6R2pJ0N87bvrKVwNXmdy3jnr6eQBecdqx/HMknBmpA==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-openharmony-arm64": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-openharmony-arm64/-/binding-openharmony-arm64-1.2.5.tgz",
++      "integrity": "sha512-8SLssA2oweAxyRgDp789ACfRb/3P+zNRJpzZxSizxF9m8NUDQ4+3xjo8ttjhVGGw6Qxb70oZiEtIjaKikCO7Yw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "openharmony"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-win32-arm64-msvc": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.2.5.tgz",
++      "integrity": "sha512-vGbruD5zquhoc8D9SViXgN2FBJtNdTyQ4DtG+SWiEGlJiAzoKcZ2xp+xuXCffhubVdt0NJlTZqkeRuERy7g8Cw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-win32-x64-msvc": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.2.5.tgz",
++      "integrity": "sha512-e/SXpgISz+IoqVcSSI0rx/d/he8zqLex+/rCWpnHpmVfmPIUjag9H6P7zotf0gJHwPUhQxZ/mF8tr6acebT9yw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/pluginutils": {
++      "version": "1.0.1",
++      "resolved": "https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.0.1.tgz",
++      "integrity": "sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/@tailwindcss/node": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/node/-/node-4.3.3.tgz",
++      "integrity": "sha512-/T8IKEsf9VTU6tLjgC7+sv2mOPtQxzE2jMw7u4Tt40Tx+QSZxpzh95/H6cMKoja9XuW7iMdLJYBB0o9G1CaAgg==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/remapping": "^2.3.5",
++        "enhanced-resolve": "^5.24.1",
++        "jiti": "^2.7.0",
++        "lightningcss": "1.32.0",
++        "magic-string": "^0.30.21",
++        "source-map-js": "^1.2.1",
++        "tailwindcss": "4.3.3"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss/-/lightningcss-1.32.0.tgz",
++      "integrity": "sha512-NXYBzinNrblfraPGyrbPoD19C1h9lfI/1mzgWYvXUTe414Gz/X1FD2XBZSZM7rRTrMA8JL3OtAaGifrIKhQ5yQ==",
++      "dev": true,
++      "license": "MPL-2.0",
++      "dependencies": {
++        "detect-libc": "^2.0.3"
++      },
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      },
++      "optionalDependencies": {
++        "lightningcss-android-arm64": "1.32.0",
++        "lightningcss-darwin-arm64": "1.32.0",
++        "lightningcss-darwin-x64": "1.32.0",
++        "lightningcss-freebsd-x64": "1.32.0",
++        "lightningcss-linux-arm-gnueabihf": "1.32.0",
++        "lightningcss-linux-arm64-gnu": "1.32.0",
++        "lightningcss-linux-arm64-musl": "1.32.0",
++        "lightningcss-linux-x64-gnu": "1.32.0",
++        "lightningcss-linux-x64-musl": "1.32.0",
++        "lightningcss-win32-arm64-msvc": "1.32.0",
++        "lightningcss-win32-x64-msvc": "1.32.0"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-android-arm64": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-android-arm64/-/lightningcss-android-arm64-1.32.0.tgz",
++      "integrity": "sha512-YK7/ClTt4kAK0vo6w3X+Pnm0D2cf2vPHbhOXdoNti1Ga0al1P4TBZhwjATvjNwLEBCnKvjJc2jQgHXH0NEwlAg==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-darwin-arm64": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.32.0.tgz",
++      "integrity": "sha512-RzeG9Ju5bag2Bv1/lwlVJvBE3q6TtXskdZLLCyfg5pt+HLz9BqlICO7LZM7VHNTTn/5PRhHFBSjk5lc4cmscPQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-darwin-x64": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-darwin-x64/-/lightningcss-darwin-x64-1.32.0.tgz",
++      "integrity": "sha512-U+QsBp2m/s2wqpUYT/6wnlagdZbtZdndSmut/NJqlCcMLTWp5muCrID+K5UJ6jqD2BFshejCYXniPDbNh73V8w==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-freebsd-x64": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-freebsd-x64/-/lightningcss-freebsd-x64-1.32.0.tgz",
++      "integrity": "sha512-JCTigedEksZk3tHTTthnMdVfGf61Fky8Ji2E4YjUTEQX14xiy/lTzXnu1vwiZe3bYe0q+SpsSH/CTeDXK6WHig==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-linux-arm-gnueabihf": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm-gnueabihf/-/lightningcss-linux-arm-gnueabihf-1.32.0.tgz",
++      "integrity": "sha512-x6rnnpRa2GL0zQOkt6rts3YDPzduLpWvwAF6EMhXFVZXD4tPrBkEFqzGowzCsIWsPjqSK+tyNEODUBXeeVHSkw==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-linux-arm64-gnu": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-gnu/-/lightningcss-linux-arm64-gnu-1.32.0.tgz",
++      "integrity": "sha512-0nnMyoyOLRJXfbMOilaSRcLH3Jw5z9HDNGfT/gwCPgaDjnx0i8w7vBzFLFR1f6CMLKF8gVbebmkUN3fa/kQJpQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-linux-arm64-musl": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-musl/-/lightningcss-linux-arm64-musl-1.32.0.tgz",
++      "integrity": "sha512-UpQkoenr4UJEzgVIYpI80lDFvRmPVg6oqboNHfoH4CQIfNA+HOrZ7Mo7KZP02dC6LjghPQJeBsvXhJod/wnIBg==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-linux-x64-gnu": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.32.0.tgz",
++      "integrity": "sha512-V7Qr52IhZmdKPVr+Vtw8o+WLsQJYCTd8loIfpDaMRWGUZfBOYEJeyJIkqGIDMZPwPx24pUMfwSxxI8phr/MbOA==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-linux-x64-musl": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-musl/-/lightningcss-linux-x64-musl-1.32.0.tgz",
++      "integrity": "sha512-bYcLp+Vb0awsiXg/80uCRezCYHNg1/l3mt0gzHnWV9XP1W5sKa5/TCdGWaR/zBM2PeF/HbsQv/j2URNOiVuxWg==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-win32-arm64-msvc": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-win32-arm64-msvc/-/lightningcss-win32-arm64-msvc-1.32.0.tgz",
++      "integrity": "sha512-8SbC8BR40pS6baCM8sbtYDSwEVQd4JlFTOlaD3gWGHfThTcABnNDBda6eTZeqbofalIJhFx0qKzgHJmcPTnGdw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/node/node_modules/lightningcss-win32-x64-msvc": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.32.0.tgz",
++      "integrity": "sha512-Amq9B/SoZYdDi1kFrojnoqPLxYhQ4Wo5XiL8EVJrVsB8ARoC1PWW6VGtT0WKCemjy8aC+louJnjS7U18x3b06Q==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/@tailwindcss/oxide": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide/-/oxide-4.3.3.tgz",
++      "integrity": "sha512-krXjAikiaFSPaK/FkAQT5UTx3VormQaiZ5hBFlJZ9UFQGB/rwg1MZIhHAG9smMQRTdyJxP6Qt5MwMtdyU5FWrA==",
++      "dev": true,
++      "license": "MIT",
++      "engines": {
++        "node": ">= 20"
++      },
++      "optionalDependencies": {
++        "@tailwindcss/oxide-android-arm64": "4.3.3",
++        "@tailwindcss/oxide-darwin-arm64": "4.3.3",
++        "@tailwindcss/oxide-darwin-x64": "4.3.3",
++        "@tailwindcss/oxide-freebsd-x64": "4.3.3",
++        "@tailwindcss/oxide-linux-arm-gnueabihf": "4.3.3",
++        "@tailwindcss/oxide-linux-arm64-gnu": "4.3.3",
++        "@tailwindcss/oxide-linux-arm64-musl": "4.3.3",
++        "@tailwindcss/oxide-linux-x64-gnu": "4.3.3",
++        "@tailwindcss/oxide-linux-x64-musl": "4.3.3",
++        "@tailwindcss/oxide-wasm32-wasi": "4.3.3",
++        "@tailwindcss/oxide-win32-arm64-msvc": "4.3.3",
++        "@tailwindcss/oxide-win32-x64-msvc": "4.3.3"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-android-arm64": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-android-arm64/-/oxide-android-arm64-4.3.3.tgz",
++      "integrity": "sha512-Y85A2gmPSkl5Ve5qR86GL4HT509cFqQh1aes9p3sSkyTPwt0Pppf3GkwGe4JPACcRYjgJIEhQgM6dBClnr0NYw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-darwin-arm64": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-darwin-arm64/-/oxide-darwin-arm64-4.3.3.tgz",
++      "integrity": "sha512-BiaWatpBcERQFDlOjRDpIVXuFK5PJez5SA4JMg6VYZdBYU+qKfV/vqjcIs+IYmtitf1xYQZTwXvU/8y4lfZUGw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-darwin-x64": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-darwin-x64/-/oxide-darwin-x64-4.3.3.tgz",
++      "integrity": "sha512-fAeUqfV5ndhxRwai8cXGzdLvul9utWOmeTkv69unv4ZXixjn61Z+p9lCWdwOwA3TYboG3BwdVuN/RDjhBRl0mw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-freebsd-x64": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-freebsd-x64/-/oxide-freebsd-x64-4.3.3.tgz",
++      "integrity": "sha512-iyf5bV6+wnAlflVeEy7R25dupxTNECZN5QMI0qNT6eT+EgaGdZcKhGkr5SdoaWiLJ3spLqIY9VCeSGrwmtg4kw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-arm-gnueabihf": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-arm-gnueabihf/-/oxide-linux-arm-gnueabihf-4.3.3.tgz",
++      "integrity": "sha512-aAYUprJAJQWWbRrPvtjdroZ56Md+JM8pMiopS6xGEwDfLhqj+2ver2p4nU4Mb3CRqcMmNBjo8KkUgcxhkzVQGQ==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-arm64-gnu": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-arm64-gnu/-/oxide-linux-arm64-gnu-4.3.3.tgz",
++      "integrity": "sha512-nDxldcEENOxZRzC2uu9jrutZdAAQtb+8WWDCSnWL1zvBk1+FN+x6MtDViPB5AJMfttVCUhehGWus3XBPgatM/w==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-arm64-musl": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-arm64-musl/-/oxide-linux-arm64-musl-4.3.3.tgz",
++      "integrity": "sha512-Md44bD6veX/PC5iyF8cDVnw4HBIANZepRZZ7a8DQOvkfo5WUBwcp6iAuCUz23u+4SUkhJlD3eL7hNdW8ezd/kA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-x64-gnu": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-x64-gnu/-/oxide-linux-x64-gnu-4.3.3.tgz",
++      "integrity": "sha512-tx7us1muwOKAKWao2v/GaafFeQboE6aj88vC6ziN2NCGcRm8gWUhwjzg+YdVB1e4boAtdtma4L43onunI6NS4w==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-x64-musl": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-x64-musl/-/oxide-linux-x64-musl-4.3.3.tgz",
++      "integrity": "sha512-SJxX60smvHgasZoBy11dX6YRjXJFovwWBoedhbQPOBzgFWBHGB+TVPWB9BxzR7TTxU8FQZAI2AyiNCMzFm8Img==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-wasm32-wasi": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-wasm32-wasi/-/oxide-wasm32-wasi-4.3.3.tgz",
++      "integrity": "sha512-jx1+rPhY/5Ympkktd656HBWEBLxP7dH06losBLjjf5vgCODXvi9KhtftWcMIwTFIDqBr7cRnQkdLnAG+IOlGvQ==",
++      "bundleDependencies": [
++        "@napi-rs/wasm-runtime",
++        "@emnapi/core",
++        "@emnapi/runtime",
++        "@tybys/wasm-util",
++        "@emnapi/wasi-threads",
++        "tslib"
++      ],
++      "cpu": [
++        "wasm32"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "dependencies": {
++        "@emnapi/core": "^1.11.1",
++        "@emnapi/runtime": "^1.11.1",
++        "@emnapi/wasi-threads": "^1.2.2",
++        "@napi-rs/wasm-runtime": "^1.1.4",
++        "@tybys/wasm-util": "^0.10.2",
++        "tslib": "^2.8.1"
++      },
++      "engines": {
++        "node": ">=14.0.0"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-win32-arm64-msvc": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-win32-arm64-msvc/-/oxide-win32-arm64-msvc-4.3.3.tgz",
++      "integrity": "sha512-3rc292Ca2ceK6Ulcc/bAVnTs/3nDtoPhyEKlgPv+yQJQi/JS/AMJlqzxvlDacL1nekbrcf6bTqp/jV4qgnPxNQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-win32-x64-msvc": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-win32-x64-msvc/-/oxide-win32-x64-msvc-4.3.3.tgz",
++      "integrity": "sha512-yJ0pwIVc/nYeGoV02WtsN8KYyLQv7kyI2wDnkezyJlGGjkd4QLwDGAwl47YpPJeuI0M0ObaXGSPjvWDPeTPggw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/vite": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/vite/-/vite-4.3.3.tgz",
++      "integrity": "sha512-yYU8cogLeSh/ms2jh8Fj7jaba/EWa7Ja6GoUqYZaraEuCI5YS6ms6ObZgjjedm+jm6XZjdNRWBpPP6Z86oOxcw==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@tailwindcss/node": "4.3.3",
++        "@tailwindcss/oxide": "4.3.3",
++        "tailwindcss": "4.3.3"
++      },
++      "peerDependencies": {
++        "vite": "^5.2.0 || ^6 || ^7 || ^8"
++      }
++    },
++    "node_modules/@types/node": {
++      "version": "24.13.3",
++      "resolved": "https://registry.npmjs.org/@types/node/-/node-24.13.3.tgz",
++      "integrity": "sha512-Dh8vAsV36ig5wa9OX4pXvMc9D3Veibfw2wix0CUwYODLD8nkj9UsLjASr49nPg+2eKzxhBV+v7L8pXvT4e639Q==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "undici-types": "~7.18.0"
++      }
++    },
++    "node_modules/@types/react": {
++      "version": "19.2.18",
++      "resolved": "https://registry.npmjs.org/@types/react/-/react-19.2.18.tgz",
++      "integrity": "sha512-AnzbBERsrLKtk2XSfTbYRLjQPdy116Sty4q+T+Bp3IC4l6jNBvreVPAHmpq9qhXQM7CXZPjLVmGMw9sy+hxQ3w==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "csstype": "^3.2.2"
++      }
++    },
++    "node_modules/@types/react-dom": {
++      "version": "19.2.5",
++      "resolved": "https://registry.npmjs.org/@types/react-dom/-/react-dom-19.2.5.tgz",
++      "integrity": "sha512-fMPwH9v7r/pp43yUd2/Mbiex5KouJwwR3dzHkhLREUC6764VyDsqxhAxv6OFEYR1RhjOyD1naqba8ECDBe7ZQg==",
++      "dev": true,
++      "license": "MIT",
++      "peerDependencies": {
++        "@types/react": "^19.2.0"
++      }
++    },
++    "node_modules/@vitejs/plugin-react": {
++      "version": "6.1.0",
++      "resolved": "https://registry.npmjs.org/@vitejs/plugin-react/-/plugin-react-6.1.0.tgz",
++      "integrity": "sha512-qd2BzUBehkov86WFhg0JkEFEYyCLG9uPCe6qWTY/kRlss9OvJrOF2UbIWT7p+8IzZHkEu0DNGHc4HSv+JdDLsw==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@rolldown/pluginutils": "^1.0.1"
++      },
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      },
++      "peerDependencies": {
++        "@rolldown/plugin-babel": "^0.1.7 || ^0.2.0",
++        "babel-plugin-react-compiler": "^1.0.0",
++        "oxc-transform-react": "^0.145.0",
++        "vite": "^8.0.0"
++      },
++      "peerDependenciesMeta": {
++        "@rolldown/plugin-babel": {
++          "optional": true
++        },
++        "babel-plugin-react-compiler": {
++          "optional": true
++        },
++        "oxc-transform-react": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/csstype": {
++      "version": "3.2.3",
++      "resolved": "https://registry.npmjs.org/csstype/-/csstype-3.2.3.tgz",
++      "integrity": "sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/detect-libc": {
++      "version": "2.1.2",
++      "resolved": "https://registry.npmjs.org/detect-libc/-/detect-libc-2.1.2.tgz",
++      "integrity": "sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==",
++      "dev": true,
++      "license": "Apache-2.0",
++      "engines": {
++        "node": ">=8"
++      }
++    },
++    "node_modules/enhanced-resolve": {
++      "version": "5.24.5",
++      "resolved": "https://registry.npmjs.org/enhanced-resolve/-/enhanced-resolve-5.24.5.tgz",
++      "integrity": "sha512-L1l8TNvomm6UVW5B253AGxQagSQr+vGwhMlrrfRS2qmhx46AMpMVJKQYLvWYbysTMY8VoicOvzHzoHMbyzB+4A==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "graceful-fs": "^4.2.4",
++        "tapable": "^2.3.3"
++      },
++      "engines": {
++        "node": ">=10.13.0"
++      }
++    },
++    "node_modules/fdir": {
++      "version": "6.5.0",
++      "resolved": "https://registry.npmjs.org/fdir/-/fdir-6.5.0.tgz",
++      "integrity": "sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==",
++      "dev": true,
++      "license": "MIT",
++      "engines": {
++        "node": ">=12.0.0"
++      },
++      "peerDependencies": {
++        "picomatch": "^3 || ^4"
++      },
++      "peerDependenciesMeta": {
++        "picomatch": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/fsevents": {
++      "version": "2.3.3",
++      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz",
++      "integrity": "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==",
++      "dev": true,
++      "hasInstallScript": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^8.16.0 || ^10.6.0 || >=11.0.0"
++      }
++    },
++    "node_modules/graceful-fs": {
++      "version": "4.2.11",
++      "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz",
++      "integrity": "sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==",
++      "dev": true,
++      "license": "ISC"
++    },
++    "node_modules/jiti": {
++      "version": "2.7.0",
++      "resolved": "https://registry.npmjs.org/jiti/-/jiti-2.7.0.tgz",
++      "integrity": "sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ==",
++      "dev": true,
++      "license": "MIT",
++      "bin": {
++        "jiti": "lib/jiti-cli.mjs"
++      }
++    },
++    "node_modules/lightningcss": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss/-/lightningcss-1.33.0.tgz",
++      "integrity": "sha512-WkUDrojuJs0xkgGf2udWxa3yGBRxPtxUkB79i6aCZLRgc7PM8fZe9TosfPDcvEpQZbuFASnHYmRLBLUbmLOIIA==",
++      "dev": true,
++      "license": "MPL-2.0",
++      "dependencies": {
++        "detect-libc": "^2.0.3"
++      },
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      },
++      "optionalDependencies": {
++        "lightningcss-android-arm64": "1.33.0",
++        "lightningcss-darwin-arm64": "1.33.0",
++        "lightningcss-darwin-x64": "1.33.0",
++        "lightningcss-freebsd-x64": "1.33.0",
++        "lightningcss-linux-arm-gnueabihf": "1.33.0",
++        "lightningcss-linux-arm64-gnu": "1.33.0",
++        "lightningcss-linux-arm64-musl": "1.33.0",
++        "lightningcss-linux-x64-gnu": "1.33.0",
++        "lightningcss-linux-x64-musl": "1.33.0",
++        "lightningcss-win32-arm64-msvc": "1.33.0",
++        "lightningcss-win32-x64-msvc": "1.33.0"
++      }
++    },
++    "node_modules/lightningcss-android-arm64": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-android-arm64/-/lightningcss-android-arm64-1.33.0.tgz",
++      "integrity": "sha512-gEpRTalKdosp4Bb8qWtc2iOgE5SeIHlpS1up9bFq2wAyYhl1UdTObYiHe98zEM9SQvSoqQZ1IQD0JNpg3Ml5pg==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-darwin-arm64": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.33.0.tgz",
++      "integrity": "sha512-Sciaz8eenNTKn9b3t7+xr0ipTp9YxKQY4npwQ3mrRuL0BAVHBLyZxofhaKBAVtzmtRZ/zTyo0/to4B1uWG/Djg==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-darwin-x64": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-darwin-x64/-/lightningcss-darwin-x64-1.33.0.tgz",
++      "integrity": "sha512-Z5UPAxzrjlWNNyGy6i65cJzzvgJ5D3T6wMvs+gWpY9d7qRhANrxqAp6LhxIgZhWEw18RfJTGcRxjuLIBr+m8XQ==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-freebsd-x64": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-freebsd-x64/-/lightningcss-freebsd-x64-1.33.0.tgz",
++      "integrity": "sha512-QQM/Ti/hQajJwCY+RiWuCZ9sdtI/XQk7nDK5vC8kkdwixezOlDgvDx7+RT+QjK6FcFT4MpsuoBnHIo/O3StRRg==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-arm-gnueabihf": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm-gnueabihf/-/lightningcss-linux-arm-gnueabihf-1.33.0.tgz",
++      "integrity": "sha512-N7FVBe6iS24MlM6R/4RBTxGhQheZGs7tiQ9U32UtF75NzP5Q7xWPRqLBCKxlRQRk3rY1jCIPLzx7WzOhuUIRLQ==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-arm64-gnu": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-gnu/-/lightningcss-linux-arm64-gnu-1.33.0.tgz",
++      "integrity": "sha512-j2v/itmy4HlNxlc6voKXYgBqNi0Ng2LShg4z7GufpEgs05P+2suBVyi9I6YHq5uoVFx9ETin3eCEhLVyXGQnKg==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-arm64-musl": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-musl/-/lightningcss-linux-arm64-musl-1.33.0.tgz",
++      "integrity": "sha512-yiO5ROMuYQgXbC60yjZU5CYSFZGKXL0HFATXt9mHJn1+zW55oCtMI9NfcVhYLMFDL7gV7oBPon/EmMMGg2OvtQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-x64-gnu": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.33.0.tgz",
++      "integrity": "sha512-ar+Ju7LmcN0Jo4FpL4hpFybwNG9/3A/Br5KW2n2jyODg3MEZXaDYADdemoNS+BDNfMgKvylJLj4S5tyRActuAg==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-x64-musl": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-musl/-/lightningcss-linux-x64-musl-1.33.0.tgz",
++      "integrity": "sha512-RYiYbkokw0trfKqqzfF55lginwEPrD3OJDfTuJzFs1MK6iFnDenaz1fqLLtX4ITG3OktJQXOeTaw1awrBAlZPw==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-win32-arm64-msvc": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-win32-arm64-msvc/-/lightningcss-win32-arm64-msvc-1.33.0.tgz",
++      "integrity": "sha512-1K+MPfLSFVpphzpdbfkhlWk6wBrTObBzS2T6db10PNOZgR9GoVsAWzwNyuhUYYbTp23j+4RrncfujZ4uAzXvwA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-win32-x64-msvc": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.33.0.tgz",
++      "integrity": "sha512-OlEICDx/Xl0FqSp4bry8zFnCvGpig3Gl4gCquvYwHuqJKEC1+n9NgDniFvqHGmMv1ZkqDJrDqKKSykTDX+ehuA==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/magic-string": {
++      "version": "0.30.21",
++      "resolved": "https://registry.npmjs.org/magic-string/-/magic-string-0.30.21.tgz",
++      "integrity": "sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/sourcemap-codec": "^1.5.5"
++      }
++    },
++    "node_modules/nanoid": {
++      "version": "3.3.18",
++      "resolved": "https://registry.npmjs.org/nanoid/-/nanoid-3.3.18.tgz",
++      "integrity": "sha512-DTg4MJbGMWkfi6VZFdNt2/caMbQy4Ou+Op/hJQvGEWcnVfoA1QA+xzRKAzw9jD6+GVOOeYr/mIcuDSdug6F6+w==",
++      "dev": true,
++      "funding": [
++        {
++          "type": "github",
++          "url": "https://github.com/sponsors/ai"
++        }
++      ],
++      "license": "MIT",
++      "bin": {
++        "nanoid": "bin/nanoid.cjs"
++      },
++      "engines": {
++        "node": "^10 || ^12 || ^13.7 || ^14 || >=15.0.1"
++      }
++    },
++    "node_modules/oxlint": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/oxlint/-/oxlint-1.80.0.tgz",
++      "integrity": "sha512-5nTiSps4qdbCWLbxzuO00alHkEO2exR9YMN/ig6QXWrLsYSG0KaObOAM+l6oU2LcKPWoSAGYbkZIGEu1ViiWKA==",
++      "dev": true,
++      "license": "MIT",
++      "bin": {
++        "oxlint": "bin/oxlint"
++      },
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/Boshen"
++      },
++      "optionalDependencies": {
++        "@oxlint/binding-android-arm-eabi": "1.80.0",
++        "@oxlint/binding-android-arm64": "1.80.0",
++        "@oxlint/binding-darwin-arm64": "1.80.0",
++        "@oxlint/binding-darwin-x64": "1.80.0",
++        "@oxlint/binding-freebsd-x64": "1.80.0",
++        "@oxlint/binding-linux-arm-gnueabihf": "1.80.0",
++        "@oxlint/binding-linux-arm-musleabihf": "1.80.0",
++        "@oxlint/binding-linux-arm64-gnu": "1.80.0",
++        "@oxlint/binding-linux-arm64-musl": "1.80.0",
++        "@oxlint/binding-linux-ppc64-gnu": "1.80.0",
++        "@oxlint/binding-linux-riscv64-gnu": "1.80.0",
++        "@oxlint/binding-linux-riscv64-musl": "1.80.0",
++        "@oxlint/binding-linux-s390x-gnu": "1.80.0",
++        "@oxlint/binding-linux-x64-gnu": "1.80.0",
++        "@oxlint/binding-linux-x64-musl": "1.80.0",
++        "@oxlint/binding-openharmony-arm64": "1.80.0",
++        "@oxlint/binding-win32-arm64-msvc": "1.80.0",
++        "@oxlint/binding-win32-ia32-msvc": "1.80.0",
++        "@oxlint/binding-win32-x64-msvc": "1.80.0"
++      },
++      "peerDependencies": {
++        "oxlint-tsgolint": ">=7.0.2001",
++        "vite-plus": "*"
++      },
++      "peerDependenciesMeta": {
++        "oxlint-tsgolint": {
++          "optional": true
++        },
++        "vite-plus": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/picocolors": {
++      "version": "1.1.1",
++      "resolved": "https://registry.npmjs.org/picocolors/-/picocolors-1.1.1.tgz",
++      "integrity": "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==",
++      "dev": true,
++      "license": "ISC"
++    },
++    "node_modules/picomatch": {
++      "version": "4.0.7",
++      "resolved": "https://registry.npmjs.org/picomatch/-/picomatch-4.0.7.tgz",
++      "integrity": "sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==",
++      "dev": true,
++      "license": "MIT",
++      "engines": {
++        "node": ">=12"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/jonschlinkert"
++      }
++    },
++    "node_modules/postcss": {
++      "version": "8.5.26",
++      "resolved": "https://registry.npmjs.org/postcss/-/postcss-8.5.26.tgz",
++      "integrity": "sha512-u82N74LFzG8ca+dD8puPnplTXoGH4fTPpVGuIbt36G3qvNlkvfD0lEAZSxaly3KX8TS/L1A1gsCEmvKmBcVbkQ==",
++      "dev": true,
++      "funding": [
++        {
++          "type": "opencollective",
++          "url": "https://opencollective.com/postcss/"
++        },
++        {
++          "type": "tidelift",
++          "url": "https://tidelift.com/funding/github/npm/postcss"
++        },
++        {
++          "type": "github",
++          "url": "https://github.com/sponsors/ai"
++        }
++      ],
++      "license": "MIT",
++      "dependencies": {
++        "nanoid": "^3.3.17",
++        "picocolors": "^1.1.1",
++        "source-map-js": "^1.2.1"
++      },
++      "engines": {
++        "node": "^10 || ^12 || >=14"
++      }
++    },
++    "node_modules/react": {
++      "version": "19.2.8",
++      "resolved": "https://registry.npmjs.org/react/-/react-19.2.8.tgz",
++      "integrity": "sha512-PWaYA1L/q9u2u7xYQi+Y3L3Yfnie7XyLeaJICV1MGD6LprsBxcAqGjYyr0eY3p+QdsA+x/Irkt4Qif8D63+Sbw==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=0.10.0"
++      }
++    },
++    "node_modules/react-dom": {
++      "version": "19.2.8",
++      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-19.2.8.tgz",
++      "integrity": "sha512-rVprimfGBG3DR+Tq0IQG2DT5PxKth1WIGDmj5yPmlzr4YBe7uyE+Du4oVqTDXZSHGGGXRtTJEGSSePyQCMBglQ==",
++      "license": "MIT",
++      "dependencies": {
++        "scheduler": "^0.27.0"
++      },
++      "peerDependencies": {
++        "react": "^19.2.8"
++      }
++    },
++    "node_modules/rolldown": {
++      "version": "1.2.5",
++      "resolved": "https://registry.npmjs.org/rolldown/-/rolldown-1.2.5.tgz",
++      "integrity": "sha512-VD2IE5PUG4Oj8zz2VGykiYd5wbnjdIiSsNQb8Qu5B+noEp+A78mu2iVvpp27g8es14Tk9rofNs5Tku9iQCS4fA==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@oxc-project/types": "=0.146.0",
++        "@rolldown/pluginutils": "^1.0.0"
++      },
++      "bin": {
++        "rolldown": "bin/cli.mjs"
++      },
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      },
++      "optionalDependencies": {
++        "@rolldown/binding-android-arm-eabi": "1.2.5",
++        "@rolldown/binding-android-arm64": "1.2.5",
++        "@rolldown/binding-darwin-arm64": "1.2.5",
++        "@rolldown/binding-darwin-x64": "1.2.5",
++        "@rolldown/binding-freebsd-x64": "1.2.5",
++        "@rolldown/binding-linux-arm-gnueabihf": "1.2.5",
++        "@rolldown/binding-linux-arm64-gnu": "1.2.5",
++        "@rolldown/binding-linux-arm64-musl": "1.2.5",
++        "@rolldown/binding-linux-ppc64-gnu": "1.2.5",
++        "@rolldown/binding-linux-s390x-gnu": "1.2.5",
++        "@rolldown/binding-linux-x64-gnu": "1.2.5",
++        "@rolldown/binding-linux-x64-musl": "1.2.5",
++        "@rolldown/binding-openharmony-arm64": "1.2.5",
++        "@rolldown/binding-win32-arm64-msvc": "1.2.5",
++        "@rolldown/binding-win32-x64-msvc": "1.2.5"
++      }
++    },
++    "node_modules/scheduler": {
++      "version": "0.27.0",
++      "resolved": "https://registry.npmjs.org/scheduler/-/scheduler-0.27.0.tgz",
++      "integrity": "sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==",
++      "license": "MIT"
++    },
++    "node_modules/source-map-js": {
++      "version": "1.2.1",
++      "resolved": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.1.tgz",
++      "integrity": "sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==",
++      "dev": true,
++      "license": "BSD-3-Clause",
++      "engines": {
++        "node": ">=0.10.0"
++      }
++    },
++    "node_modules/tailwindcss": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/tailwindcss/-/tailwindcss-4.3.3.tgz",
++      "integrity": "sha512-gOhV3P7ufE62QDGg1zVaTgCR+EtPv92k2nIhVcVKcLmxT1sUBsQGhnZj175j+MqRt4zLF7ic+sCYjfhxMxj7YQ==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/tapable": {
++      "version": "2.3.3",
++      "resolved": "https://registry.npmjs.org/tapable/-/tapable-2.3.3.tgz",
++      "integrity": "sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==",
++      "dev": true,
++      "license": "MIT",
++      "engines": {
++        "node": ">=6"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/webpack"
++      }
++    },
++    "node_modules/tinyglobby": {
++      "version": "0.2.17",
++      "resolved": "https://registry.npmjs.org/tinyglobby/-/tinyglobby-0.2.17.tgz",
++      "integrity": "sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "fdir": "^6.5.0",
++        "picomatch": "^4.0.4"
++      },
++      "engines": {
++        "node": ">=12.0.0"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/SuperchupuDev"
++      }
++    },
++    "node_modules/typescript": {
++      "version": "6.0.3",
++      "resolved": "https://registry.npmjs.org/typescript/-/typescript-6.0.3.tgz",
++      "integrity": "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==",
++      "dev": true,
++      "license": "Apache-2.0",
++      "bin": {
++        "tsc": "bin/tsc",
++        "tsserver": "bin/tsserver"
++      },
++      "engines": {
++        "node": ">=14.17"
++      }
++    },
++    "node_modules/undici-types": {
++      "version": "7.18.2",
++      "resolved": "https://registry.npmjs.org/undici-types/-/undici-types-7.18.2.tgz",
++      "integrity": "sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/vite": {
++      "version": "8.2.2",
++      "resolved": "https://registry.npmjs.org/vite/-/vite-8.2.2.tgz",
++      "integrity": "sha512-cFKLV/PRgAUlIRm5WjMjJ86jrftzpqcgH+Us+DS8mI3CDNiH30Whrz8uHL3+MOLPAgqbMBAqWdAHAphOAM+z/Q==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "lightningcss": "^1.33.0",
++        "picomatch": "^4.0.5",
++        "postcss": "^8.5.26",
++        "rolldown": "~1.2.4",
++        "tinyglobby": "^0.2.17"
++      },
++      "bin": {
++        "vite": "bin/vite.js"
++      },
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      },
++      "funding": {
++        "url": "https://github.com/vitejs/vite?sponsor=1"
++      },
++      "optionalDependencies": {
++        "fsevents": "~2.3.3"
++      },
++      "peerDependencies": {
++        "@types/node": "^20.19.0 || >=22.12.0",
++        "@vitejs/devtools": "^0.4.0 || ^0.5.0",
++        "esbuild": "^0.27.0 || ^0.28.0",
++        "jiti": ">=1.21.0",
++        "less": "^4.0.0",
++        "sass": "^1.70.0",
++        "sass-embedded": "^1.70.0",
++        "stylus": ">=0.54.8",
++        "sugarss": "^5.0.0",
++        "terser": "^5.16.0",
++        "tsx": "^4.8.1",
++        "yaml": "^2.4.2"
++      },
++      "peerDependenciesMeta": {
++        "@types/node": {
++          "optional": true
++        },
++        "@vitejs/devtools": {
++          "optional": true
++        },
++        "esbuild": {
++          "optional": true
++        },
++        "jiti": {
++          "optional": true
++        },
++        "less": {
++          "optional": true
++        },
++        "sass": {
++          "optional": true
++        },
++        "sass-embedded": {
++          "optional": true
++        },
++        "stylus": {
++          "optional": true
++        },
++        "sugarss": {
++          "optional": true
++        },
++        "terser": {
++          "optional": true
++        },
++        "tsx": {
++          "optional": true
++        },
++        "yaml": {
++          "optional": true
++        }
++      }
++    }
++  }
++}
+diff --git a/package.json b/package.json
+new file mode 100644
+index 0000000..329e9a5
+--- /dev/null
++++ b/package.json
+@@ -0,0 +1,27 @@
++{
++  "name": "settings-workspace",
++  "private": true,
++  "version": "0.0.0",
++  "type": "module",
++  "scripts": {
++    "dev": "vite",
++    "build": "tsc -b && vite build",
++    "lint": "oxlint",
++    "preview": "vite preview"
++  },
++  "dependencies": {
++    "react": "^19.2.8",
++    "react-dom": "^19.2.8"
++  },
++  "devDependencies": {
++    "@tailwindcss/vite": "^4.3.3",
++    "@types/node": "^24.13.3",
++    "@types/react": "^19.2.18",
++    "@types/react-dom": "^19.2.4",
++    "@vitejs/plugin-react": "^6.1.0",
++    "oxlint": "^1.79.0",
++    "tailwindcss": "^4.3.3",
++    "typescript": "~6.0.2",
++    "vite": "^8.2.2"
++  }
++}
+diff --git a/public/favicon.svg b/public/favicon.svg
+new file mode 100644
+index 0000000..6893eb1
+--- /dev/null
++++ b/public/favicon.svg
+@@ -0,0 +1 @@
++<svg xmlns="http://www.w3.org/2000/svg" width="48" height="46" fill="none" viewBox="0 0 48 46"><path fill="#863bff" d="M25.946 44.938c-.664.845-2.021.375-2.021-.698V33.937a2.26 2.26 0 0 0-2.262-2.262H10.287c-.92 0-1.456-1.04-.92-1.788l7.48-10.471c1.07-1.497 0-3.578-1.842-3.578H1.237c-.92 0-1.456-1.04-.92-1.788L10.013.474c.214-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.471c-1.07 1.498 0 3.579 1.842 3.579h11.377c.943 0 1.473 1.088.89 1.83L25.947 44.94z" style="fill:#863bff;fill:color(display-p3 .5252 .23 1);fill-opacity:1"/><mask id="a" width="48" height="46" x="0" y="0" maskUnits="userSpaceOnUse" style="mask-type:alpha"><path fill="#000" d="M25.842 44.938c-.664.844-2.021.375-2.021-.698V33.937a2.26 2.26 0 0 0-2.262-2.262H10.183c-.92 0-1.456-1.04-.92-1.788l7.48-10.471c1.07-1.498 0-3.579-1.842-3.579H1.133c-.92 0-1.456-1.04-.92-1.787L9.91.473c.214-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.471c-1.07 1.498 0 3.578 1.842 3.578h11.377c.943 0 1.473 1.088.89 1.832L25.843 44.94z" style="fill:#000;fill-opacity:1"/></mask><g mask="url(#a)"><g filter="url(#b)"><ellipse cx="5.508" cy="14.704" fill="#ede6ff" rx="5.508" ry="14.704" style="fill:#ede6ff;fill:color(display-p3 .9275 .9033 1);fill-opacity:1" transform="matrix(.00324 1 1 -.00324 -4.47 31.516)"/></g><g filter="url(#c)"><ellipse cx="10.399" cy="29.851" fill="#ede6ff" rx="10.399" ry="29.851" style="fill:#ede6ff;fill:color(display-p3 .9275 .9033 1);fill-opacity:1" transform="matrix(.00324 1 1 -.00324 -39.328 7.883)"/></g><g filter="url(#d)"><ellipse cx="5.508" cy="30.487" fill="#7e14ff" rx="5.508" ry="30.487" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.814 -25.913 -14.639)scale(1 -1)"/></g><g filter="url(#e)"><ellipse cx="5.508" cy="30.599" fill="#7e14ff" rx="5.508" ry="30.599" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.814 -32.644 -3.334)scale(1 -1)"/></g><g filter="url(#f)"><ellipse cx="5.508" cy="30.599" fill="#7e14ff" rx="5.508" ry="30.599" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="matrix(.00324 1 1 -.00324 -34.34 30.47)"/></g><g filter="url(#g)"><ellipse cx="14.072" cy="22.078" fill="#ede6ff" rx="14.072" ry="22.078" style="fill:#ede6ff;fill:color(display-p3 .9275 .9033 1);fill-opacity:1" transform="rotate(93.35 24.506 48.493)scale(-1 1)"/></g><g filter="url(#h)"><ellipse cx="3.47" cy="21.501" fill="#7e14ff" rx="3.47" ry="21.501" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.009 28.708 47.59)scale(-1 1)"/></g><g filter="url(#i)"><ellipse cx="3.47" cy="21.501" fill="#7e14ff" rx="3.47" ry="21.501" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.009 28.708 47.59)scale(-1 1)"/></g><g filter="url(#j)"><ellipse cx=".387" cy="8.972" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(39.51 .387 8.972)"/></g><g filter="url(#k)"><ellipse cx="47.523" cy="-6.092" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 47.523 -6.092)"/></g><g filter="url(#l)"><ellipse cx="41.412" cy="6.333" fill="#47bfff" rx="5.971" ry="9.665" style="fill:#47bfff;fill:color(display-p3 .2799 .748 1);fill-opacity:1" transform="rotate(37.892 41.412 6.333)"/></g><g filter="url(#m)"><ellipse cx="-1.879" cy="38.332" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 -1.88 38.332)"/></g><g filter="url(#n)"><ellipse cx="-1.879" cy="38.332" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 -1.88 38.332)"/></g><g filter="url(#o)"><ellipse cx="35.651" cy="29.907" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 35.651 29.907)"/></g><g filter="url(#p)"><ellipse cx="38.418" cy="32.4" fill="#47bfff" rx="5.971" ry="15.297" style="fill:#47bfff;fill:color(display-p3 .2799 .748 1);fill-opacity:1" transform="rotate(37.892 38.418 32.4)"/></g></g><defs><filter id="b" width="60.045" height="41.654" x="-19.77" y="16.149" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="7.659"/></filter><filter id="c" width="90.34" height="51.437" x="-54.613" y="-7.533" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="7.659"/></filter><filter id="d" width="79.355" height="29.4" x="-49.64" y="2.03" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="e" width="79.579" height="29.4" x="-45.045" y="20.029" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="f" width="79.579" height="29.4" x="-43.513" y="21.178" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="g" width="74.749" height="58.852" x="15.756" y="-17.901" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="7.659"/></filter><filter id="h" width="61.377" height="25.362" x="23.548" y="2.284" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="i" width="61.377" height="25.362" x="23.548" y="2.284" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="j" width="56.045" height="63.649" x="-27.636" y="-22.853" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="k" width="54.814" height="64.646" x="20.116" y="-38.415" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="l" width="33.541" height="35.313" x="24.641" y="-11.323" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="m" width="54.814" height="64.646" x="-29.286" y="6.009" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="n" width="54.814" height="64.646" x="-29.286" y="6.009" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="o" width="54.814" height="64.646" x="8.244" y="-2.416" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="p" width="39.409" height="43.623" x="18.713" y="10.588" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter></defs></svg>
+\ No newline at end of file
+diff --git a/src/App.tsx b/src/App.tsx
+new file mode 100644
+index 0000000..0e10867
+--- /dev/null
++++ b/src/App.tsx
+@@ -0,0 +1,82 @@
++import { useEffect, useState } from "react";
++import { Tabs } from "./components/Tabs";
++import { ToastProvider } from "./components/Toast";
++import { AccountProfileTab } from "./features/account/AccountProfileTab";
++import { ApiKeysTab } from "./features/apiKeys/ApiKeysTab";
++import { BillingTab } from "./features/billing/BillingTab";
++import { TeamTab } from "./features/team/TeamTab";
++import type { TabDef, TabId } from "./types";
++
++const TABS: TabDef[] = [
++  { id: "account", label: "Account Profile", description: "Your personal information and password." },
++  { id: "api-keys", label: "API Keys", description: "Manage credentials used to access the API." },
++  { id: "billing", label: "Billing Plan", description: "Subscription, usage, and payment details." },
++  { id: "team", label: "Team Permissions", description: "Who has access to this workspace, and at what level." },
++];
++
++function tabFromHash(): TabId {
++  const hash = window.location.hash.replace("#", "");
++  return TABS.some((t) => t.id === hash) ? (hash as TabId) : "account";
++}
++
++export default function App() {
++  const [activeTab, setActiveTab] = useState<TabId>(tabFromHash);
++
++  useEffect(() => {
++    const onHashChange = () => setActiveTab(tabFromHash());
++    window.addEventListener("hashchange", onHashChange);
++    return () => window.removeEventListener("hashchange", onHashChange);
++  }, []);
++
++  function changeTab(id: TabId) {
++    setActiveTab(id);
++    window.location.hash = id;
++  }
++
++  const activeDef = TABS.find((t) => t.id === activeTab)!;
++
++  return (
++    <ToastProvider>
++      <div className="min-h-svh bg-canvas">
++        <header className="border-b border-border bg-white">
++          <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-4 sm:px-6">
++            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-ink-900 text-sm font-bold text-white">
++              M
++            </div>
++            <div>
++              <p className="text-sm font-semibold text-ink-900">Meridian</p>
++              <p className="text-xs text-ink-400">Acme Robotics workspace</p>
++            </div>
++          </div>
++        </header>
++
++        <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
++          <h1 className="text-xl font-semibold text-ink-900">Settings</h1>
++          <p className="mt-1 text-sm text-ink-500">Manage your account, API access, billing, and team.</p>
++
++          <div className="mt-6">
++            <Tabs tabs={TABS} activeId={activeTab} onChange={changeTab} />
++          </div>
++
++          <div className="mt-6">
++            <h2 id={`panel-${activeTab}-heading`} className="sr-only">
++              {activeDef.label}
++            </h2>
++            <div
++              role="tabpanel"
++              id={`panel-${activeTab}`}
++              aria-labelledby={`tab-${activeTab}`}
++              tabIndex={0}
++              className="focus-visible:outline-none"
++            >
++              {activeTab === "account" && <AccountProfileTab />}
++              {activeTab === "api-keys" && <ApiKeysTab />}
++              {activeTab === "billing" && <BillingTab />}
++              {activeTab === "team" && <TeamTab />}
++            </div>
++          </div>
++        </main>
++      </div>
++    </ToastProvider>
++  );
++}
+diff --git a/src/components/Badge.tsx b/src/components/Badge.tsx
+new file mode 100644
+index 0000000..39eac36
+--- /dev/null
++++ b/src/components/Badge.tsx
+@@ -0,0 +1,21 @@
++import type { ReactNode } from "react";
++
++type Tone = "neutral" | "accent" | "danger" | "warn" | "success";
++
++const TONE_CLASSES: Record<Tone, string> = {
++  neutral: "bg-canvas text-ink-500 ring-1 ring-inset ring-border-strong",
++  accent: "bg-accent-50 text-accent-700 ring-1 ring-inset ring-accent-400/30",
++  danger: "bg-danger-50 text-danger-600 ring-1 ring-inset ring-danger-500/20",
++  warn: "bg-warn-50 text-warn-500 ring-1 ring-inset ring-warn-500/25",
++  success: "bg-accent-50 text-accent-700 ring-1 ring-inset ring-accent-400/30",
++};
++
++export function Badge({ tone = "neutral", children }: { tone?: Tone; children: ReactNode }) {
++  return (
++    <span
++      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${TONE_CLASSES[tone]}`}
++    >
++      {children}
++    </span>
++  );
++}
+diff --git a/src/components/ConfirmDialog.tsx b/src/components/ConfirmDialog.tsx
+new file mode 100644
+index 0000000..309fcfe
+--- /dev/null
++++ b/src/components/ConfirmDialog.tsx
+@@ -0,0 +1,129 @@
++import { useEffect, useId, useRef, useState } from "react";
++
++interface ConfirmDialogProps {
++  open: boolean;
++  onClose: () => void;
++  onConfirm: () => void | Promise<void>;
++  title: string;
++  description: string;
++  /** Label for the confirming action, e.g. "Revoke key" */
++  confirmLabel: string;
++  tone?: "danger" | "default";
++  /**
++   * If set, the user must type this exact string into a text field before the
++   * confirm button is enabled — used for the most consequential actions
++   * (delete account, cancel plan) so a stray click can't trigger them.
++   */
++  typeToConfirm?: string;
++  busyLabel?: string;
++}
++
++export function ConfirmDialog({
++  open,
++  onClose,
++  onConfirm,
++  title,
++  description,
++  confirmLabel,
++  tone = "danger",
++  typeToConfirm,
++  busyLabel = "Working…",
++}: ConfirmDialogProps) {
++  const dialogRef = useRef<HTMLDialogElement>(null);
++  const [typedValue, setTypedValue] = useState("");
++  const [busy, setBusy] = useState(false);
++  const headingId = useId();
++  const descId = useId();
++
++  useEffect(() => {
++    const el = dialogRef.current;
++    if (!el) return;
++    if (open && !el.open) {
++      el.showModal();
++      setTypedValue("");
++      setBusy(false);
++    } else if (!open && el.open) {
++      el.close();
++    }
++  }, [open]);
++
++  // Native <dialog> fires "close" on Escape / backdrop dismissal too — keep parent state in sync.
++  useEffect(() => {
++    const el = dialogRef.current;
++    if (!el) return;
++    const handleClose = () => onClose();
++    el.addEventListener("close", handleClose);
++    return () => el.removeEventListener("close", handleClose);
++  }, [onClose]);
++
++  const gateSatisfied = !typeToConfirm || typedValue === typeToConfirm;
++  const confirmTone =
++    tone === "danger"
++      ? "bg-danger-500 hover:bg-danger-600 focus-visible:outline-danger-500"
++      : "bg-accent-500 hover:bg-accent-600 focus-visible:outline-accent-500";
++
++  async function handleConfirm() {
++    setBusy(true);
++    try {
++      await onConfirm();
++      dialogRef.current?.close();
++    } finally {
++      setBusy(false);
++    }
++  }
++
++  return (
++    <dialog
++      ref={dialogRef}
++      aria-labelledby={headingId}
++      aria-describedby={descId}
++      className="w-full max-w-md rounded-xl bg-white p-0 shadow-popover backdrop:bg-transparent"
++      onCancel={(e) => {
++        // Let native Escape-to-close behavior stand, just resync state.
++        e.currentTarget.close();
++      }}
++    >
++      <div className="p-5">
++        <h2 id={headingId} className="text-base font-semibold text-ink-900">
++          {title}
++        </h2>
++        <p id={descId} className="mt-2 text-sm leading-relaxed text-ink-500">
++          {description}
++        </p>
++
++        {typeToConfirm && (
++          <label className="mt-4 block text-sm">
++            <span className="mb-1.5 block font-medium text-ink-700">
++              Type <span className="font-mono text-ink-900">{typeToConfirm}</span> to confirm
++            </span>
++            <input
++              type="text"
++              value={typedValue}
++              onChange={(e) => setTypedValue(e.target.value)}
++              autoComplete="off"
++              spellCheck={false}
++              className="w-full rounded-md border border-border-strong px-3 py-2 text-sm text-ink-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1"
++            />
++          </label>
++        )}
++      </div>
++      <div className="flex justify-end gap-2 rounded-b-xl border-t border-border bg-canvas px-5 py-3">
++        <button
++          type="button"
++          onClick={() => dialogRef.current?.close()}
++          className="rounded-md px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-white"
++        >
++          Cancel
++        </button>
++        <button
++          type="button"
++          disabled={!gateSatisfied || busy}
++          onClick={handleConfirm}
++          className={`rounded-md px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:bg-ink-400/50 ${confirmTone}`}
++        >
++          {busy ? busyLabel : confirmLabel}
++        </button>
++      </div>
++    </dialog>
++  );
++}
+diff --git a/src/components/FormField.tsx b/src/components/FormField.tsx
+new file mode 100644
+index 0000000..407ee8a
+--- /dev/null
++++ b/src/components/FormField.tsx
+@@ -0,0 +1,93 @@
++import { useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
++
++interface BaseProps {
++  label: string;
++  error?: string;
++  hint?: string;
++}
++
++type InputProps = BaseProps & InputHTMLAttributes<HTMLInputElement> & { as?: "input" };
++type TextareaProps = BaseProps & TextareaHTMLAttributes<HTMLTextAreaElement> & { as: "textarea" };
++
++export function FormField(props: InputProps | TextareaProps) {
++  const { label, error, hint } = props;
++  const id = useId();
++  const errorId = `${id}-error`;
++  const hintId = `${id}-hint`;
++  const describedBy = [error && errorId, hint && hintId].filter(Boolean).join(" ") || undefined;
++
++  const fieldClass = `w-full rounded-md border bg-white px-3 py-2 text-sm text-ink-900 placeholder:text-ink-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 ${
++    error ? "border-danger-500 focus-visible:outline-danger-500" : "border-border-strong focus-visible:outline-accent-500"
++  }`;
++
++  let field: ReactNode;
++  if (props.as === "textarea") {
++    const { label: _label, error: _error, hint: _hint, as: _as, ...rest } = props;
++    field = (
++      <textarea
++        id={id}
++        aria-invalid={!!error}
++        aria-describedby={describedBy}
++        className={`${fieldClass} min-h-24 resize-y`}
++        {...rest}
++      />
++    );
++  } else {
++    const { label: _label, error: _error, hint: _hint, as: _as, ...rest } = props;
++    field = (
++      <input id={id} aria-invalid={!!error} aria-describedby={describedBy} className={fieldClass} {...rest} />
++    );
++  }
++
++  return (
++    <div>
++      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-ink-700">
++        {label}
++      </label>
++      {field}
++      {hint && !error && (
++        <p id={hintId} className="mt-1.5 text-xs text-ink-400">
++          {hint}
++        </p>
++      )}
++      {error && (
++        <p id={errorId} role="alert" className="mt-1.5 text-xs font-medium text-danger-500">
++          {error}
++        </p>
++      )}
++    </div>
++  );
++}
++
++export function Select({
++  label,
++  error,
++  hint,
++  children,
++  ...rest
++}: BaseProps & { children: ReactNode } & SelectHTMLAttributes<HTMLSelectElement>) {
++  const id = useId();
++  return (
++    <div>
++      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-ink-700">
++        {label}
++      </label>
++      <select
++        id={id}
++        aria-invalid={!!error}
++        className={`w-full rounded-md border bg-white px-3 py-2 text-sm text-ink-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 ${
++          error ? "border-danger-500" : "border-border-strong focus-visible:outline-accent-500"
++        }`}
++        {...rest}
++      >
++        {children}
++      </select>
++      {hint && !error && <p className="mt-1.5 text-xs text-ink-400">{hint}</p>}
++      {error && (
++        <p role="alert" className="mt-1.5 text-xs font-medium text-danger-500">
++          {error}
++        </p>
++      )}
++    </div>
++  );
++}
+diff --git a/src/components/SectionCard.tsx b/src/components/SectionCard.tsx
+new file mode 100644
+index 0000000..6140c11
+--- /dev/null
++++ b/src/components/SectionCard.tsx
+@@ -0,0 +1,34 @@
++import type { ReactNode } from "react";
++
++interface SectionCardProps {
++  title: string;
++  description?: string;
++  children: ReactNode;
++  footer?: ReactNode;
++  tone?: "default" | "danger";
++}
++
++export function SectionCard({ title, description, children, footer, tone = "default" }: SectionCardProps) {
++  return (
++    <section
++      className={`overflow-hidden rounded-xl border bg-white shadow-panel ${
++        tone === "danger" ? "border-danger-500/30" : "border-border"
++      }`}
++    >
++      <div className="border-b border-border px-5 py-4 sm:px-6">
++        <h2 className={`text-sm font-semibold ${tone === "danger" ? "text-danger-600" : "text-ink-900"}`}>{title}</h2>
++        {description && <p className="mt-1 text-sm text-ink-500">{description}</p>}
++      </div>
++      <div className="px-5 py-5 sm:px-6">{children}</div>
++      {footer && (
++        <div
++          className={`flex items-center justify-end gap-2 border-t px-5 py-3 sm:px-6 ${
++            tone === "danger" ? "border-danger-500/30 bg-danger-50/40" : "border-border bg-canvas/60"
++          }`}
++        >
++          {footer}
++        </div>
++      )}
++    </section>
++  );
++}
+diff --git a/src/components/Tabs.tsx b/src/components/Tabs.tsx
+new file mode 100644
+index 0000000..40937a2
+--- /dev/null
++++ b/src/components/Tabs.tsx
+@@ -0,0 +1,74 @@
++import { useRef } from "react";
++import type { TabDef, TabId } from "../types";
++
++interface TabsProps {
++  tabs: TabDef[];
++  activeId: TabId;
++  onChange: (id: TabId) => void;
++}
++
++/**
++ * ARIA "tabs" pattern (manual activation would also be valid, but automatic
++ * activation with roving tabindex + arrow-key movement matches how most
++ * settings UIs — GitHub, Stripe, Vercel — actually behave).
++ * https://www.w3.org/WAI/ARIA/apg/patterns/tabs/
++ */
++export function Tabs({ tabs, activeId, onChange }: TabsProps) {
++  const tabRefs = useRef<Map<TabId, HTMLButtonElement>>(new Map());
++
++  function focusAndActivate(id: TabId) {
++    onChange(id);
++    tabRefs.current.get(id)?.focus();
++  }
++
++  function handleKeyDown(e: React.KeyboardEvent, index: number) {
++    let nextIndex: number | null = null;
++    if (e.key === "ArrowRight") nextIndex = (index + 1) % tabs.length;
++    else if (e.key === "ArrowLeft") nextIndex = (index - 1 + tabs.length) % tabs.length;
++    else if (e.key === "Home") nextIndex = 0;
++    else if (e.key === "End") nextIndex = tabs.length - 1;
++    if (nextIndex !== null) {
++      e.preventDefault();
++      focusAndActivate(tabs[nextIndex].id);
++    }
++  }
++
++  return (
++    <div
++      role="tablist"
++      aria-label="Settings sections"
++      className="flex gap-1 overflow-x-auto border-b border-border px-1 sm:px-0"
++    >
++      {tabs.map((tab, index) => {
++        const selected = tab.id === activeId;
++        return (
++          <button
++            key={tab.id}
++            ref={(el) => {
++              if (el) tabRefs.current.set(tab.id, el);
++            }}
++            role="tab"
++            type="button"
++            id={`tab-${tab.id}`}
++            aria-selected={selected}
++            aria-controls={`panel-${tab.id}`}
++            tabIndex={selected ? 0 : -1}
++            onClick={() => onChange(tab.id)}
++            onKeyDown={(e) => handleKeyDown(e, index)}
++            className={`relative shrink-0 whitespace-nowrap px-3.5 py-3 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent-500 ${
++              selected ? "text-ink-900" : "text-ink-500 hover:text-ink-900"
++            }`}
++          >
++            {tab.label}
++            <span
++              aria-hidden="true"
++              className={`absolute inset-x-3 -bottom-px h-0.5 rounded-full transition-colors ${
++                selected ? "bg-accent-500" : "bg-transparent"
++              }`}
++            />
++          </button>
++        );
++      })}
++    </div>
++  );
++}
+diff --git a/src/components/Toast.tsx b/src/components/Toast.tsx
+new file mode 100644
+index 0000000..2fa3ba5
+--- /dev/null
++++ b/src/components/Toast.tsx
+@@ -0,0 +1,80 @@
++import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from "react";
++
++interface Toast {
++  id: string;
++  kind: "success" | "error" | "info";
++  message: string;
++}
++
++interface ToastContextValue {
++  push: (kind: Toast["kind"], message: string) => void;
++}
++
++const ToastContext = createContext<ToastContextValue | null>(null);
++
++export function useToast(): ToastContextValue {
++  const ctx = useContext(ToastContext);
++  if (!ctx) throw new Error("useToast must be used within <ToastProvider>");
++  return ctx;
++}
++
++const KIND_STYLES: Record<Toast["kind"], string> = {
++  success: "border-accent-600/20 bg-white text-ink-900 before:bg-[var(--color-accent-500)]",
++  error: "border-danger-500/20 bg-white text-ink-900 before:bg-[var(--color-danger-500)]",
++  info: "border-border bg-white text-ink-900 before:bg-ink-500",
++};
++
++export function ToastProvider({ children }: { children: ReactNode }) {
++  const [toasts, setToasts] = useState<Toast[]>([]);
++  const timers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
++
++  const dismiss = useCallback((id: string) => {
++    setToasts((prev) => prev.filter((t) => t.id !== id));
++    const timer = timers.current.get(id);
++    if (timer) {
++      clearTimeout(timer);
++      timers.current.delete(id);
++    }
++  }, []);
++
++  const push = useCallback(
++    (kind: Toast["kind"], message: string) => {
++      const id = crypto.randomUUID();
++      setToasts((prev) => [...prev, { id, kind, message }]);
++      const timer = setTimeout(() => dismiss(id), 5000);
++      timers.current.set(id, timer);
++    },
++    [dismiss],
++  );
++
++  return (
++    <ToastContext.Provider value={{ push }}>
++      {children}
++      <div
++        aria-live="polite"
++        aria-atomic="false"
++        className="pointer-events-none fixed bottom-4 right-4 z-[100] flex w-full max-w-sm flex-col gap-2"
++      >
++        {toasts.map((t) => (
++          <div
++            key={t.id}
++            role="status"
++            className={`pointer-events-auto relative overflow-hidden rounded-lg border py-3 pl-4 pr-9 text-sm shadow-popover before:absolute before:inset-y-0 before:left-0 before:w-1 ${KIND_STYLES[t.kind]}`}
++          >
++            {t.message}
++            <button
++              type="button"
++              onClick={() => dismiss(t.id)}
++              aria-label="Dismiss notification"
++              className="absolute right-2 top-2 rounded p-1 text-ink-400 hover:bg-canvas hover:text-ink-700"
++            >
++              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" aria-hidden="true">
++                <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
++              </svg>
++            </button>
++          </div>
++        ))}
++      </div>
++    </ToastContext.Provider>
++  );
++}
+diff --git a/src/features/account/AccountProfileTab.tsx b/src/features/account/AccountProfileTab.tsx
+new file mode 100644
+index 0000000..ce720c6
+--- /dev/null
++++ b/src/features/account/AccountProfileTab.tsx
+@@ -0,0 +1,284 @@
++import { useState } from "react";
++import { Badge } from "../../components/Badge";
++import { ConfirmDialog } from "../../components/ConfirmDialog";
++import { FormField, Select } from "../../components/FormField";
++import { SectionCard } from "../../components/SectionCard";
++import { useToast } from "../../components/Toast";
++import type { AccountState } from "../../types";
++import { emailError, maxLength, minLength, required, type FieldErrors } from "../../lib/validation";
++
++const TIMEZONES = [
++  "UTC",
++  "America/Los_Angeles",
++  "America/Denver",
++  "America/Chicago",
++  "America/New_York",
++  "Europe/London",
++  "Europe/Berlin",
++  "Asia/Kolkata",
++  "Asia/Tokyo",
++  "Australia/Sydney",
++];
++
++const INITIAL_ACCOUNT: AccountState = {
++  fullName: "Jordan Reyes",
++  email: "jordan.reyes@example.com",
++  timezone: "America/New_York",
++  bio: "Product engineer focused on developer tooling.",
++};
++
++type ProfileField = "fullName" | "email" | "bio";
++type PasswordField = "current" | "next" | "confirm";
++
++export function AccountProfileTab() {
++  const { push } = useToast();
++
++  // --- Profile form: separate "saved" and "draft" so we can detect dirtiness and revert ---
++  const [saved, setSaved] = useState<AccountState>(INITIAL_ACCOUNT);
++  const [draft, setDraft] = useState<AccountState>(INITIAL_ACCOUNT);
++  const [profileErrors, setProfileErrors] = useState<FieldErrors<ProfileField>>({});
++  const [savingProfile, setSavingProfile] = useState(false);
++
++  const isDirty = JSON.stringify(saved) !== JSON.stringify(draft);
++
++  function validateProfile(state: AccountState): FieldErrors<ProfileField> {
++    return {
++      fullName: required(state.fullName, "Full name") ?? maxLength(state.fullName, 80, "Full name"),
++      email: emailError(state.email),
++      bio: maxLength(state.bio, 280, "Bio"),
++    };
++  }
++
++  function handleProfileSubmit(e: React.FormEvent) {
++    e.preventDefault();
++    const errors = validateProfile(draft);
++    const hasErrors = Object.values(errors).some(Boolean);
++    setProfileErrors(errors);
++    if (hasErrors) {
++      push("error", "Fix the highlighted fields before saving.");
++      return;
++    }
++    setSavingProfile(true);
++    // Simulated network round-trip so the loading/disabled state is real, not just cosmetic.
++    setTimeout(() => {
++      setSaved(draft);
++      setSavingProfile(false);
++      push("success", "Profile updated.");
++    }, 500);
++  }
++
++  function handleProfileReset() {
++    setDraft(saved);
++    setProfileErrors({});
++  }
++
++  // --- Password change ---
++  const [pwd, setPwd] = useState({ current: "", next: "", confirm: "" });
++  const [pwdErrors, setPwdErrors] = useState<FieldErrors<PasswordField>>({});
++  const [changingPwd, setChangingPwd] = useState(false);
++
++  function validatePassword(): FieldErrors<PasswordField> {
++    const current = required(pwd.current, "Current password");
++    const next =
++      required(pwd.next, "New password") ??
++      minLength(pwd.next, 10, "New password") ??
++      (pwd.next && pwd.next === pwd.current ? "New password must differ from the current password." : undefined);
++    const confirm =
++      required(pwd.confirm, "Confirmation") ?? (pwd.confirm !== pwd.next ? "Passwords do not match." : undefined);
++    return { current, next, confirm };
++  }
++
++  function handlePasswordSubmit(e: React.FormEvent) {
++    e.preventDefault();
++    const errors = validatePassword();
++    setPwdErrors(errors);
++    if (Object.values(errors).some(Boolean)) {
++      push("error", "Fix the highlighted fields before changing your password.");
++      return;
++    }
++    setChangingPwd(true);
++    setTimeout(() => {
++      setChangingPwd(false);
++      setPwd({ current: "", next: "", confirm: "" });
++      setPwdErrors({});
++      push("success", "Password changed. You'll stay signed in on this device.");
++    }, 600);
++  }
++
++  // --- Delete account (destructive, type-to-confirm) ---
++  const [deleteOpen, setDeleteOpen] = useState(false);
++  const [deleted, setDeleted] = useState(false);
++
++  return (
++    <div className="flex flex-col gap-6">
++      <SectionCard
++        title="Profile"
++        description="This information may be visible to other members of your team."
++        footer={
++          <>
++            <button
++              type="button"
++              onClick={handleProfileReset}
++              disabled={!isDirty || savingProfile}
++              className="rounded-md px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
++            >
++              Discard changes
++            </button>
++            <button
++              type="submit"
++              form="profile-form"
++              disabled={!isDirty || savingProfile}
++              className="rounded-md bg-accent-500 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-accent-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500 disabled:cursor-not-allowed disabled:bg-ink-400/50"
++            >
++              {savingProfile ? "Saving…" : "Save changes"}
++            </button>
++          </>
++        }
++      >
++        <form id="profile-form" onSubmit={handleProfileSubmit} className="grid gap-4 sm:grid-cols-2" noValidate>
++          <div className="flex items-center gap-4 sm:col-span-2">
++            <div
++              aria-hidden="true"
++              className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent-100 text-lg font-semibold text-accent-700"
++            >
++              {draft.fullName
++                .split(" ")
++                .map((p) => p[0])
++                .join("")
++                .slice(0, 2)
++                .toUpperCase() || "?"}
++            </div>
++            <div>
++              <p className="text-sm font-medium text-ink-900">Profile photo</p>
++              <p className="text-xs text-ink-400">Generated from your initials — custom uploads aren't wired up in this build.</p>
++            </div>
++          </div>
++
++          <FormField
++            label="Full name"
++            value={draft.fullName}
++            onChange={(e) => setDraft((d) => ({ ...d, fullName: e.target.value }))}
++            error={profileErrors.fullName}
++            autoComplete="name"
++          />
++          <FormField
++            label="Email address"
++            type="email"
++            value={draft.email}
++            onChange={(e) => setDraft((d) => ({ ...d, email: e.target.value }))}
++            error={profileErrors.email}
++            autoComplete="email"
++          />
++          <Select
++            label="Timezone"
++            value={draft.timezone}
++            onChange={(e) => setDraft((d) => ({ ...d, timezone: e.target.value }))}
++          >
++            {TIMEZONES.map((tz) => (
++              <option key={tz} value={tz}>
++                {tz}
++              </option>
++            ))}
++          </Select>
++          <div className="sm:col-span-2">
++            <FormField
++              as="textarea"
++              label="Bio"
++              value={draft.bio}
++              onChange={(e) => setDraft((d) => ({ ...d, bio: e.target.value }))}
++              error={profileErrors.bio}
++              hint={`${draft.bio.length}/280`}
++              maxLength={280}
++            />
++          </div>
++        </form>
++      </SectionCard>
++
++      <SectionCard
++        title="Change password"
++        description="Choose a password that's at least 10 characters and not used elsewhere."
++        footer={
++          <button
++            type="submit"
++            form="password-form"
++            disabled={changingPwd}
++            className="rounded-md bg-accent-500 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-accent-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500 disabled:cursor-not-allowed disabled:bg-ink-400/50"
++          >
++            {changingPwd ? "Updating…" : "Update password"}
++          </button>
++        }
++      >
++        <form id="password-form" onSubmit={handlePasswordSubmit} className="grid gap-4 sm:grid-cols-2" noValidate>
++          <div className="sm:col-span-2">
++            <FormField
++              label="Current password"
++              type="password"
++              value={pwd.current}
++              onChange={(e) => setPwd((p) => ({ ...p, current: e.target.value }))}
++              error={pwdErrors.current}
++              autoComplete="current-password"
++            />
++          </div>
++          <FormField
++            label="New password"
++            type="password"
++            value={pwd.next}
++            onChange={(e) => setPwd((p) => ({ ...p, next: e.target.value }))}
++            error={pwdErrors.next}
++            autoComplete="new-password"
++          />
++          <FormField
++            label="Confirm new password"
++            type="password"
++            value={pwd.confirm}
++            onChange={(e) => setPwd((p) => ({ ...p, confirm: e.target.value }))}
++            error={pwdErrors.confirm}
++            autoComplete="new-password"
++          />
++        </form>
++      </SectionCard>
++
++      <SectionCard
++        title="Danger zone"
++        description="Deleting your account is permanent and cannot be undone."
++        tone="danger"
++        footer={
++          <button
++            type="button"
++            onClick={() => setDeleteOpen(true)}
++            disabled={deleted}
++            className="rounded-md bg-danger-500 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-danger-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-500 disabled:cursor-not-allowed disabled:opacity-50"
++          >
++            Delete account
++          </button>
++        }
++      >
++        {deleted ? (
++          <div className="flex items-center gap-2">
++            <Badge tone="danger">Deletion scheduled</Badge>
++            <p className="text-sm text-ink-500">This account will be permanently removed. (Simulated — nothing was actually deleted.)</p>
++          </div>
++        ) : (
++          <p className="text-sm text-ink-500">
++            This removes your profile, revokes every API key you own, and removes you from all teams. Team data owned
++            by others is unaffected.
++          </p>
++        )}
++      </SectionCard>
++
++      <ConfirmDialog
++        open={deleteOpen}
++        onClose={() => setDeleteOpen(false)}
++        onConfirm={() => {
++          setDeleted(true);
++          push("success", "Account deletion simulated — this is a mock action, nothing was sent anywhere.");
++        }}
++        title="Delete your account?"
++        description={`This permanently deletes ${saved.fullName}'s account, revokes all API keys, and removes them from every team. This cannot be undone.`}
++        confirmLabel="Delete account"
++        busyLabel="Deleting…"
++        typeToConfirm={saved.email}
++      />
++    </div>
++  );
++}
+diff --git a/src/features/apiKeys/ApiKeysTab.tsx b/src/features/apiKeys/ApiKeysTab.tsx
+new file mode 100644
+index 0000000..199451b
+--- /dev/null
++++ b/src/features/apiKeys/ApiKeysTab.tsx
+@@ -0,0 +1,317 @@
++import { useId, useReducer, useRef, useState } from "react";
++import { Badge } from "../../components/Badge";
++import { ConfirmDialog } from "../../components/ConfirmDialog";
++import { FormField, Select } from "../../components/FormField";
++import { SectionCard } from "../../components/SectionCard";
++import { useToast } from "../../components/Toast";
++import { formatDate, relativeFromNow, isoDaysAgo } from "../../lib/format";
++import { makeApiKeySecret, makeId } from "../../lib/id";
++import { required } from "../../lib/validation";
++import type { ApiKey, ApiKeyScope } from "../../types";
++
++const SCOPE_LABEL: Record<ApiKeyScope, string> = {
++  "read-only": "Read only",
++  "read-write": "Read & write",
++  admin: "Admin",
++};
++
++const SCOPE_TONE: Record<ApiKeyScope, "neutral" | "accent" | "danger"> = {
++  "read-only": "neutral",
++  "read-write": "accent",
++  admin: "danger",
++};
++
++const INITIAL_KEYS: ApiKey[] = [
++  {
++    id: makeId("key"),
++    name: "Production backend",
++    scope: "read-write",
++    last4: "8f2a",
++    createdAt: isoDaysAgo(210),
++    lastUsedAt: isoDaysAgo(0),
++  },
++  {
++    id: makeId("key"),
++    name: "CI pipeline",
++    scope: "read-only",
++    last4: "c103",
++    createdAt: isoDaysAgo(64),
++    lastUsedAt: isoDaysAgo(2),
++  },
++  {
++    id: makeId("key"),
++    name: "Legacy import script",
++    scope: "admin",
++    last4: "44e9",
++    createdAt: isoDaysAgo(400),
++    lastUsedAt: null,
++  },
++];
++
++type Action =
++  | { type: "add"; key: ApiKey }
++  | { type: "revoke"; id: string };
++
++function keysReducer(state: ApiKey[], action: Action): ApiKey[] {
++  switch (action.type) {
++    case "add":
++      return [action.key, ...state];
++    case "revoke":
++      return state.filter((k) => k.id !== action.id);
++  }
++}
++
++export function ApiKeysTab() {
++  const { push } = useToast();
++  const [keys, dispatch] = useReducer(keysReducer, INITIAL_KEYS);
++
++  // --- Create flow ---
++  const [createOpen, setCreateOpen] = useState(false);
++  const [newName, setNewName] = useState("");
++  const [newScope, setNewScope] = useState<ApiKeyScope>("read-only");
++  const [nameError, setNameError] = useState<string | undefined>();
++  const [revealedSecret, setRevealedSecret] = useState<string | null>(null);
++  const [copied, setCopied] = useState(false);
++  const createDialogRef = useRef<HTMLDialogElement>(null);
++  const revealDialogRef = useRef<HTMLDialogElement>(null);
++  const nameId = useId();
++
++  function openCreate() {
++    setNewName("");
++    setNewScope("read-only");
++    setNameError(undefined);
++    setCreateOpen(true);
++    requestAnimationFrame(() => createDialogRef.current?.showModal());
++  }
++
++  function closeCreate() {
++    setCreateOpen(false);
++    createDialogRef.current?.close();
++  }
++
++  function handleCreateSubmit(e: React.FormEvent) {
++    e.preventDefault();
++    const err = required(newName, "Key name");
++    if (err) {
++      setNameError(err);
++      return;
++    }
++    const secret = makeApiKeySecret();
++    const key: ApiKey = {
++      id: makeId("key"),
++      name: newName.trim(),
++      scope: newScope,
++      last4: secret.slice(-4),
++      createdAt: new Date().toISOString(),
++      lastUsedAt: null,
++    };
++    dispatch({ type: "add", key });
++    closeCreate();
++    setRevealedSecret(secret);
++    setCopied(false);
++    requestAnimationFrame(() => revealDialogRef.current?.showModal());
++  }
++
++  async function copySecret() {
++    if (!revealedSecret) return;
++    try {
++      await navigator.clipboard.writeText(revealedSecret);
++      setCopied(true);
++      push("success", "Key copied to clipboard.");
++    } catch {
++      push("error", "Couldn't access the clipboard — copy the key manually.");
++    }
++  }
++
++  function closeReveal() {
++    revealDialogRef.current?.close();
++    setRevealedSecret(null);
++    push("info", "New key created. Store it somewhere safe — it won't be shown again.");
++  }
++
++  // --- Revoke flow ---
++  const [revokeTarget, setRevokeTarget] = useState<ApiKey | null>(null);
++
++  return (
++    <div className="flex flex-col gap-6">
++      <SectionCard
++        title="API keys"
++        description="Keys authenticate requests to the API on your behalf. Treat them like passwords."
++        footer={
++          <button
++            type="button"
++            onClick={openCreate}
++            className="rounded-md bg-accent-500 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-accent-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500"
++          >
++            Create API key
++          </button>
++        }
++      >
++        {keys.length === 0 ? (
++          <div className="flex flex-col items-center gap-2 py-10 text-center">
++            <p className="text-sm font-medium text-ink-700">No API keys yet</p>
++            <p className="max-w-sm text-sm text-ink-400">
++              Create a key to start making authenticated requests to the API.
++            </p>
++          </div>
++        ) : (
++          <div className="table-scroll -mx-1 overflow-x-auto">
++            <table className="w-full min-w-[640px] border-collapse text-sm">
++              <thead>
++                <tr className="border-b border-border text-left text-xs font-medium uppercase tracking-wide text-ink-400">
++                  <th className="px-3 py-2 font-medium">Name</th>
++                  <th className="px-3 py-2 font-medium">Key</th>
++                  <th className="px-3 py-2 font-medium">Scope</th>
++                  <th className="px-3 py-2 font-medium">Created</th>
++                  <th className="px-3 py-2 font-medium">Last used</th>
++                  <th className="px-3 py-2 font-medium">
++                    <span className="sr-only">Actions</span>
++                  </th>
++                </tr>
++              </thead>
++              <tbody>
++                {keys.map((key) => (
++                  <tr key={key.id} className="border-b border-border last:border-0">
++                    <td className="px-3 py-3 font-medium text-ink-900">{key.name}</td>
++                    <td className="px-3 py-3">
++                      <code className="rounded bg-canvas px-1.5 py-0.5 font-mono text-xs text-ink-500">
++                        mk_live_••••••••{key.last4}
++                      </code>
++                    </td>
++                    <td className="px-3 py-3">
++                      <Badge tone={SCOPE_TONE[key.scope]}>{SCOPE_LABEL[key.scope]}</Badge>
++                    </td>
++                    <td className="px-3 py-3 text-ink-500">{formatDate(key.createdAt)}</td>
++                    <td className="px-3 py-3 text-ink-500">{relativeFromNow(key.lastUsedAt)}</td>
++                    <td className="px-3 py-3 text-right">
++                      <button
++                        type="button"
++                        onClick={() => setRevokeTarget(key)}
++                        className="rounded-md px-2 py-1 text-sm font-medium text-danger-500 hover:bg-danger-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-danger-500"
++                      >
++                        Revoke
++                      </button>
++                    </td>
++                  </tr>
++                ))}
++              </tbody>
++            </table>
++          </div>
++        )}
++      </SectionCard>
++
++      {/* Create key dialog */}
++      <dialog
++        ref={createDialogRef}
++        aria-labelledby={`${nameId}-title`}
++        className="w-full max-w-md rounded-xl bg-white p-0 shadow-popover"
++        onCancel={() => setCreateOpen(false)}
++        onClose={() => setCreateOpen(false)}
++      >
++        {createOpen && (
++          <form onSubmit={handleCreateSubmit} noValidate>
++            <div className="p-5">
++              <h2 id={`${nameId}-title`} className="text-base font-semibold text-ink-900">
++                Create API key
++              </h2>
++              <p className="mt-1 text-sm text-ink-500">
++                The full key is only shown once, immediately after creation.
++              </p>
++              <div className="mt-4 flex flex-col gap-4">
++                <FormField
++                  label="Key name"
++                  placeholder="e.g. Staging worker"
++                  value={newName}
++                  onChange={(e) => setNewName(e.target.value)}
++                  error={nameError}
++                  autoFocus
++                />
++                <Select label="Scope" value={newScope} onChange={(e) => setNewScope(e.target.value as ApiKeyScope)}>
++                  <option value="read-only">Read only — can fetch data, no mutations</option>
++                  <option value="read-write">Read &amp; write — can create and update records</option>
++                  <option value="admin">Admin — full access, including billing and team settings</option>
++                </Select>
++              </div>
++            </div>
++            <div className="flex justify-end gap-2 rounded-b-xl border-t border-border bg-canvas px-5 py-3">
++              <button
++                type="button"
++                onClick={closeCreate}
++                className="rounded-md px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-white"
++              >
++                Cancel
++              </button>
++              <button
++                type="submit"
++                className="rounded-md bg-accent-500 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-accent-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500"
++              >
++                Create key
++              </button>
++            </div>
++          </form>
++        )}
++      </dialog>
++
++      {/* Reveal-once secret dialog */}
++      <dialog
++        ref={revealDialogRef}
++        aria-labelledby="reveal-title"
++        className="w-full max-w-md rounded-xl bg-white p-0 shadow-popover"
++        onCancel={(e) => e.preventDefault()}
++      >
++        {revealedSecret && (
++          <div>
++            <div className="p-5">
++              <h2 id="reveal-title" className="text-base font-semibold text-ink-900">
++                Copy your new API key
++              </h2>
++              <p className="mt-1 text-sm text-ink-500">
++                For security, this is the only time the full key is shown. Store it in a password manager or secrets
++                vault.
++              </p>
++              <div className="mt-4 flex items-center gap-2 rounded-md border border-border-strong bg-canvas p-3">
++                <code className="flex-1 overflow-x-auto whitespace-nowrap font-mono text-sm text-ink-900">
++                  {revealedSecret}
++                </code>
++                <button
++                  type="button"
++                  onClick={copySecret}
++                  className="shrink-0 rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-ink-700 shadow-sm ring-1 ring-inset ring-border-strong hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent-500"
++                >
++                  {copied ? "Copied" : "Copy"}
++                </button>
++              </div>
++              <p className="mt-3 text-xs text-warn-500">
++                Anyone with this key can act on your account within its granted scope. Never commit it to source
++                control.
++              </p>
++            </div>
++            <div className="flex justify-end rounded-b-xl border-t border-border bg-canvas px-5 py-3">
++              <button
++                type="button"
++                onClick={closeReveal}
++                className="rounded-md bg-accent-500 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-accent-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500"
++              >
++                Done, I've saved it
++              </button>
++            </div>
++          </div>
++        )}
++      </dialog>
++
++      <ConfirmDialog
++        open={!!revokeTarget}
++        onClose={() => setRevokeTarget(null)}
++        onConfirm={() => {
++          if (!revokeTarget) return;
++          dispatch({ type: "revoke", id: revokeTarget.id });
++          push("success", `"${revokeTarget.name}" revoked.`);
++        }}
++        title={`Revoke "${revokeTarget?.name}"?`}
++        description="Any application using this key will immediately lose access. This cannot be undone — you'll need to create a new key to restore access."
++        confirmLabel="Revoke key"
++        busyLabel="Revoking…"
++      />
++    </div>
++  );
++}
+diff --git a/src/features/billing/BillingTab.tsx b/src/features/billing/BillingTab.tsx
+new file mode 100644
+index 0000000..02e1f77
+--- /dev/null
++++ b/src/features/billing/BillingTab.tsx
+@@ -0,0 +1,219 @@
++import { useState } from "react";
++import { Badge } from "../../components/Badge";
++import { ConfirmDialog } from "../../components/ConfirmDialog";
++import { SectionCard } from "../../components/SectionCard";
++import { useToast } from "../../components/Toast";
++import { formatDate } from "../../lib/format";
++import type { Invoice, PlanId } from "../../types";
++import { MOCK_INVOICES, PLANS } from "./plans";
++import { UsageMeter } from "./UsageMeter";
++
++const INVOICE_STATUS_TONE: Record<Invoice["status"], "success" | "warn" | "danger"> = {
++  paid: "success",
++  pending: "warn",
++  failed: "danger",
++};
++
++export function BillingTab() {
++  const { push } = useToast();
++  const [currentPlanId, setCurrentPlanId] = useState<PlanId>("pro");
++  const [selectedPlanId, setSelectedPlanId] = useState<PlanId>("pro");
++  const [switchTarget, setSwitchTarget] = useState<PlanId | null>(null);
++  const [cancelOpen, setCancelOpen] = useState(false);
++  const [cancelled, setCancelled] = useState(false);
++  const [cancelEffectiveDate, setCancelEffectiveDate] = useState<string | null>(null);
++
++  const currentPlan = PLANS.find((p) => p.id === currentPlanId)!;
++  const seatsUsed = 12;
++  const apiCallsUsed = 184_203;
++
++  const currentIndex = PLANS.findIndex((p) => p.id === currentPlanId);
++  const selectedIndex = PLANS.findIndex((p) => p.id === switchTarget);
++  const isDowngrade = switchTarget !== null && selectedIndex < currentIndex;
++
++  return (
++    <div className="flex flex-col gap-6">
++      {cancelled && cancelEffectiveDate && (
++        <div className="rounded-lg border border-warn-500/30 bg-warn-50 px-4 py-3 text-sm text-ink-700">
++          Your subscription is set to cancel at the end of the current billing period ({formatDate(cancelEffectiveDate)}). You'll keep Pro features until then.
++        </div>
++      )}
++
++      <SectionCard title="Current plan" description="Your plan determines usage limits and available features.">
++        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
++          <div>
++            <div className="flex items-center gap-2">
++              <p className="text-lg font-semibold text-ink-900">{currentPlan.name}</p>
++              <Badge tone="accent">{currentPlan.price} {currentPlan.cadence}</Badge>
++              {cancelled && <Badge tone="warn">Cancels soon</Badge>}
++            </div>
++            <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink-500">
++              {currentPlan.highlights.map((h) => (
++                <li key={h} className="flex items-center gap-1">
++                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="text-accent-500">
++                    <path d="M3.5 8.5l3 3 6-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
++                  </svg>
++                  {h}
++                </li>
++              ))}
++            </ul>
++          </div>
++          {!cancelled && currentPlanId !== "free" && (
++            <button
++              type="button"
++              onClick={() => setCancelOpen(true)}
++              className="shrink-0 rounded-md px-3 py-1.5 text-sm font-medium text-danger-500 hover:bg-danger-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-danger-500"
++            >
++              Cancel plan
++            </button>
++          )}
++        </div>
++
++        <div className="mt-5 grid gap-4 border-t border-border pt-5 sm:grid-cols-2">
++          <UsageMeter label="Seats" used={seatsUsed} limit={currentPlan.seatLimit} />
++          <UsageMeter label="API calls this month" used={apiCallsUsed} limit={currentPlan.apiCallLimit} />
++        </div>
++      </SectionCard>
++
++      <SectionCard title="Change plan" description="Switching plans takes effect immediately; you're billed a prorated difference.">
++        <div className="grid gap-3 sm:grid-cols-3">
++          {PLANS.map((plan) => {
++            const isCurrent = plan.id === currentPlanId;
++            const isSelected = plan.id === selectedPlanId;
++            return (
++              <label
++                key={plan.id}
++                className={`relative flex cursor-pointer flex-col gap-2 rounded-lg border p-4 text-sm transition-colors ${
++                  isSelected ? "border-accent-500 ring-1 ring-accent-500" : "border-border hover:border-border-strong"
++                }`}
++              >
++                <input
++                  type="radio"
++                  name="plan"
++                  value={plan.id}
++                  checked={isSelected}
++                  onChange={() => setSelectedPlanId(plan.id)}
++                  className="absolute right-3 top-3 h-4 w-4 accent-[var(--color-accent-500)]"
++                />
++                <span className="pr-6 font-semibold text-ink-900">{plan.name}</span>
++                <span className="text-ink-500">
++                  {plan.price} <span className="text-xs text-ink-400">{plan.cadence}</span>
++                </span>
++                {isCurrent && <Badge tone="neutral">Current plan</Badge>}
++              </label>
++            );
++          })}
++        </div>
++        {selectedPlanId !== currentPlanId && (
++          <div className="mt-4 flex justify-end">
++            <button
++              type="button"
++              onClick={() => setSwitchTarget(selectedPlanId)}
++              className="rounded-md bg-accent-500 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-accent-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500"
++            >
++              Switch to {PLANS.find((p) => p.id === selectedPlanId)!.name}
++            </button>
++          </div>
++        )}
++      </SectionCard>
++
++      <SectionCard
++        title="Payment method"
++        description="Used for your monthly subscription charge."
++        footer={
++          <button
++            type="button"
++            onClick={() => push("info", "Payment method editing isn't wired up in this demo build.")}
++            className="rounded-md px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-canvas"
++          >
++            Update payment method
++          </button>
++        }
++      >
++        <div className="flex items-center gap-3 text-sm">
++          <div className="flex h-8 w-12 items-center justify-center rounded bg-ink-900 text-[10px] font-bold tracking-wide text-white">
++            VISA
++          </div>
++          <div>
++            <p className="font-medium text-ink-900">Visa ending in 4242</p>
++            <p className="text-ink-400">Expires 08/2029</p>
++          </div>
++        </div>
++      </SectionCard>
++
++      <SectionCard title="Invoice history" description="Download past invoices for your records.">
++        <div className="table-scroll -mx-1 overflow-x-auto">
++          <table className="w-full min-w-[480px] border-collapse text-sm">
++            <thead>
++              <tr className="border-b border-border text-left text-xs font-medium uppercase tracking-wide text-ink-400">
++                <th className="px-3 py-2 font-medium">Invoice</th>
++                <th className="px-3 py-2 font-medium">Date</th>
++                <th className="px-3 py-2 font-medium">Amount</th>
++                <th className="px-3 py-2 font-medium">Status</th>
++                <th className="px-3 py-2 font-medium">
++                  <span className="sr-only">Actions</span>
++                </th>
++              </tr>
++            </thead>
++            <tbody>
++              {MOCK_INVOICES.map((inv) => (
++                <tr key={inv.id} className="border-b border-border last:border-0">
++                  <td className="px-3 py-3 font-mono text-xs text-ink-500">{inv.id}</td>
++                  <td className="px-3 py-3 text-ink-700">{formatDate(inv.date)}</td>
++                  <td className="px-3 py-3 text-ink-900">{inv.amount}</td>
++                  <td className="px-3 py-3">
++                    <Badge tone={INVOICE_STATUS_TONE[inv.status]}>{inv.status}</Badge>
++                  </td>
++                  <td className="px-3 py-3 text-right">
++                    <button
++                      type="button"
++                      onClick={() => push("info", `Downloading ${inv.id} isn't wired up in this demo build.`)}
++                      className="rounded-md px-2 py-1 text-sm font-medium text-accent-600 hover:bg-accent-50"
++                    >
++                      Download
++                    </button>
++                  </td>
++                </tr>
++              ))}
++            </tbody>
++          </table>
++        </div>
++      </SectionCard>
++
++      <ConfirmDialog
++        open={switchTarget !== null}
++        onClose={() => setSwitchTarget(null)}
++        onConfirm={() => {
++          if (!switchTarget) return;
++          setCurrentPlanId(switchTarget);
++          setCancelled(false);
++          push("success", `Switched to the ${PLANS.find((p) => p.id === switchTarget)!.name} plan.`);
++        }}
++        title={`Switch to ${switchTarget ? PLANS.find((p) => p.id === switchTarget)!.name : ""}?`}
++        description={
++          isDowngrade
++            ? "Downgrading reduces your seat and usage limits immediately. If you're currently over the new plan's limits, some team members or integrations may lose access."
++            : "You'll be charged a prorated amount for the rest of this billing cycle, then the new plan's price on your next renewal."
++        }
++        confirmLabel={`Switch plan`}
++        tone={isDowngrade ? "danger" : "default"}
++        busyLabel="Switching…"
++      />
++
++      <ConfirmDialog
++        open={cancelOpen}
++        onClose={() => setCancelOpen(false)}
++        onConfirm={() => {
++          setCancelled(true);
++          setCancelEffectiveDate(new Date(Date.now() + 1000 * 60 * 60 * 24 * 18).toISOString());
++          push("success", "Your plan is set to cancel at the end of the billing period.");
++        }}
++        title="Cancel your subscription?"
++        description="You'll keep Pro features until the end of the current billing period, then your account drops to the Free plan. Any usage above Free's limits will be blocked at that point."
++        confirmLabel="Cancel plan"
++        busyLabel="Cancelling…"
++        typeToConfirm="CANCEL"
++      />
++    </div>
++  );
++}
+diff --git a/src/features/billing/UsageMeter.tsx b/src/features/billing/UsageMeter.tsx
+new file mode 100644
+index 0000000..c8bdae3
+--- /dev/null
++++ b/src/features/billing/UsageMeter.tsx
+@@ -0,0 +1,32 @@
++interface UsageMeterProps {
++  label: string;
++  used: number;
++  limit: number;
++}
++
++export function UsageMeter({ label, used, limit }: UsageMeterProps) {
++  const isUnlimited = !Number.isFinite(limit);
++  const pct = isUnlimited ? 0 : Math.min(100, Math.round((used / limit) * 100));
++  const tone = pct >= 90 ? "bg-danger-500" : pct >= 70 ? "bg-warn-500" : "bg-accent-500";
++
++  return (
++    <div>
++      <div className="flex items-baseline justify-between text-sm">
++        <span className="font-medium text-ink-700">{label}</span>
++        <span className="text-ink-400">
++          {used.toLocaleString()} / {isUnlimited ? "Unlimited" : limit.toLocaleString()}
++        </span>
++      </div>
++      <div
++        className="mt-1.5 h-2 overflow-hidden rounded-full bg-canvas"
++        role="progressbar"
++        aria-label={label}
++        aria-valuenow={isUnlimited ? undefined : used}
++        aria-valuemin={0}
++        aria-valuemax={isUnlimited ? undefined : limit}
++      >
++        {!isUnlimited && <div className={`h-full rounded-full ${tone}`} style={{ width: `${pct}%` }} />}
++      </div>
++    </div>
++  );
++}
+diff --git a/src/features/billing/plans.ts b/src/features/billing/plans.ts
+new file mode 100644
+index 0000000..31bf0e1
+--- /dev/null
++++ b/src/features/billing/plans.ts
+@@ -0,0 +1,39 @@
++import type { Invoice, PlanDef } from "../../types";
++import { isoDaysAgo } from "../../lib/format";
++
++export const PLANS: PlanDef[] = [
++  {
++    id: "free",
++    name: "Free",
++    price: "$0",
++    cadence: "forever",
++    seatLimit: 3,
++    apiCallLimit: 10_000,
++    highlights: ["3 seats", "10,000 API calls / mo", "Community support"],
++  },
++  {
++    id: "pro",
++    name: "Pro",
++    price: "$49",
++    cadence: "per month",
++    seatLimit: 20,
++    apiCallLimit: 250_000,
++    highlights: ["20 seats", "250,000 API calls / mo", "Priority email support", "Audit log (30 days)"],
++  },
++  {
++    id: "enterprise",
++    name: "Enterprise",
++    price: "Custom",
++    cadence: "billed annually",
++    seatLimit: Infinity,
++    apiCallLimit: Infinity,
++    highlights: ["Unlimited seats", "Unlimited API calls", "SSO & SCIM", "Dedicated support engineer"],
++  },
++];
++
++export const MOCK_INVOICES: Invoice[] = [
++  { id: "inv_2026_07", date: isoDaysAgo(24), amount: "$49.00", status: "paid" },
++  { id: "inv_2026_06", date: isoDaysAgo(54), amount: "$49.00", status: "paid" },
++  { id: "inv_2026_05", date: isoDaysAgo(85), amount: "$49.00", status: "paid" },
++  { id: "inv_2026_04", date: isoDaysAgo(116), amount: "$49.00", status: "failed" },
++];
+diff --git a/src/features/team/TeamTab.tsx b/src/features/team/TeamTab.tsx
+new file mode 100644
+index 0000000..61ebbf4
+--- /dev/null
++++ b/src/features/team/TeamTab.tsx
+@@ -0,0 +1,287 @@
++import { useReducer, useRef, useState } from "react";
++import { Badge } from "../../components/Badge";
++import { ConfirmDialog } from "../../components/ConfirmDialog";
++import { FormField, Select } from "../../components/FormField";
++import { SectionCard } from "../../components/SectionCard";
++import { useToast } from "../../components/Toast";
++import { formatDate, isoDaysAgo } from "../../lib/format";
++import { emailError } from "../../lib/validation";
++import { makeId } from "../../lib/id";
++import type { TeamMember, TeamRole } from "../../types";
++
++const ROLE_LABEL: Record<TeamRole, string> = {
++  owner: "Owner",
++  admin: "Admin",
++  member: "Member",
++  viewer: "Viewer",
++};
++
++const ROLE_DESCRIPTION: Record<TeamRole, string> = {
++  owner: "Full control, including billing and ownership transfer.",
++  admin: "Can manage team members, API keys, and settings.",
++  member: "Can use the product and manage their own resources.",
++  viewer: "Read-only access to shared resources.",
++};
++
++const CURRENT_USER_EMAIL = "jordan.reyes@example.com";
++
++const INITIAL_MEMBERS: TeamMember[] = [
++  { id: makeId("mem"), name: "Jordan Reyes", email: CURRENT_USER_EMAIL, role: "owner", status: "active", joinedAt: isoDaysAgo(410) },
++  { id: makeId("mem"), name: "Priya Natarajan", email: "priya.natarajan@example.com", role: "admin", status: "active", joinedAt: isoDaysAgo(300) },
++  { id: makeId("mem"), name: "Marcus Bell", email: "marcus.bell@example.com", role: "member", status: "active", joinedAt: isoDaysAgo(120) },
++  { id: makeId("mem"), name: "Sofia Álvarez", email: "sofia.alvarez@example.com", role: "viewer", status: "active", joinedAt: isoDaysAgo(40) },
++  { id: makeId("mem"), name: "", email: "devon.k@example.com", role: "member", status: "invited", joinedAt: null },
++];
++
++type Action =
++  | { type: "setRole"; id: string; role: TeamRole }
++  | { type: "remove"; id: string }
++  | { type: "invite"; member: TeamMember };
++
++function membersReducer(state: TeamMember[], action: Action): TeamMember[] {
++  switch (action.type) {
++    case "setRole":
++      return state.map((m) => (m.id === action.id ? { ...m, role: action.role } : m));
++    case "remove":
++      return state.filter((m) => m.id !== action.id);
++    case "invite":
++      return [...state, action.member];
++  }
++}
++
++export function TeamTab() {
++  const { push } = useToast();
++  const [members, dispatch] = useReducer(membersReducer, INITIAL_MEMBERS);
++
++  const active = members.filter((m) => m.status === "active");
++  const pending = members.filter((m) => m.status === "invited");
++  const ownerCount = active.filter((m) => m.role === "owner").length;
++
++  // --- Invite flow ---
++  const [inviteOpen, setInviteOpen] = useState(false);
++  const [inviteEmail, setInviteEmail] = useState("");
++  const [inviteRole, setInviteRole] = useState<TeamRole>("member");
++  const [inviteError, setInviteError] = useState<string | undefined>();
++  const inviteDialogRef = useRef<HTMLDialogElement>(null);
++
++  function openInvite() {
++    setInviteEmail("");
++    setInviteRole("member");
++    setInviteError(undefined);
++    setInviteOpen(true);
++    requestAnimationFrame(() => inviteDialogRef.current?.showModal());
++  }
++
++  function closeInvite() {
++    setInviteOpen(false);
++    inviteDialogRef.current?.close();
++  }
++
++  function handleInviteSubmit(e: React.FormEvent) {
++    e.preventDefault();
++    const err = emailError(inviteEmail);
++    if (err) {
++      setInviteError(err);
++      return;
++    }
++    const normalized = inviteEmail.trim().toLowerCase();
++    if (members.some((m) => m.email.toLowerCase() === normalized)) {
++      setInviteError("This person is already a member or has a pending invite.");
++      return;
++    }
++    dispatch({
++      type: "invite",
++      member: { id: makeId("mem"), name: "", email: inviteEmail.trim(), role: inviteRole, status: "invited", joinedAt: null },
++    });
++    push("success", `Invitation sent to ${inviteEmail.trim()}.`);
++    closeInvite();
++  }
++
++  // --- Remove member (destructive) ---
++  const [removeTarget, setRemoveTarget] = useState<TeamMember | null>(null);
++
++  // --- Revoke invite (lighter-weight: immediate + toast, no modal) ---
++  function revokeInvite(member: TeamMember) {
++    dispatch({ type: "remove", id: member.id });
++    push("info", `Invitation to ${member.email} revoked.`);
++  }
++
++  return (
++    <div className="flex flex-col gap-6">
++      <SectionCard
++        title="Members"
++        description={`${active.length} active member${active.length === 1 ? "" : "s"}.`}
++        footer={
++          <button
++            type="button"
++            onClick={openInvite}
++            className="rounded-md bg-accent-500 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-accent-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500"
++          >
++            Invite member
++          </button>
++        }
++      >
++        <div className="table-scroll -mx-1 overflow-x-auto">
++          <table className="w-full min-w-[560px] border-collapse text-sm">
++            <thead>
++              <tr className="border-b border-border text-left text-xs font-medium uppercase tracking-wide text-ink-400">
++                <th className="px-3 py-2 font-medium">Name</th>
++                <th className="px-3 py-2 font-medium">Role</th>
++                <th className="px-3 py-2 font-medium">Joined</th>
++                <th className="px-3 py-2 font-medium">
++                  <span className="sr-only">Actions</span>
++                </th>
++              </tr>
++            </thead>
++            <tbody>
++              {active.map((member) => {
++                const isOwner = member.role === "owner";
++                const isSelf = member.email.toLowerCase() === CURRENT_USER_EMAIL;
++                const isLastOwner = isOwner && ownerCount <= 1;
++                return (
++                  <tr key={member.id} className="border-b border-border last:border-0">
++                    <td className="px-3 py-3">
++                      <p className="font-medium text-ink-900">
++                        {member.name}
++                        {isSelf && <span className="ml-1.5 text-xs font-normal text-ink-400">(you)</span>}
++                      </p>
++                      <p className="text-xs text-ink-400">{member.email}</p>
++                    </td>
++                    <td className="px-3 py-3">
++                      {isOwner ? (
++                        <span title="Transfer ownership to change this role.">
++                          <Badge tone="accent">Owner</Badge>
++                        </span>
++                      ) : (
++                        <label className="sr-only" htmlFor={`role-${member.id}`}>
++                          Role for {member.name}
++                        </label>
++                      )}
++                      {!isOwner && (
++                        <select
++                          id={`role-${member.id}`}
++                          value={member.role}
++                          onChange={(e) => {
++                            dispatch({ type: "setRole", id: member.id, role: e.target.value as TeamRole });
++                            push("success", `${member.name}'s role changed to ${ROLE_LABEL[e.target.value as TeamRole]}.`);
++                          }}
++                          className="rounded-md border border-border-strong bg-white px-2 py-1 text-sm text-ink-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent-500"
++                        >
++                          <option value="admin">Admin</option>
++                          <option value="member">Member</option>
++                          <option value="viewer">Viewer</option>
++                        </select>
++                      )}
++                    </td>
++                    <td className="px-3 py-3 text-ink-500">{formatDate(member.joinedAt)}</td>
++                    <td className="px-3 py-3 text-right">
++                      <button
++                        type="button"
++                        onClick={() => setRemoveTarget(member)}
++                        disabled={isLastOwner}
++                        title={isLastOwner ? "Transfer ownership before removing the last owner." : undefined}
++                        className="rounded-md px-2 py-1 text-sm font-medium text-danger-500 hover:bg-danger-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-danger-500 disabled:cursor-not-allowed disabled:text-ink-400 disabled:hover:bg-transparent"
++                      >
++                        Remove
++                      </button>
++                    </td>
++                  </tr>
++                );
++              })}
++            </tbody>
++          </table>
++        </div>
++      </SectionCard>
++
++      {pending.length > 0 && (
++        <SectionCard title="Pending invitations" description="These people haven't accepted their invite yet.">
++          <ul className="flex flex-col divide-y divide-border">
++            {pending.map((member) => (
++              <li key={member.id} className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
++                <div>
++                  <p className="text-sm font-medium text-ink-900">{member.email}</p>
++                  <p className="text-xs text-ink-400">Invited as {ROLE_LABEL[member.role]}</p>
++                </div>
++                <div className="flex items-center gap-2">
++                  <Badge tone="warn">Pending</Badge>
++                  <button
++                    type="button"
++                    onClick={() => revokeInvite(member)}
++                    className="rounded-md px-2 py-1 text-sm font-medium text-ink-500 hover:bg-canvas hover:text-danger-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent-500"
++                  >
++                    Revoke
++                  </button>
++                </div>
++              </li>
++            ))}
++          </ul>
++        </SectionCard>
++      )}
++
++      {/* Invite dialog */}
++      <dialog
++        ref={inviteDialogRef}
++        aria-labelledby="invite-title"
++        className="w-full max-w-md rounded-xl bg-white p-0 shadow-popover"
++        onCancel={() => setInviteOpen(false)}
++        onClose={() => setInviteOpen(false)}
++      >
++        {inviteOpen && (
++          <form onSubmit={handleInviteSubmit} noValidate>
++            <div className="p-5">
++              <h2 id="invite-title" className="text-base font-semibold text-ink-900">
++                Invite a team member
++              </h2>
++              <p className="mt-1 text-sm text-ink-500">They'll receive an email invite to join your team.</p>
++              <div className="mt-4 flex flex-col gap-4">
++                <FormField
++                  label="Email address"
++                  type="email"
++                  placeholder="name@company.com"
++                  value={inviteEmail}
++                  onChange={(e) => setInviteEmail(e.target.value)}
++                  error={inviteError}
++                  autoFocus
++                />
++                <Select label="Role" value={inviteRole} onChange={(e) => setInviteRole(e.target.value as TeamRole)}>
++                  <option value="admin">Admin — {ROLE_DESCRIPTION.admin}</option>
++                  <option value="member">Member — {ROLE_DESCRIPTION.member}</option>
++                  <option value="viewer">Viewer — {ROLE_DESCRIPTION.viewer}</option>
++                </Select>
++              </div>
++            </div>
++            <div className="flex justify-end gap-2 rounded-b-xl border-t border-border bg-canvas px-5 py-3">
++              <button
++                type="button"
++                onClick={closeInvite}
++                className="rounded-md px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-white"
++              >
++                Cancel
++              </button>
++              <button
++                type="submit"
++                className="rounded-md bg-accent-500 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-accent-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500"
++              >
++                Send invite
++              </button>
++            </div>
++          </form>
++        )}
++      </dialog>
++
++      <ConfirmDialog
++        open={!!removeTarget}
++        onClose={() => setRemoveTarget(null)}
++        onConfirm={() => {
++          if (!removeTarget) return;
++          dispatch({ type: "remove", id: removeTarget.id });
++          push("success", `${removeTarget.name} removed from the team.`);
++        }}
++        title={`Remove ${removeTarget?.name}?`}
++        description={`${removeTarget?.name} will immediately lose access to this team's data, API keys, and billing. They can be re-invited later.`}
++        confirmLabel="Remove member"
++        busyLabel="Removing…"
++      />
++    </div>
++  );
++}
+diff --git a/src/index.css b/src/index.css
+new file mode 100644
+index 0000000..e4852ef
+--- /dev/null
++++ b/src/index.css
+@@ -0,0 +1,96 @@
++@import "tailwindcss";
++
++@theme {
++  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
++  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
++
++  /* Neutral scale: cool slate, kept desaturated so the single accent reads clearly */
++  --color-canvas: #f7f7f8;
++  --color-surface: #ffffff;
++  --color-surface-raised: #ffffff;
++  --color-border: #e4e4e9;
++  --color-border-strong: #d3d3da;
++
++  --color-ink-900: #16161d;
++  --color-ink-700: #3c3c46;
++  --color-ink-500: #6b6b76;
++  --color-ink-400: #8c8c96;
++
++  /* Accent: teal — deliberately not the default indigo/purple/blue SaaS accent */
++  --color-accent-50: #edfaf7;
++  --color-accent-100: #d2f2ea;
++  --color-accent-400: #23a891;
++  --color-accent-500: #178a77;
++  --color-accent-600: #106e5f;
++  --color-accent-700: #0d5a4e;
++
++  --color-danger-50: #fdf1f0;
++  --color-danger-100: #fbdedb;
++  --color-danger-500: #c8402f;
++  --color-danger-600: #ab3324;
++
++  --color-warn-50: #fdf6e8;
++  --color-warn-500: #b0791b;
++
++  --shadow-panel: 0 1px 2px rgba(20, 20, 30, 0.04), 0 8px 24px -8px rgba(20, 20, 30, 0.08);
++  --shadow-popover: 0 4px 12px rgba(20, 20, 30, 0.08), 0 12px 32px -8px rgba(20, 20, 30, 0.16);
++}
++
++/*
++ * Tailwind v4 puts its own rules inside CSS cascade layers (base/utilities).
++ * Unlayered rules always win over layered ones regardless of specificity, so
++ * any plain (non-@layer) selector here would silently beat utility classes
++ * like `bg-white` on the same element. Everything below is layered into
++ * `base` for that reason — it stays overridable by our own utility classes.
++ */
++@layer base {
++  html {
++    font-family: var(--font-sans);
++    color-scheme: light;
++  }
++
++  body {
++    margin: 0;
++    background: var(--color-canvas);
++    color: var(--color-ink-900);
++  }
++
++  /* Native <dialog> backdrop, used by ConfirmDialog */
++  dialog::backdrop {
++    background: rgba(15, 15, 20, 0.44);
++    backdrop-filter: blur(1px);
++  }
++
++  dialog {
++    border: none;
++    padding: 0;
++    background: transparent;
++    overflow: visible;
++  }
++
++  /* Tailwind's preflight resets margin to 0 on every element, which quietly
++     breaks the browser's native `margin: auto` centering for dialog:modal.
++     Restore it explicitly so showModal() centers the dialog in the viewport. */
++  dialog[open] {
++    position: fixed;
++    inset: 0;
++    margin: auto;
++  }
++
++  /* Consistent focus ring across native + custom controls */
++  :focus-visible {
++    outline: 2px solid var(--color-accent-500);
++    outline-offset: 2px;
++    border-radius: 4px;
++  }
++
++  ::selection {
++    background: var(--color-accent-100);
++  }
++
++  /* Scrollable table containers should not clip the focus ring */
++  .table-scroll {
++    scrollbar-width: thin;
++    scrollbar-color: var(--color-border-strong) transparent;
++  }
++}
+diff --git a/src/lib/format.ts b/src/lib/format.ts
+new file mode 100644
+index 0000000..1e675aa
+--- /dev/null
++++ b/src/lib/format.ts
+@@ -0,0 +1,30 @@
++export function formatDate(iso: string | null): string {
++  if (!iso) return "Never";
++  const d = new Date(iso);
++  return d.toLocaleDateString(undefined, {
++    year: "numeric",
++    month: "short",
++    day: "numeric",
++  });
++}
++
++export function relativeFromNow(iso: string | null): string {
++  if (!iso) return "Never";
++  const then = new Date(iso).getTime();
++  const now = Date.now();
++  const diffMs = now - then;
++  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
++  if (diffDays <= 0) return "Today";
++  if (diffDays === 1) return "Yesterday";
++  if (diffDays < 30) return `${diffDays} days ago`;
++  const diffMonths = Math.round(diffDays / 30);
++  if (diffMonths < 12) return `${diffMonths} month${diffMonths > 1 ? "s" : ""} ago`;
++  const diffYears = Math.round(diffMonths / 12);
++  return `${diffYears} year${diffYears > 1 ? "s" : ""} ago`;
++}
++
++export function isoDaysAgo(days: number): string {
++  const d = new Date();
++  d.setDate(d.getDate() - days);
++  return d.toISOString();
++}
+diff --git a/src/lib/id.ts b/src/lib/id.ts
+new file mode 100644
+index 0000000..bfd2cce
+--- /dev/null
++++ b/src/lib/id.ts
+@@ -0,0 +1,16 @@
++/** Short, URL-safe random id — good enough for in-memory mock records. */
++export function makeId(prefix = ""): string {
++  const rand = crypto.getRandomValues(new Uint32Array(2));
++  const s = Array.from(rand, (n) => n.toString(36)).join("");
++  return prefix ? `${prefix}_${s}` : s;
++}
++
++/** Generates a plausible-looking secret API key string. Never persisted beyond creation-time display. */
++export function makeApiKeySecret(): string {
++  const bytes = crypto.getRandomValues(new Uint8Array(24));
++  const b64 = btoa(String.fromCharCode(...bytes))
++    .replace(/\+/g, "A")
++    .replace(/\//g, "B")
++    .replace(/=/g, "");
++  return `mk_live_${b64}`;
++}
+diff --git a/src/lib/validation.ts b/src/lib/validation.ts
+new file mode 100644
+index 0000000..9fcc21a
+--- /dev/null
++++ b/src/lib/validation.ts
+@@ -0,0 +1,29 @@
++export type FieldErrors<T extends string> = Partial<Record<T, string>>;
++
++const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
++
++export function isValidEmail(value: string): boolean {
++  return EMAIL_RE.test(value.trim());
++}
++
++export function required(value: string, label: string): string | undefined {
++  return value.trim().length === 0 ? `${label} is required.` : undefined;
++}
++
++export function emailError(value: string): string | undefined {
++  const req = required(value, "Email");
++  if (req) return req;
++  if (!isValidEmail(value)) return "Enter a valid email address.";
++  return undefined;
++}
++
++export function minLength(value: string, min: number, label: string): string | undefined {
++  if (value.length === 0) return undefined; // let `required` own the empty case
++  if (value.length < min) return `${label} must be at least ${min} characters.`;
++  return undefined;
++}
++
++export function maxLength(value: string, max: number, label: string): string | undefined {
++  if (value.length > max) return `${label} must be ${max} characters or fewer.`;
++  return undefined;
++}
+diff --git a/src/main.tsx b/src/main.tsx
+new file mode 100644
+index 0000000..bef5202
+--- /dev/null
++++ b/src/main.tsx
+@@ -0,0 +1,10 @@
++import { StrictMode } from 'react'
++import { createRoot } from 'react-dom/client'
++import './index.css'
++import App from './App.tsx'
++
++createRoot(document.getElementById('root')!).render(
++  <StrictMode>
++    <App />
++  </StrictMode>,
++)
+diff --git a/src/types.ts b/src/types.ts
+new file mode 100644
+index 0000000..c4f0cb9
+--- /dev/null
++++ b/src/types.ts
+@@ -0,0 +1,61 @@
++export type TabId = "account" | "api-keys" | "billing" | "team";
++
++export interface TabDef {
++  id: TabId;
++  label: string;
++  description: string;
++}
++
++// ---- Account ----
++export interface AccountState {
++  fullName: string;
++  email: string;
++  timezone: string;
++  bio: string;
++}
++
++// ---- API Keys ----
++export type ApiKeyScope = "read-only" | "read-write" | "admin";
++
++export interface ApiKey {
++  id: string;
++  name: string;
++  scope: ApiKeyScope;
++  /** Last 4 characters only — the full secret is never retained after creation. */
++  last4: string;
++  createdAt: string; // ISO date
++  lastUsedAt: string | null; // ISO date
++}
++
++// ---- Billing ----
++export type PlanId = "free" | "pro" | "enterprise";
++
++export interface PlanDef {
++  id: PlanId;
++  name: string;
++  price: string;
++  cadence: string;
++  seatLimit: number;
++  apiCallLimit: number;
++  highlights: string[];
++}
++
++export interface Invoice {
++  id: string;
++  date: string;
++  amount: string;
++  status: "paid" | "pending" | "failed";
++}
++
++// ---- Team ----
++export type TeamRole = "owner" | "admin" | "member" | "viewer";
++export type MemberStatus = "active" | "invited";
++
++export interface TeamMember {
++  id: string;
++  name: string;
++  email: string;
++  role: TeamRole;
++  status: MemberStatus;
++  joinedAt: string | null;
++}
+diff --git a/tsconfig.app.json b/tsconfig.app.json
+new file mode 100644
+index 0000000..6830b6f
+--- /dev/null
++++ b/tsconfig.app.json
+@@ -0,0 +1,26 @@
++{
++  "compilerOptions": {
++    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
++    "target": "es2023",
++    "lib": ["ES2023", "DOM"],
++    "module": "esnext",
++    "types": ["vite/client"],
++    "allowArbitraryExtensions": true,
++    "skipLibCheck": true,
++
++    /* Bundler mode */
++    "moduleResolution": "bundler",
++    "allowImportingTsExtensions": true,
++    "verbatimModuleSyntax": true,
++    "moduleDetection": "force",
++    "noEmit": true,
++    "jsx": "react-jsx",
++
++    /* Linting */
++    "noUnusedLocals": true,
++    "noUnusedParameters": true,
++    "erasableSyntaxOnly": true,
++    "noFallthroughCasesInSwitch": true
++  },
++  "include": ["src"]
++}
+diff --git a/tsconfig.json b/tsconfig.json
+new file mode 100644
+index 0000000..1ffef60
+--- /dev/null
++++ b/tsconfig.json
+@@ -0,0 +1,7 @@
++{
++  "files": [],
++  "references": [
++    { "path": "./tsconfig.app.json" },
++    { "path": "./tsconfig.node.json" }
++  ]
++}
+diff --git a/tsconfig.node.json b/tsconfig.node.json
+new file mode 100644
+index 0000000..8455dcb
+--- /dev/null
++++ b/tsconfig.node.json
+@@ -0,0 +1,23 @@
++{
++  "compilerOptions": {
++    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
++    "target": "es2023",
++    "lib": ["ES2023"],
++    "types": ["node"],
++    "skipLibCheck": true,
++
++    /* Bundler mode */
++    "module": "nodenext",
++    "allowImportingTsExtensions": true,
++    "verbatimModuleSyntax": true,
++    "moduleDetection": "force",
++    "noEmit": true,
++
++    /* Linting */
++    "noUnusedLocals": true,
++    "noUnusedParameters": true,
++    "erasableSyntaxOnly": true,
++    "noFallthroughCasesInSwitch": true
++  },
++  "include": ["vite.config.ts"]
++}
+diff --git a/vite.config.ts b/vite.config.ts
+new file mode 100644
+index 0000000..9f9b446
+--- /dev/null
++++ b/vite.config.ts
+@@ -0,0 +1,8 @@
++import tailwindcss from '@tailwindcss/vite'
++import react from '@vitejs/plugin-react'
++import { defineConfig } from 'vite'
++
++// https://vite.dev/config/
++export default defineConfig({
++  plugins: [react(), tailwindcss()],
++})
