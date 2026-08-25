@@ -9,6 +9,8 @@ This directory holds a benchmark suite (`evaluation-suite.md`, Tests A–L) for 
 3. Score both runs against the rubric below.
 4. Read the failure conditions listed for that test explicitly — a run can score reasonably on the rubric while still tripping a named failure condition (especially on Tests H, K, and L), and a tripped failure condition should weigh heavily regardless of the numeric score.
 
+**Test L specifically requires a verified-clean environment before dispatch, not just a project-level dependency removal** — see its own "Setup" entry in `evaluation-suite.md` for the checklist. The first full paired run of this suite (2026-08-24/25) found that a stray shared cache on the eval machine silently defeated the skilled run's "no tooling" premise without anyone noticing until the (separately, correctly clean) baseline run was compared against it — a Test L result recorded without confirming and clearing shared caches first should be treated as unverified.
+
 ## Scoring rubric (100 points)
 
 Adapted from the source research's evaluation criteria. Score each dimension independently, then read the qualitative notes — **a single composite number should never stand alone for subjective design work.** Two runs with the same total score can differ enormously in what they got right and wrong; write a sentence per dimension explaining the score, not just the number.

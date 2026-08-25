@@ -1,0 +1,13 @@
+{
+  "states": [
+    { "name": "account", "actions": [] },
+    {
+      "name": "billing",
+      "actions": [{ "click": "[data-tab='billing']" }, { "waitFor": "[data-panel='billing']" }]
+    },
+    {
+      "name": "unreachable-tab",
+      "actions": [{ "click": "[data-tab='billing']" }, { "waitFor": "[data-panel='does-not-exist']" }]
+    }
+  ]
+}

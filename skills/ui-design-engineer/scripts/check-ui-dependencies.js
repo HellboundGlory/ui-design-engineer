@@ -51,7 +51,13 @@ if (wantsHelp(args)) {
       "animation, charts, forms), and known-heavy UI-adjacent packages. A component-system or primitive-\n" +
       "engine conflict is reported as CONFLICT but does NOT fail the run by default — legitimate migrations\n" +
       "and isolated legacy modules produce the same shape. Use --strict for a CI gate, and --allow (or a\n" +
-      "config file) to mark a specific conflict as a reviewed, intentional exception.",
+      "config file) to mark a specific conflict as a reviewed, intentional exception.\n" +
+      "\n" +
+      "Ecosystem-aware (V1.2.1): sibling packages from the SAME namespace (e.g. @radix-ui/react-dialog +\n" +
+      "@radix-ui/react-popover, or @mantine/core + @mantine/hooks) are normalized into one ecosystem before\n" +
+      "any conflict decision — they are never reported as competing engines against each other. Only a\n" +
+      "genuinely different ecosystem (Radix vs. Headless UI, Mantine vs. MUI, MUI vs. shadcn, etc.) is a\n" +
+      "real CONFLICT. See the --allow note below for how exceptions work at the ecosystem level.",
     usage: "node scripts/check-ui-dependencies.js [--dir <path>] [--strict] [--allow <package-or-engine>]...",
     options: [
       { flag: "--dir <path>", desc: "Project root (default: current directory)" },
@@ -69,14 +75,19 @@ if (wantsHelp(args)) {
       "node scripts/check-ui-dependencies.js",
       "node scripts/check-ui-dependencies.js --strict",
       "node scripts/check-ui-dependencies.js --strict --allow @mui/material",
+      "node scripts/check-ui-dependencies.js --strict --allow mantine   # allow by ecosystem id instead of one package",
     ],
     notes: [
       "Findings are labeled OK / REVIEW / CONFLICT / ALLOWED EXCEPTION. REVIEW (category overlap, heavy",
       "deps) is always non-blocking. CONFLICT (primitive-engine, component-system, or cross-system overlap)",
       "is the category --strict can fail on. For a cross-system finding, --allow accepts either the package",
-      'name (e.g. "@mui/material") or the short system id (e.g. "mui", "shadcn", "radix") — either resolves',
-      "the pairing. Config file shape:",
+      'name (e.g. "@mui/material") or the short ecosystem id (e.g. "mui", "shadcn", "radix", "mantine") —',
+      "either resolves the whole ecosystem's pairing, not just one of its packages. Config file shape:",
       '  { "allowUiDependencies": [{ "name": "mui", "reason": "migrating off MUI, TICKET-123" }] }',
+      "",
+      'A same-category OK line like "detected ecosystem: radix" (with a "Packages:" list underneath) means',
+      "multiple packages were found but they all normalized to one ecosystem — not a conflict, just shown so",
+      "the normalization itself is inspectable rather than silently invisible.",
     ],
   });
   process.exit(0);
@@ -134,11 +145,11 @@ if (fs.existsSync(allowFilePath)) {
 const CATEGORIES = {
   "component-system": {
     packages: ["@mantine/core", "@chakra-ui/react", "@mui/material", "@fluentui/react-components", "@primer/react", "antd"],
-    prefixes: [],
+    prefixes: ["@mantine/", "@chakra-ui/", "@mui/", "@fluentui/"],
   },
   "primitive-engine": {
     packages: ["@base-ui-components/react", "react-aria-components", "@headlessui/react"],
-    prefixes: ["@radix-ui/"],
+    prefixes: ["@radix-ui/", "@react-aria/", "@headlessui/"],
   },
   "date-library": { packages: ["date-fns", "dayjs", "luxon", "moment"], prefixes: [] },
   "animation-library": { packages: ["motion", "framer-motion", "gsap", "@react-spring/web"], prefixes: [] },
@@ -158,24 +169,58 @@ function presentInCategory(category) {
 
 const HARD_CONFLICT_CATEGORIES = new Set(["component-system", "primitive-engine"]);
 
-// --- Cross-system compatibility model ---
-// Short, explicit id per detected package, matching inspect-project.js's system ids —
-// used both for readable output and so --allow/config-file exceptions can name a
-// system ("mui", "shadcn", "radix") rather than requiring an exact package string.
-const MONOLITHIC_SYSTEM_ID = {
+// --- Ecosystem normalization (V1.2.1) ---
+// Many real systems ship many separate SCOPED packages under one namespace —
+// @radix-ui/react-dialog + @radix-ui/react-popover + @radix-ui/react-tooltip is ONE
+// primitive engine (Radix), not three competing ones; @mantine/core + @mantine/hooks +
+// @mantine/form is ONE component system (Mantine), not three. The evaluation suite
+// found this was the single most common source of wasted "investigate a false alarm"
+// work (5+ of 12 paired eval tests) — every occurrence was correctly resolved by the
+// worker, but it shouldn't have needed investigating at all. Every place that used to
+// compare raw package NAMES for a same-category duplicate-engine conflict now compares
+// ecosystem IDs instead; sibling packages from the same ecosystem collapse to one ID
+// before any conflict decision is made. This is a superset of (and replaces) the older
+// MONOLITHIC_SYSTEM_ID / primitiveSystemId exact-match maps — same short ids
+// ("radix", "mantine", "mui", "chakra", "fluent", ...), matching inspect-project.js's
+// system ids, so --allow/config-file exceptions keep working unchanged.
+const ECOSYSTEM_EXACT = {
   "@mantine/core": "mantine",
   "@chakra-ui/react": "chakra",
   "@mui/material": "mui",
   "@fluentui/react-components": "fluent",
   "@primer/react": "primer",
   antd: "antd",
+  "@base-ui-components/react": "base-ui",
+  "react-aria-components": "react-aria",
+  "@headlessui/react": "headlessui",
 };
-function primitiveSystemId(pkg) {
-  if (pkg.startsWith("@radix-ui/")) return "radix";
-  if (pkg === "@base-ui-components/react") return "base-ui";
-  if (pkg === "react-aria-components") return "react-aria";
-  if (pkg === "@headlessui/react") return "headlessui";
+const ECOSYSTEM_PREFIXES = {
+  "@radix-ui/": "radix",
+  "@mantine/": "mantine",
+  "@chakra-ui/": "chakra",
+  "@mui/": "mui",
+  "@fluentui/": "fluent",
+  "@headlessui/": "headlessui",
+  "@react-aria/": "react-aria",
+};
+function ecosystemIdFor(pkg) {
+  if (ECOSYSTEM_EXACT[pkg]) return ECOSYSTEM_EXACT[pkg];
+  for (const [prefix, id] of Object.entries(ECOSYSTEM_PREFIXES)) {
+    if (pkg.startsWith(prefix)) return id;
+  }
   return pkg;
+}
+// Groups a flat package list (as returned by presentInCategory) by ecosystem id,
+// preserving which literal packages contributed to each ecosystem — needed both for
+// readable "Packages:" output and so --allow can still match an exact package name.
+function groupByEcosystem(packages) {
+  const map = new Map();
+  for (const pkg of packages) {
+    const id = ecosystemIdFor(pkg);
+    if (!map.has(id)) map.set(id, []);
+    map.get(id).push(pkg);
+  }
+  return [...map.entries()].map(([id, pkgs]) => ({ id, pkgs }));
 }
 
 // Known heavy UI-adjacent single-purpose packages worth flagging as a bundle-budget
@@ -194,37 +239,57 @@ let anyFinding = false;
 for (const [category, def] of Object.entries(CATEGORIES)) {
   const present = presentInCategory(def);
   if (present.length <= 1) continue;
-  anyFinding = true;
 
   const isHard = HARD_CONFLICT_CATEGORIES.has(category);
-  const allowed = present.filter((p) => allowSet.has(p));
-  const notAllowed = present.filter((p) => !allowSet.has(p));
 
   if (!isHard) {
+    anyFinding = true;
     console.log(`REVIEW: multiple "${category}" packages installed: ${present.join(", ")}`);
     console.log(`  Consider standardizing on one ${category.replace(/-/g, " ")} rather than maintaining both.`);
     console.log("");
     continue;
   }
 
-  // Hard-conflict category (component-system / primitive-engine).
-  if (allowed.length > 0) {
-    console.log(`ALLOWED EXCEPTION: "${category}" overlap includes package(s) marked as reviewed: ${allowed.join(", ")}`);
-    allowed.forEach((p) => console.log(`  - ${p}: ${allowReasons[p]}`));
+  // Hard-conflict category (component-system / primitive-engine): group by ecosystem
+  // FIRST. Sibling packages from the same ecosystem (@radix-ui/react-dialog +
+  // @radix-ui/react-popover, @mantine/core + @mantine/hooks, ...) are one engine, not a
+  // duplicate — only >1 DISTINCT ecosystem here is a real conflict. See ecosystemIdFor.
+  const ecosystems = groupByEcosystem(present);
+  if (ecosystems.length <= 1) {
+    if (present.length > 1) {
+      // Nothing to flag, but worth naming the normalization so the reasoning is
+      // inspectable rather than silently invisible (evidence: V1.2.1 §2C).
+      console.log(`OK: "${category}" — detected ecosystem: ${ecosystems[0].id}`);
+      console.log(`  Packages: ${ecosystems[0].pkgs.join(", ")}`);
+      console.log("");
+    }
+    continue;
   }
-  if (notAllowed.length > 1) {
-    // More than one non-allowed package in this category is still a live conflict.
+  anyFinding = true;
+
+  const ecoAllowed = (eco) => allowSet.has(eco.id) || eco.pkgs.some((p) => allowSet.has(p));
+  const ecoReasonKey = (eco) => [eco.id, ...eco.pkgs].find((k) => allowReasons[k]);
+  const allowedEco = ecosystems.filter(ecoAllowed);
+  const notAllowedEco = ecosystems.filter((e) => !ecoAllowed(e));
+
+  if (allowedEco.length > 0) {
+    console.log(`ALLOWED EXCEPTION: "${category}" overlap includes ecosystem(s) marked as reviewed: ${allowedEco.map((e) => e.id).join(", ")}`);
+    allowedEco.forEach((e) => console.log(`  - ${e.id} (${e.pkgs.join(", ")}): ${allowReasons[ecoReasonKey(e)]}`));
+  }
+  if (notAllowedEco.length > 1) {
+    // More than one non-allowed ECOSYSTEM in this category is still a live conflict.
     unresolvedConflict = true;
-    console.log(`CONFLICT: multiple "${category}" packages installed without a documented exception: ${notAllowed.join(", ")}`);
+    console.log(`CONFLICT: multiple "${category}" ecosystems installed without a documented exception:`);
+    notAllowedEco.forEach((e) => console.log(`  - ${e.id}: ${e.pkgs.join(", ")}`));
     console.log("  Per references/component-selection.md, prefer a single primitive/component engine per project.");
     console.log("  Legitimate reasons this can happen: an in-progress migration, an isolated legacy module, or");
     console.log("  scoped specialist functionality. If intentional, mark it reviewed:");
-    console.log(`    node scripts/check-ui-dependencies.js --allow <package-name>`);
+    console.log(`    node scripts/check-ui-dependencies.js --allow <ecosystem-or-package-name>`);
     console.log(`  ...or add it to ${path.basename(allowFilePath)} with a reason, and record it in DESIGN.md §19.`);
-  } else if (notAllowed.length === 1 && allowed.length > 0) {
-    // Everything except one package was allowed — still worth a note, not a hard conflict on its own,
+  } else if (notAllowedEco.length === 1 && allowedEco.length > 0) {
+    // Everything except one ecosystem was allowed — still worth a note, not a hard conflict on its own,
     // but surfaced so it isn't silently invisible.
-    console.log(`REVIEW: "${category}" also includes a non-exempted package: ${notAllowed[0]}`);
+    console.log(`REVIEW: "${category}" also includes a non-exempted ecosystem: ${notAllowedEco[0].id} (${notAllowedEco[0].pkgs.join(", ")})`);
   }
   console.log("");
 }
@@ -237,19 +302,14 @@ for (const [category, def] of Object.entries(CATEGORIES)) {
 // shadcn + Radix" — check it explicitly here instead.
 {
   const shadcnPresent = fs.existsSync(path.join(ROOT, "components.json"));
-  const monolithicSystems = presentInCategory(CATEGORIES["component-system"]).map((pkg) => ({
-    id: MONOLITHIC_SYSTEM_ID[pkg],
-    pkg,
-  }));
-  const primitiveSystemsPresentMap = new Map();
-  for (const pkg of presentInCategory(CATEGORIES["primitive-engine"])) {
-    const id = primitiveSystemId(pkg);
-    if (!primitiveSystemsPresentMap.has(id)) primitiveSystemsPresentMap.set(id, pkg);
-  }
-  const primitiveSystemsPresent = [...primitiveSystemsPresentMap.entries()].map(([id, pkg]) => ({ id, pkg }));
+  // Same ecosystem grouping as the same-category loop above, so a "MUI ships @mui/material
+  // + @mui/icons-material" project is ONE monolithic system here too, not flagged against
+  // itself — see ecosystemIdFor / groupByEcosystem.
+  const monolithicSystems = groupByEcosystem(presentInCategory(CATEGORIES["component-system"]));
+  const primitiveSystemsPresent = groupByEcosystem(presentInCategory(CATEGORIES["primitive-engine"]));
 
   function identifiersFor(node) {
-    return node.pkg ? [node.id, node.pkg] : [node.id];
+    return node.pkgs && node.pkgs.length > 0 ? [node.id, ...node.pkgs] : [node.id];
   }
   function allowedNode(node) {
     return identifiersFor(node).find((id) => allowSet.has(id)) || null;
@@ -261,8 +321,8 @@ for (const [category, def] of Object.entries(CATEGORIES)) {
   if (shadcnPresent) {
     for (const m of monolithicSystems) {
       crossPairs.push({
-        a: { id: "shadcn", pkg: null, label: "shadcn (components.json)" },
-        b: { ...m, label: `${m.id} (${m.pkg})` },
+        a: { id: "shadcn", pkgs: [], label: "shadcn (components.json)" },
+        b: { ...m, label: `${m.id} (${m.pkgs.join(", ")})` },
         reason: "shadcn is itself a component system — pairing it with another full component system is very likely two competing design systems, not one.",
       });
     }
@@ -274,8 +334,8 @@ for (const [category, def] of Object.entries(CATEGORIES)) {
   for (const m of monolithicSystems) {
     for (const p of primitiveSystemsPresent) {
       crossPairs.push({
-        a: { ...m, label: `${m.id} (${m.pkg})` },
-        b: { ...p, label: `${p.id} (${p.pkg})` },
+        a: { ...m, label: `${m.id} (${m.pkgs.join(", ")})` },
+        b: { ...p, label: `${p.id} (${p.pkgs.join(", ")})` },
         reason: `${m.id} ships its own primitives/interaction layer — a headless engine like ${p.id} alongside it is very likely an unintended second system (unless something else, like shadcn, is deliberately using it).`,
       });
     }

@@ -1,0 +1,10 @@
+{
+  "name": "fixture-dependency-mantine-with-radix",
+  "private": true,
+  "dependencies": {
+    "react": "^19.0.0",
+    "@mantine/core": "^7.0.0",
+    "@mantine/hooks": "^7.0.0",
+    "@radix-ui/react-dialog": "^1.0.0"
+  }
+}

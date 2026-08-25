@@ -161,6 +161,48 @@ function assert(label, condition, detail) {
     shadcnRadixOnly.code === 0 && !/CONFLICT/.test(shadcnRadixOnly.stdout),
     shadcnRadixOnly.stdout
   );
+
+  // --- Ecosystem normalization (V1.2.1): sibling packages from ONE ecosystem must
+  // never be reported as a duplicate-engine conflict against each other. See
+  // evals/results/2026-08-24-opencode-claude-v1.2.0/RESULTS.md's "Repeated Failure
+  // Patterns" #3 — this false positive cost real investigation time in 5+ of 12 tests.
+  const radixSiblings = run("check-ui-dependencies.js", ["--dir", path.join(FIXTURES, "dependency-radix-siblings"), "--strict"]);
+  assert(
+    "check-ui-dependencies.js: three @radix-ui/* sibling packages are ONE ecosystem, not a conflict, even with --strict",
+    radixSiblings.code === 0 && !/CONFLICT/.test(radixSiblings.stdout) && /detected ecosystem: radix/.test(radixSiblings.stdout),
+    radixSiblings.stdout
+  );
+
+  const mantineSiblings = run("check-ui-dependencies.js", ["--dir", path.join(FIXTURES, "dependency-mantine-siblings"), "--strict"]);
+  assert(
+    "check-ui-dependencies.js: three @mantine/* sibling packages are ONE ecosystem, not a conflict, even with --strict",
+    mantineSiblings.code === 0 && !/CONFLICT/.test(mantineSiblings.stdout) && /detected ecosystem: mantine/.test(mantineSiblings.stdout),
+    mantineSiblings.stdout
+  );
+
+  const mantineWithRadixDefault = run("check-ui-dependencies.js", ["--dir", path.join(FIXTURES, "dependency-mantine-with-radix")]);
+  assert(
+    "check-ui-dependencies.js: Mantine + Radix (real cross-system pairing) still reports CONFLICT, non-blocking without --strict",
+    mantineWithRadixDefault.code === 0 && /CONFLICT: cross-system pairing "mantine .* \+ "radix/.test(mantineWithRadixDefault.stdout),
+    mantineWithRadixDefault.stdout
+  );
+  const mantineWithRadixStrict = run("check-ui-dependencies.js", ["--dir", path.join(FIXTURES, "dependency-mantine-with-radix"), "--strict"]);
+  assert(
+    "check-ui-dependencies.js: Mantine + Radix with --strict exits 1 (real conflict, not weakened by the ecosystem fix)",
+    mantineWithRadixStrict.code === 1,
+    mantineWithRadixStrict.stdout
+  );
+
+  // The pre-existing V1.1.1 MUI+shadcn+Radix fixture (Test K protection) must still
+  // fire exactly as before — the ecosystem-normalization fix must not weaken it.
+  const test_k_regression = run("check-ui-dependencies.js", ["--dir", path.join(FIXTURES, "existing-mui-with-shadcn"), "--strict"]);
+  assert(
+    "check-ui-dependencies.js: Test K's MUI+shadcn+Radix regression fixture still exits 1 with --strict (unweakened)",
+    test_k_regression.code === 1 &&
+      /CONFLICT: cross-system pairing "shadcn .* \+ "mui/.test(test_k_regression.stdout) &&
+      /CONFLICT: cross-system pairing "mui .* \+ "radix/.test(test_k_regression.stdout),
+    test_k_regression.stdout
+  );
 }
 
 // --- audit-hardcoded-colors.js fixtures ---

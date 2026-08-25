@@ -1,12 +1,12 @@
 {
   "name": "ui-design-engineer",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "description": "Portable Agent Skill: design-system-aware UI/UX design engineering for coding agents.",
   "license": "MIT",
   "scripts": {
     "test": "node tests/validate-repo.js && node tests/run-fixtures.js",
-    "test:playwright": "node tests/run-playwright-integration.js"
+    "test:playwright": "node tests/run-playwright-integration.js && node tests/run-multistate-integration.js"
   },
   "devDependencies": {
     "axe-core": "^4.10.0",

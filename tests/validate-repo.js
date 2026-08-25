@@ -79,8 +79,19 @@ check("all references/templates/scripts/checklists/evals paths mentioned in mark
   // same convention as SKILL.md's own bare paths), not a pointer for a human browsing
   // this repository — they're correct as bare paths and aren't meant to resolve
   // relative to the repo root.
+  //
+  // evals/results/** is excluded for the same reason, one level deeper: every recorded
+  // worker-report.md and DESIGN.md under a test's own results directory is itself an
+  // agent-perspective transcript/artifact of a run against the skill (quoting what that
+  // run typed or read, e.g. "scripts/visual-qa.js"), not documentation authored by this
+  // repository pointing a human at its own files. These accumulate every time a new
+  // eval result is recorded, so this is a directory-prefix exclusion, not a fixed list.
   const EXCLUDED = new Set(["CHANGELOG.md", path.join("evals", "evaluation-suite.md")]);
-  const mdFiles = collectFiles(ROOT, (rel) => rel.endsWith(".md") && !rel.startsWith("node_modules") && !EXCLUDED.has(rel));
+  const EXCLUDED_PREFIXES = [path.join("evals", "results") + path.sep];
+  const mdFiles = collectFiles(
+    ROOT,
+    (rel) => rel.endsWith(".md") && !rel.startsWith("node_modules") && !EXCLUDED.has(rel) && !EXCLUDED_PREFIXES.some((p) => rel.startsWith(p))
+  );
   const broken = [];
   for (const rel of mdFiles) {
     // Two possible bases, not "relative to the file's own directory": references/,

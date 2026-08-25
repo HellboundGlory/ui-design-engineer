@@ -55,5 +55,5 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Run visual-qa.js against the streaming-app fixture
+      - name: Run visual-qa.js against the streaming-app and tabbed-app (multi-route/multi-state) fixtures
         run: npm run test:playwright
