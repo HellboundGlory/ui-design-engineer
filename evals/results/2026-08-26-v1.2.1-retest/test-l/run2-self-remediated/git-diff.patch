@@ -1,0 +1,4226 @@
+diff --git a/.gitignore b/.gitignore
+index 1780783..a547bf3 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,7 +1,24 @@
+-node_modules/
+-dist/
+-dist-ssr/
+-.env
+-.env.local
++# Logs
++logs
+ *.log
++npm-debug.log*
++yarn-debug.log*
++yarn-error.log*
++pnpm-debug.log*
++lerna-debug.log*
++
++node_modules
++dist
++dist-ssr
++*.local
++
++# Editor directories and files
++.vscode/*
++!.vscode/extensions.json
++.idea
+ .DS_Store
++*.suo
++*.ntvs*
++*.njsproj
++*.sln
++*.sw?
+diff --git a/.oxlintrc.json b/.oxlintrc.json
+new file mode 100644
+index 0000000..6fa991d
+--- /dev/null
++++ b/.oxlintrc.json
+@@ -0,0 +1,8 @@
++{
++  "$schema": "./node_modules/oxlint/configuration_schema.json",
++  "plugins": ["react", "typescript", "oxc"],
++  "rules": {
++    "react/rules-of-hooks": "error",
++    "react/only-export-components": ["warn", { "allowConstantExport": true }]
++  }
++}
+diff --git a/DESIGN.md b/DESIGN.md
+new file mode 100644
+index 0000000..c5c6afa
+--- /dev/null
++++ b/DESIGN.md
+@@ -0,0 +1,172 @@
++# Project Design Memory (DESIGN.md)
++
++## 1. Product Intent
++
++- **What is this product?** Ingress — a real-time API traffic analytics dashboard: throughput, error rate, latency percentiles, and per-endpoint health for a backend API.
++- **Core job on this screen:** Monitoring. An on-call engineer or SRE watches for deviation from normal and needs to notice anomalies fast, then drill into which endpoint is responsible.
++- **What does success feel like?** "I can tell at a glance whether the API is healthy, and if not, which endpoint and how bad."
++
++## 2. Users & Usage Context
++
++- **Primary user:** Backend/platform engineers and on-call SREs — technical, fluent with HTTP status codes, percentiles, and RPS.
++- **Usage context:** Kept open on a second monitor for hours at a time, or pulled up urgently during an incident.
++- **Cost of a mistake:** High during an incident (missing a spike costs response time), low otherwise. Density and legibility matter more than ornamentation.
++
++## 3. Visual Personality
++
++- **Three adjectives:** Instrumented, precise, calm-under-load.
++- **References:** Grafana / Datadog dark operational dashboards — not a marketing analytics tool.
++
++## 4. Archetype / Direction
++
++- **Active archetype:** Precision Technical.
++- **Why:** Technical operator audience, monitoring (not exploratory analysis) task, success = "found the anomaly fast." See `references/archetypes/precision-technical.md`.
++
++## 5. Color & Semantic Tokens
++
++Dark is the default and primary mode (operational tool, "used at 2am during an incident"); light is supported and fully token-driven via a `data-theme` attribute toggle in the header, but every value was chosen with dark as the primary target.
++
++Token names here diverge slightly from the template: `--surface`/`--surface-foreground` replace `--card`/`--card-foreground` (there is no separate "card" concept — the app uses full-bleed bordered panels, not nested cards).
++
++### Dark (default)
++```css
++--background: oklch(0.16 0.01 250);
++--foreground: oklch(0.94 0.004 250);
++--surface: oklch(0.205 0.011 250);
++--surface-foreground: oklch(0.94 0.004 250);
++--primary: oklch(0.72 0.14 227);
++--primary-foreground: oklch(0.14 0.015 250);
++--muted: oklch(0.245 0.012 250);
++--muted-foreground: oklch(0.65 0.014 250);
++--accent: oklch(0.28 0.03 227);
++--accent-foreground: oklch(0.88 0.03 227);
++--border: oklch(1 0 0 / 10%);
++--ring: oklch(0.72 0.14 227);
++--status-success: oklch(0.7 0.15 150);
++--status-warning: oklch(0.8 0.15 85);
++--status-error: oklch(0.66 0.2 25);
++--status-info: oklch(0.7 0.11 255);
++```
++
++### Light
++```css
++--background: oklch(0.985 0.002 250);
++--foreground: oklch(0.18 0.012 250);
++--surface: oklch(1 0 0);
++--surface-foreground: oklch(0.18 0.012 250);
++--primary: oklch(0.52 0.15 227);
++--primary-foreground: oklch(0.99 0 0);
++--muted: oklch(0.955 0.004 250);
++--muted-foreground: oklch(0.46 0.012 250);
++--accent: oklch(0.93 0.02 227);
++--accent-foreground: oklch(0.32 0.06 227);
++--border: oklch(0.9 0.006 250);
++--ring: oklch(0.52 0.15 227);
++--status-success: oklch(0.5 0.14 150);
++--status-warning: oklch(0.45 0.14 75);
++--status-error: oklch(0.55 0.21 25);
++--status-info: oklch(0.55 0.12 255);
++```
++
++`--status-warning` in light mode was deliberately darkened (L 0.62 → 0.45) after the axe-core automated scan flagged the original value's text contrast as a "serious" violation against the light surface — see §21.
++
++### Chart series tokens (separate from status/primary — see §14)
++```css
++--chart-1: #3987e5 (dark) / #2a78d6 (light)  /* blue — p50, throughput */
++--chart-2: #d95926 (dark) / #eb6834 (light)  /* orange — reserved */
++--chart-3: #199e70 (dark) / #1baf7a (light)  /* aqua — reserved */
++--chart-4: #c98500 (dark) / #eda100 (light)  /* amber — p95 */
++--chart-8: #e66767 (dark) / #e34948 (light)  /* red — p99 */
++```
++These are the dataviz skill's validated categorical palette (`references/palette.md`), sourced directly rather than derived from the OKLCH brand ramp — chart identity colors are deliberately distinct from status/semantic colors per that skill's rule ("status colors are reserved, never reused for series").
++
++- **Dark mode default:** yes — this is the primary supported mode for the archetype; light is a fully-implemented but secondary alternative.
++
++## 6. Typography
++
++- **Display / body font stack:** `"Inter", ui-sans-serif, system-ui, sans-serif`
++- **Code / data (monospace) stack:** `"JetBrains Mono", ui-monospace, "SFMono-Regular", monospace` — used for endpoint paths and HTTP methods in the table.
++- **Scale ratio:** 1.2 (Minor Third) — implicit via Tailwind's default type scale, kept tight per the dense archetype.
++- **Tabular numbers policy:** Enforced everywhere numeric — all metric values, chart axis ticks, tooltip values, and table numeric columns use `tabular-nums`.
++
++## 7. Spacing
++
++- **Spacing grid:** 4px (Tailwind default scale), per Precision Technical's density guidance.
++
++## 8. Density
++
++- **Layout density target:** Compact.
++  - Table row height: ~36px (px-3 py-2 cells)
++  - Time-range/live control height: ~28px
++  - Panel internal padding: 16px (p-4)
++  - Container max-width: 1400px, centered
++
++## 9. Geometry
++
++- **Global radius token:** 0.3rem (~5px) — tight, per archetype ("rounded corners exist to soften edges, not signal friendliness").
++
++## 10. Surfaces & Elevation
++
++- **Elevation model:** Border-based separation (1px low-opacity border), no drop shadows except the segmented time-range control's active-segment shadow.
++- **Glassmorphism policy:** Forbidden.
++
++## 11. Iconography
++
++- **Primary icon set:** None imported — a single inline SVG wordmark glyph in the header. No other decorative icons; status is communicated via color + text label (dot + word), not icons, keeping the icon surface minimal by design.
++- **Label requirement:** All icon-only/glyph-only controls carry `aria-label` or `aria-hidden` as appropriate (verified via axe-core scan, 0 violations).
++
++## 12. Navigation
++
++- **Primary navigation model:** Single-screen dashboard, top bar only (product mark, live/pause toggle, time-range control, theme toggle). No sidebar — there is only one screen in this product's current scope.
++- **Narrow viewports:** Header wraps via flex-wrap; metric strip and chart grid collapse to a single column below `lg`; the endpoint table scrolls horizontally rather than reflowing (acceptable per archetype — desktop-first operator tool).
++
++## 13. Components
++
++- **Primary component/primitive source:** None (custom, hand-built). No shadcn/Radix/MUI — the entire UI is ~10 small bespoke components (badges, controls, table) with no interactive-primitive complexity (popovers, dialogs, comboboxes) that would justify a primitive engine. Adding one here would be dependency weight without a corresponding need.
++- **Utility/specialized registries in use:** None.
++
++## 14. Data Visualization
++
++- **Charting engine:** Recharts — standard line/area charts with reasonable customization, no need for bespoke D3 visuals or very large datasets.
++- **Max simultaneous chart series:** 3 (latency percentiles: p50/p95/p99), well under the 5-series cap.
++- **Series color assignment:** Fixed order from the dataviz skill's validated categorical palette (chart-1 blue, chart-4 amber, chart-8 red) chosen to read as an intensity ramp (cool → hot = better → worse percentile), never cycled or reassigned by filter state.
++- **Tooltips:** One shared `<ChartTooltip>` component reused by all three charts for consistent formatting.
++- **Anomaly surfacing:** Error-rate chart carries a dashed reference line at the 5% SLA threshold; a dedicated incident banner surfaces active endpoint-level incidents by name rather than relying on the user to eyeball chart deviation (see `references/dashboard-architecture.md` §Alerting).
++
++## 15. Motion
++
++- **Motion engine:** CSS transitions only (color/background transitions on interactive controls); Recharts animation explicitly disabled (`isAnimationActive={false}`) so the live-updating charts don't re-animate on every 2s tick.
++- **Reduced-motion compliance:** Global `prefers-reduced-motion` media query zeroes transition/animation durations (includes the live-indicator's ping animation).
++
++## 16. Responsive Behavior
++
++- **Breakpoint scale:** Tailwind defaults (sm/md/lg/xl). Chart grid switches from 2-column to 1-column at `lg`.
++- **Viewport support:** Verified 375/768/1440/1920 via `scripts/visual-qa.js` — no horizontal overflow at any size. Mobile is supported but not optimized as a primary use case (see §12).
++
++## 17. Accessibility
++
++- **Target:** WCAG 2.2 AA. Automated axe-core scan (via `scripts/visual-qa.js`) returns 0 violations at all four viewports in both themes after the light-mode warning-color contrast fix (§21). This is an automated-subset result, not full manual AA conformance — a full manual pass against `checklists/accessibility-audit.md` has not been separately completed.
++- **Known debt:** None identified beyond the standard "axe covers ~30-40% of real issues" caveat.
++
++## 18. Project-Specific Anti-Patterns (STRICT NEVER)
++
++- Never fake a chart or sparkline with static/hardcoded data — the endpoint table's trend sparkline and all three charts are wired to the same live `trafficEngine` stream, never illustrative placeholder data.
++- Never let a status color (success/warning/error) double as a chart series color — chart series always use the `--chart-*` tokens, status always uses `--status-*`.
++- Never reintroduce the default AI-slop "3 KPI cards + 2 chart cards" layout — metrics stay in one divided inline strip, not individual cards (see `references/dashboard-architecture.md`).
++
++## 19. Component Sources & Exceptions
++
++- **Primary primitives:** None — custom-built.
++- **Charting engine:** Recharts.
++- **Documented exceptions:** `--chart-*` tokens are raw hex (not OKLCH) by deliberate exception — they're sourced verbatim from the dataviz skill's pre-validated, colorblind-safety-tested categorical palette, and re-deriving them in OKLCH risked breaking that validation. Flagged by `audit-hardcoded-colors.js`; reviewed and kept.
++
++## 20. Open Questions / Not Yet Decided
++
++- No backend exists yet — all data comes from an in-browser simulation (`src/lib/trafficEngine.ts`). Wiring to a real metrics backend (Prometheus, a custom ingest API, etc.) is the natural next step and would replace the engine's `setInterval` tick with a WebSocket/SSE subscription while keeping the same `EngineSnapshot` shape consumed by `useTrafficStream`.
++- No drill-down view exists yet (clicking a table row or chart point does nothing beyond what's already visible) — flagged as a known gap rather than silently omitted.
++
++## 21. Design Decisions Log
++
++- 2026-08-29: Initialized DESIGN.md for Ingress. Archetype: Precision Technical, dark-default with full light-mode support.
++- 2026-08-29: Darkened light-mode `--status-warning` from `oklch(0.62 0.15 75)` to `oklch(0.45 0.14 75)` after `visual-qa.js`'s axe-core pass flagged a serious color-contrast violation on `.text-status-warning` (the endpoint table's "Degraded" badge) in light mode. Re-ran the scan clean afterward.
++- 2026-08-29: Increased the endpoint table's sortable column-header buttons from an implicit ~16×21px hit target to ~36×29px+ (added `px-1 py-2.5`) after `visual-qa.js` flagged them as REVIEW-level undersized interactive targets across all four viewports.
+diff --git a/README.md b/README.md
+index 4b682ed..675b655 100644
+--- a/README.md
++++ b/README.md
+@@ -1,10 +1,27 @@
+-# ui-design-engineer-eval-greenfield
++# Ingress — API Traffic Analytics Dashboard
+ 
+-Scratch repo for the `ui-design-engineer` skill's greenfield eval tests (see
+-`ui-design-engineer/evals/evaluation-suite.md`). `main` stays empty — each
+-test branches off it and scaffolds its own project state per that test's
+-"Setup" description (e.g. an empty-commit branch for Test D/L-style tests).
++A real-time dashboard for API traffic: throughput, error rate, latency percentiles,
++and per-endpoint health.
+ 
+-Fresh as of 2026-08-26 — the previous run's worktrees and seed branches were
+-cleared out after `evals/results/2026-08-24-opencode-claude-v1.2.0` captured
+-their results.
++## Stack
++
++React 19 + TypeScript + Vite, Tailwind CSS v4 (OKLCH semantic tokens), Recharts.
++
++## Running
++
++```bash
++npm install
++npm run dev
++```
++
++## Data
++
++There is no backend. `src/lib/trafficEngine.ts` runs an in-memory traffic
++simulation (Poisson-ish request volume, log-normal-ish latency, occasional
++randomized incidents) and ticks every 2 seconds. See `DESIGN.md` §20 for how to
++swap it for a real metrics source without changing the UI layer.
++
++## Design decisions
++
++See `DESIGN.md` for the full design system record (tokens, archetype, and a
++decision log), and `worker-report.md` for a summary of what was built and why.
+diff --git a/index.html b/index.html
+new file mode 100644
+index 0000000..ff076aa
+--- /dev/null
++++ b/index.html
+@@ -0,0 +1,13 @@
++<!doctype html>
++<html lang="en">
++  <head>
++    <meta charset="UTF-8" />
++    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
++    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++    <title>Ingress · API Traffic Analytics</title>
++  </head>
++  <body>
++    <div id="root"></div>
++    <script type="module" src="/src/main.tsx"></script>
++  </body>
++</html>
+diff --git a/package-lock.json b/package-lock.json
+new file mode 100644
+index 0000000..aac7b62
+--- /dev/null
++++ b/package-lock.json
+@@ -0,0 +1,2323 @@
++{
++  "name": "api-traffic-dashboard",
++  "version": "0.0.0",
++  "lockfileVersion": 3,
++  "requires": true,
++  "packages": {
++    "": {
++      "name": "api-traffic-dashboard",
++      "version": "0.0.0",
++      "dependencies": {
++        "@tailwindcss/vite": "^4.3.3",
++        "clsx": "^2.1.1",
++        "react": "^19.2.8",
++        "react-dom": "^19.2.8",
++        "recharts": "^3.10.1",
++        "tailwindcss": "^4.3.3"
++      },
++      "devDependencies": {
++        "@types/node": "^24.13.3",
++        "@types/react": "^19.2.18",
++        "@types/react-dom": "^19.2.4",
++        "@vitejs/plugin-react": "^6.1.0",
++        "axe-core": "^4.13.0",
++        "oxlint": "^1.79.0",
++        "playwright": "^1.62.1",
++        "typescript": "~6.0.2",
++        "vite": "^8.2.2"
++      }
++    },
++    "node_modules/@jridgewell/gen-mapping": {
++      "version": "0.3.13",
++      "resolved": "https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.3.13.tgz",
++      "integrity": "sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==",
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/sourcemap-codec": "^1.5.0",
++        "@jridgewell/trace-mapping": "^0.3.24"
++      }
++    },
++    "node_modules/@jridgewell/remapping": {
++      "version": "2.3.5",
++      "resolved": "https://registry.npmjs.org/@jridgewell/remapping/-/remapping-2.3.5.tgz",
++      "integrity": "sha512-LI9u/+laYG4Ds1TDKSJW2YPrIlcVYOwi2fUC6xB43lueCjgxV4lffOCZCtYFiH6TNOX+tQKXx97T4IKHbhyHEQ==",
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/gen-mapping": "^0.3.5",
++        "@jridgewell/trace-mapping": "^0.3.24"
++      }
++    },
++    "node_modules/@jridgewell/resolve-uri": {
++      "version": "3.1.2",
++      "resolved": "https://registry.npmjs.org/@jridgewell/resolve-uri/-/resolve-uri-3.1.2.tgz",
++      "integrity": "sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=6.0.0"
++      }
++    },
++    "node_modules/@jridgewell/sourcemap-codec": {
++      "version": "1.6.0",
++      "resolved": "https://registry.npmjs.org/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.6.0.tgz",
++      "integrity": "sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw==",
++      "license": "MIT"
++    },
++    "node_modules/@jridgewell/trace-mapping": {
++      "version": "0.3.31",
++      "resolved": "https://registry.npmjs.org/@jridgewell/trace-mapping/-/trace-mapping-0.3.31.tgz",
++      "integrity": "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==",
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/resolve-uri": "^3.1.0",
++        "@jridgewell/sourcemap-codec": "^1.4.14"
++      }
++    },
++    "node_modules/@oxc-project/types": {
++      "version": "0.147.0",
++      "resolved": "https://registry.npmjs.org/@oxc-project/types/-/types-0.147.0.tgz",
++      "integrity": "sha512-IJ3s6ltHLp45S0bh7phkX+gJO7A1Wuz2EaqpAhb8WjqDwbzMiWKHhyyT42tskaWjEYXtHtVCPpnBJVT9+dcRLg==",
++      "license": "MIT",
++      "funding": {
++        "url": "https://github.com/sponsors/Boshen"
++      }
++    },
++    "node_modules/@oxlint/binding-android-arm-eabi": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-android-arm-eabi/-/binding-android-arm-eabi-1.80.0.tgz",
++      "integrity": "sha512-RM3Plj+biQpxa5d1GOOX6ciDlcUROmm4OZ/pLTpitkQt2mJv4jhtY4cbgaetOm5UKWZe05/TGQ6o1Vl8EOHkrA==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-android-arm64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-android-arm64/-/binding-android-arm64-1.80.0.tgz",
++      "integrity": "sha512-YlO5JEf0Yr2bUUlu8O8daVcUxtcGGbcSmyV7E7nSbJbfAdxTE0PFPwgnIlw7wXJaTYjb+qs5hI5q3jxUkI7cAw==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-darwin-arm64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-darwin-arm64/-/binding-darwin-arm64-1.80.0.tgz",
++      "integrity": "sha512-BULDOyO3AhsmdWfQeIUCykDt3dd7XZBGLhp1eIh56skRv01O+cNjNPwXMIbeW1x4+pxcln5if72wcRgViVo7PA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-darwin-x64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-darwin-x64/-/binding-darwin-x64-1.80.0.tgz",
++      "integrity": "sha512-YJ4JzLw7N5TDSQFlA0hAQGHvnDZgyypm1yunObVWcWiF9KM7eGCJKYKLgTC2Fi/57OdnBhbj4OkzPGdFQJ6HyA==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-freebsd-x64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-freebsd-x64/-/binding-freebsd-x64-1.80.0.tgz",
++      "integrity": "sha512-AYUIk5QnL0s8oWAYsREZwkRYy1SupJTXALo93J1TgzHywxQtdM99FecRMQ87MXEdPQ0j1TmEpeeq3fGNkpvMqg==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm-gnueabihf": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.80.0.tgz",
++      "integrity": "sha512-9hBZVANupQ89W9dXyE0n8doCyaW5pDyGn3y6XlIMPZ+rIKuyqkr3SNUXmVJIhuvUq0NBU3RBiSXXE69l4XI6KA==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm-musleabihf": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm-musleabihf/-/binding-linux-arm-musleabihf-1.80.0.tgz",
++      "integrity": "sha512-SvS2uKqzY+pbfuvAHzH4338R6Zwo805GAwrIMVvK1KxoOWCIjZUdfzTCvilD7z6JK91v011+zYMryabhDo2AsQ==",
++      "cpu": [
++        "arm"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm64-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.80.0.tgz",
++      "integrity": "sha512-tCLadyqRVL3pQTRPNg7cjXKvcvS4fbyXeQHhKk5BTJ1oftQln5/yIIWbu/Xom/DX41zv2P9QGt6+D/TtQVtY3A==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-arm64-musl": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.80.0.tgz",
++      "integrity": "sha512-XfpCNRlOPcLlJl4Bn/FUhjqlR6BVavEykERBf/MV7YA9VZDa5g5znVqYhyviMafcxS9Pe/i/kPvHNO0U6svEHQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-ppc64-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.80.0.tgz",
++      "integrity": "sha512-3I4yMwcFG9NeO8ioY6JBBuKsIm5GL/x7MATt1S4tVWaxPu5HcJ+XnLUbcVBTxG8q2Wu56HSj+NmXQiVYb1lp6A==",
++      "cpu": [
++        "ppc64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-riscv64-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-riscv64-gnu/-/binding-linux-riscv64-gnu-1.80.0.tgz",
++      "integrity": "sha512-E1wAKymkpe1/E8helzBKdm81OBOF+ezxRyXRMEuik3ZpWDER5CPOKZwF66RsdwW98uwZv8UTFremUQtC1CzdJA==",
++      "cpu": [
++        "riscv64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-riscv64-musl": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-riscv64-musl/-/binding-linux-riscv64-musl-1.80.0.tgz",
++      "integrity": "sha512-+gLRGD4sIo3+VA++iham5UxD9tKSoJ/VOrROCEXIcknrYtQg6iIQgvjN0cpiRF7N6UYC7pJbvHJlDnMge5LRpQ==",
++      "cpu": [
++        "riscv64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-s390x-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.80.0.tgz",
++      "integrity": "sha512-aR0PrzHj9leW3NmzBAAP4EzdoBNoJcs9sjnIQPIwyRnBGYrRbXUIpEB5Q39AqK3PLY5JK5uEhDQDiUa1QSAstw==",
++      "cpu": [
++        "s390x"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-x64-gnu": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.80.0.tgz",
++      "integrity": "sha512-vSVh5cSo3Xxs6ghBCcFJlpbkbENzDog1qXtoXLa/HC3aCrR4XO76GZbXmQoCPHnu99nQpdCeC3H9tdNICfDh7A==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-linux-x64-musl": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-linux-x64-musl/-/binding-linux-x64-musl-1.80.0.tgz",
++      "integrity": "sha512-FfzBXpNQ8u7/ZI/p8bl73MeZ508Ax3hxWp3SiJpEFiC+BB9XcXy5FAZHTLKDPSzrUpxQZSZJAVdDmuJp/+HDBQ==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-openharmony-arm64": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-openharmony-arm64/-/binding-openharmony-arm64-1.80.0.tgz",
++      "integrity": "sha512-zMzbkumtmprCgRwoYNzcB3iC39fXdJIMLMU33KdCjEGLlJGOEt1+LwQ4LF8ndLzAEKVz4BR0y3V6Xrkk3Nm3yA==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "openharmony"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-win32-arm64-msvc": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.80.0.tgz",
++      "integrity": "sha512-ib6iRcrXsk4t1fm3iKcwksyWh1ZkZXC/2mEzakl0ai2+6HZunf1WWMZ/xP9EJAvw9g9K4UVTC3NF/+G2qLrbTQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-win32-ia32-msvc": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-win32-ia32-msvc/-/binding-win32-ia32-msvc-1.80.0.tgz",
++      "integrity": "sha512-xhRWBMpLxZvgKAH6+DJZmpP+W8Y8UdQOSU1JfxSWNXsaBaRGW77j+1hCuNHlzj7OH4SPN8fYd1q0o2qrDtoVyw==",
++      "cpu": [
++        "ia32"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@oxlint/binding-win32-x64-msvc": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/@oxlint/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.80.0.tgz",
++      "integrity": "sha512-yAnO7lwBYQnz2pcfBPIGQQZWIX5zd5R/1aAKIF3oE+TVj7IhoHcROjOkz3sRDngzqhfPKfFaXqug5j5rE5dn6Q==",
++      "cpu": [
++        "x64"
++      ],
++      "dev": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@reduxjs/toolkit": {
++      "version": "2.12.0",
++      "resolved": "https://registry.npmjs.org/@reduxjs/toolkit/-/toolkit-2.12.0.tgz",
++      "integrity": "sha512-KiT+RzZbp6mQET+Mg+h2c97+9j1sNflUxQkIHI7Yuzf6Peu+OYpmkn6nbHWmLLWj+1ZODUJFwGZ7gx3L9R9EOw==",
++      "license": "MIT",
++      "dependencies": {
++        "@standard-schema/spec": "^1.0.0",
++        "@standard-schema/utils": "^0.3.0",
++        "immer": "^11.0.0",
++        "redux": "^5.0.1",
++        "redux-thunk": "^3.1.0",
++        "reselect": "^5.1.0"
++      },
++      "peerDependencies": {
++        "react": "^16.9.0 || ^17.0.0 || ^18 || ^19",
++        "react-redux": "^7.2.1 || ^8.1.3 || ^9.0.0"
++      },
++      "peerDependenciesMeta": {
++        "react": {
++          "optional": true
++        },
++        "react-redux": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/@rolldown/binding-android-arm-eabi": {
++      "version": "1.2.6",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-android-arm-eabi/-/binding-android-arm-eabi-1.2.6.tgz",
++      "integrity": "sha512-b+jTcARdTiFLI6jB4a5XjTm0RWd6KcRfQj/I2356fxUZemiho9zQLxo0RtCuMDAyKcLo6cEltkgbQp6d1+sjjQ==",
++      "cpu": [
++        "arm"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-android-arm64": {
++      "version": "1.2.6",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-android-arm64/-/binding-android-arm64-1.2.6.tgz",
++      "integrity": "sha512-lkWU8ZJaRk9q3CIEY1Tc7vIFALp3Xw5NfGJo2hQg5oIqNgxWi1zI+IiDEK3r70BF5Dzol1tcXsnzsRc8NLhG+Q==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-darwin-arm64": {
++      "version": "1.2.6",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-darwin-arm64/-/binding-darwin-arm64-1.2.6.tgz",
++      "integrity": "sha512-dgR56NYnvAszm7Ob1B2/Vn0e8bUQYZH2UjVaMMtMVOCKFSfjhfLmuA/9+O+F+ajUdG6B/bSssrKW6JJYASa8jA==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-darwin-x64": {
++      "version": "1.2.6",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-darwin-x64/-/binding-darwin-x64-1.2.6.tgz",
++      "integrity": "sha512-vpVxFvUCFioJqug7OTvqptkc4yb8UX0AwfDmJpaR/0sWz+BUmqSVAf7c8JkUgnN8YLspb4a/N6NhTyMAmdyQ7Q==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-freebsd-x64": {
++      "version": "1.2.6",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-freebsd-x64/-/binding-freebsd-x64-1.2.6.tgz",
++      "integrity": "sha512-h1wG6Y6K3JlRswxsI64qQJqBAy4vrLuHgRbc8CZMGSWTOFRY6ghMApM1NKzB2I0n5xV1fjkE18SuVl2QpLeNpA==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-arm-gnueabihf": {
++      "version": "1.2.6",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.2.6.tgz",
++      "integrity": "sha512-tbCiqub0q2MVWJKgF5PoAlNWCtQydiOYSLIkd8sByqK/6MMYLJRcSXSYodqYtd0O+Fw7QaVmKKlS4oL94YRZ0w==",
++      "cpu": [
++        "arm"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-arm64-gnu": {
++      "version": "1.2.6",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.2.6.tgz",
++      "integrity": "sha512-oxK9+baEBPhZG5HB4URY+uU04zJWeZlH6Tb9rB5DK4DF9XR1uXNLXt5Q5ZsugTKayNCNLhkcwz/ye74hRI98dg==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-arm64-musl": {
++      "version": "1.2.6",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.2.6.tgz",
++      "integrity": "sha512-muWCk27FVBEZtv0MsK8gnfSmgczA8KQ0uRVJbTABKhkRfQc38aUrcb7fhi3BNiyseFmgcRsoMfQsSNJ+DbZdSw==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-ppc64-gnu": {
++      "version": "1.2.6",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.2.6.tgz",
++      "integrity": "sha512-eWDoSfU7Co2qj3vgB3Dt4lj1mG6CoWbcJQkRMP3XJplyCMtuaq3LHvPFjS9QIPvMGWVadJC04Xiy0IdcVPtnwQ==",
++      "cpu": [
++        "ppc64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-s390x-gnu": {
++      "version": "1.2.6",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.2.6.tgz",
++      "integrity": "sha512-2bWNjRSIayvupRKxXUY2tWG9fYdoUlTqWywHRvE8Eq3GvuQ+f2HeIkve697fIt+IQs/PV8yFsdWuhp1aJ1PdnA==",
++      "cpu": [
++        "s390x"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-x64-gnu": {
++      "version": "1.2.6",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.2.6.tgz",
++      "integrity": "sha512-KekI0gS0wLxe1UBSQSjenBVwou/JkcQPDzBPICGZjxUv9k3RteHDPBQaiOicZUFKRIH2wKEimGwVpnJsbPzu7w==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-linux-x64-musl": {
++      "version": "1.2.6",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-linux-x64-musl/-/binding-linux-x64-musl-1.2.6.tgz",
++      "integrity": "sha512-TvtPnfVr+HtyGiDmPK4VWmlNm7QhNNAcK5Q9A7aOXsI8545yCyaoMaicXrFZ72JzeYjaUVk7yT243zT0jzjFKQ==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-openharmony-arm64": {
++      "version": "1.2.6",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-openharmony-arm64/-/binding-openharmony-arm64-1.2.6.tgz",
++      "integrity": "sha512-iOo0VEay2XFhaCcH0sps5XIimkSuOnNaZrf6+ZkoSOQBJPKNU48RkmJv0/lSpipexu5P+ouFgafe5IGr/DiQfg==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "openharmony"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-win32-arm64-msvc": {
++      "version": "1.2.6",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.2.6.tgz",
++      "integrity": "sha512-y5NTmmasMS455JlOCO4ZM9krIchv3Mvm1crL1iUPGOPgEzSkves9n0SdC5Sjz6+qWDFhd8/JpfWMH8NSWNHe+A==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/binding-win32-x64-msvc": {
++      "version": "1.2.6",
++      "resolved": "https://registry.npmjs.org/@rolldown/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.2.6.tgz",
++      "integrity": "sha512-np8iZSLfXlAD4kWhiyq/u0Yt8oZDtRQ8lGhQaCXo2rl37KNjeU0GjJuwr4P3oeZ++ROfofsKNBqR5LTO8aXyWQ==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      }
++    },
++    "node_modules/@rolldown/pluginutils": {
++      "version": "1.0.1",
++      "resolved": "https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.0.1.tgz",
++      "integrity": "sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==",
++      "license": "MIT"
++    },
++    "node_modules/@standard-schema/spec": {
++      "version": "1.1.0",
++      "resolved": "https://registry.npmjs.org/@standard-schema/spec/-/spec-1.1.0.tgz",
++      "integrity": "sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==",
++      "license": "MIT"
++    },
++    "node_modules/@standard-schema/utils": {
++      "version": "0.3.0",
++      "resolved": "https://registry.npmjs.org/@standard-schema/utils/-/utils-0.3.0.tgz",
++      "integrity": "sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==",
++      "license": "MIT"
++    },
++    "node_modules/@tailwindcss/node": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/node/-/node-4.3.3.tgz",
++      "integrity": "sha512-/T8IKEsf9VTU6tLjgC7+sv2mOPtQxzE2jMw7u4Tt40Tx+QSZxpzh95/H6cMKoja9XuW7iMdLJYBB0o9G1CaAgg==",
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/remapping": "^2.3.5",
++        "enhanced-resolve": "^5.24.1",
++        "jiti": "^2.7.0",
++        "lightningcss": "1.32.0",
++        "magic-string": "^0.30.21",
++        "source-map-js": "^1.2.1",
++        "tailwindcss": "4.3.3"
++      }
++    },
++    "node_modules/@tailwindcss/oxide": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide/-/oxide-4.3.3.tgz",
++      "integrity": "sha512-krXjAikiaFSPaK/FkAQT5UTx3VormQaiZ5hBFlJZ9UFQGB/rwg1MZIhHAG9smMQRTdyJxP6Qt5MwMtdyU5FWrA==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 20"
++      },
++      "optionalDependencies": {
++        "@tailwindcss/oxide-android-arm64": "4.3.3",
++        "@tailwindcss/oxide-darwin-arm64": "4.3.3",
++        "@tailwindcss/oxide-darwin-x64": "4.3.3",
++        "@tailwindcss/oxide-freebsd-x64": "4.3.3",
++        "@tailwindcss/oxide-linux-arm-gnueabihf": "4.3.3",
++        "@tailwindcss/oxide-linux-arm64-gnu": "4.3.3",
++        "@tailwindcss/oxide-linux-arm64-musl": "4.3.3",
++        "@tailwindcss/oxide-linux-x64-gnu": "4.3.3",
++        "@tailwindcss/oxide-linux-x64-musl": "4.3.3",
++        "@tailwindcss/oxide-wasm32-wasi": "4.3.3",
++        "@tailwindcss/oxide-win32-arm64-msvc": "4.3.3",
++        "@tailwindcss/oxide-win32-x64-msvc": "4.3.3"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-android-arm64": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-android-arm64/-/oxide-android-arm64-4.3.3.tgz",
++      "integrity": "sha512-Y85A2gmPSkl5Ve5qR86GL4HT509cFqQh1aes9p3sSkyTPwt0Pppf3GkwGe4JPACcRYjgJIEhQgM6dBClnr0NYw==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-darwin-arm64": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-darwin-arm64/-/oxide-darwin-arm64-4.3.3.tgz",
++      "integrity": "sha512-BiaWatpBcERQFDlOjRDpIVXuFK5PJez5SA4JMg6VYZdBYU+qKfV/vqjcIs+IYmtitf1xYQZTwXvU/8y4lfZUGw==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-darwin-x64": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-darwin-x64/-/oxide-darwin-x64-4.3.3.tgz",
++      "integrity": "sha512-fAeUqfV5ndhxRwai8cXGzdLvul9utWOmeTkv69unv4ZXixjn61Z+p9lCWdwOwA3TYboG3BwdVuN/RDjhBRl0mw==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-freebsd-x64": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-freebsd-x64/-/oxide-freebsd-x64-4.3.3.tgz",
++      "integrity": "sha512-iyf5bV6+wnAlflVeEy7R25dupxTNECZN5QMI0qNT6eT+EgaGdZcKhGkr5SdoaWiLJ3spLqIY9VCeSGrwmtg4kw==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-arm-gnueabihf": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-arm-gnueabihf/-/oxide-linux-arm-gnueabihf-4.3.3.tgz",
++      "integrity": "sha512-aAYUprJAJQWWbRrPvtjdroZ56Md+JM8pMiopS6xGEwDfLhqj+2ver2p4nU4Mb3CRqcMmNBjo8KkUgcxhkzVQGQ==",
++      "cpu": [
++        "arm"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-arm64-gnu": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-arm64-gnu/-/oxide-linux-arm64-gnu-4.3.3.tgz",
++      "integrity": "sha512-nDxldcEENOxZRzC2uu9jrutZdAAQtb+8WWDCSnWL1zvBk1+FN+x6MtDViPB5AJMfttVCUhehGWus3XBPgatM/w==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-arm64-musl": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-arm64-musl/-/oxide-linux-arm64-musl-4.3.3.tgz",
++      "integrity": "sha512-Md44bD6veX/PC5iyF8cDVnw4HBIANZepRZZ7a8DQOvkfo5WUBwcp6iAuCUz23u+4SUkhJlD3eL7hNdW8ezd/kA==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-x64-gnu": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-x64-gnu/-/oxide-linux-x64-gnu-4.3.3.tgz",
++      "integrity": "sha512-tx7us1muwOKAKWao2v/GaafFeQboE6aj88vC6ziN2NCGcRm8gWUhwjzg+YdVB1e4boAtdtma4L43onunI6NS4w==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-linux-x64-musl": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-linux-x64-musl/-/oxide-linux-x64-musl-4.3.3.tgz",
++      "integrity": "sha512-SJxX60smvHgasZoBy11dX6YRjXJFovwWBoedhbQPOBzgFWBHGB+TVPWB9BxzR7TTxU8FQZAI2AyiNCMzFm8Img==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-wasm32-wasi": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-wasm32-wasi/-/oxide-wasm32-wasi-4.3.3.tgz",
++      "integrity": "sha512-jx1+rPhY/5Ympkktd656HBWEBLxP7dH06losBLjjf5vgCODXvi9KhtftWcMIwTFIDqBr7cRnQkdLnAG+IOlGvQ==",
++      "bundleDependencies": [
++        "@napi-rs/wasm-runtime",
++        "@emnapi/core",
++        "@emnapi/runtime",
++        "@tybys/wasm-util",
++        "@emnapi/wasi-threads",
++        "tslib"
++      ],
++      "cpu": [
++        "wasm32"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "dependencies": {
++        "@emnapi/core": "^1.11.1",
++        "@emnapi/runtime": "^1.11.1",
++        "@emnapi/wasi-threads": "^1.2.2",
++        "@napi-rs/wasm-runtime": "^1.1.4",
++        "@tybys/wasm-util": "^0.10.2",
++        "tslib": "^2.8.1"
++      },
++      "engines": {
++        "node": ">=14.0.0"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-win32-arm64-msvc": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-win32-arm64-msvc/-/oxide-win32-arm64-msvc-4.3.3.tgz",
++      "integrity": "sha512-3rc292Ca2ceK6Ulcc/bAVnTs/3nDtoPhyEKlgPv+yQJQi/JS/AMJlqzxvlDacL1nekbrcf6bTqp/jV4qgnPxNQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/oxide-win32-x64-msvc": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/oxide-win32-x64-msvc/-/oxide-win32-x64-msvc-4.3.3.tgz",
++      "integrity": "sha512-yJ0pwIVc/nYeGoV02WtsN8KYyLQv7kyI2wDnkezyJlGGjkd4QLwDGAwl47YpPJeuI0M0ObaXGSPjvWDPeTPggw==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 20"
++      }
++    },
++    "node_modules/@tailwindcss/vite": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/@tailwindcss/vite/-/vite-4.3.3.tgz",
++      "integrity": "sha512-yYU8cogLeSh/ms2jh8Fj7jaba/EWa7Ja6GoUqYZaraEuCI5YS6ms6ObZgjjedm+jm6XZjdNRWBpPP6Z86oOxcw==",
++      "license": "MIT",
++      "dependencies": {
++        "@tailwindcss/node": "4.3.3",
++        "@tailwindcss/oxide": "4.3.3",
++        "tailwindcss": "4.3.3"
++      },
++      "peerDependencies": {
++        "vite": "^5.2.0 || ^6 || ^7 || ^8"
++      }
++    },
++    "node_modules/@types/d3-array": {
++      "version": "3.2.2",
++      "resolved": "https://registry.npmjs.org/@types/d3-array/-/d3-array-3.2.2.tgz",
++      "integrity": "sha512-hOLWVbm7uRza0BYXpIIW5pxfrKe0W+D5lrFiAEYR+pb6w3N2SwSMaJbXdUfSEv+dT4MfHBLtn5js0LAWaO6otw==",
++      "license": "MIT"
++    },
++    "node_modules/@types/d3-color": {
++      "version": "3.1.3",
++      "resolved": "https://registry.npmjs.org/@types/d3-color/-/d3-color-3.1.3.tgz",
++      "integrity": "sha512-iO90scth9WAbmgv7ogoq57O9YpKmFBbmoEoCHDB2xMBY0+/KVrqAaCDyCE16dUspeOvIxFFRI+0sEtqDqy2b4A==",
++      "license": "MIT"
++    },
++    "node_modules/@types/d3-ease": {
++      "version": "3.0.2",
++      "resolved": "https://registry.npmjs.org/@types/d3-ease/-/d3-ease-3.0.2.tgz",
++      "integrity": "sha512-NcV1JjO5oDzoK26oMzbILE6HW7uVXOHLQvHshBUW4UMdZGfiY6v5BeQwh9a9tCzv+CeefZQHJt5SRgK154RtiA==",
++      "license": "MIT"
++    },
++    "node_modules/@types/d3-interpolate": {
++      "version": "3.0.4",
++      "resolved": "https://registry.npmjs.org/@types/d3-interpolate/-/d3-interpolate-3.0.4.tgz",
++      "integrity": "sha512-mgLPETlrpVV1YRJIglr4Ez47g7Yxjl1lj7YKsiMCb27VJH9W8NVM6Bb9d8kkpG/uAQS5AmbA48q2IAolKKo1MA==",
++      "license": "MIT",
++      "dependencies": {
++        "@types/d3-color": "*"
++      }
++    },
++    "node_modules/@types/d3-path": {
++      "version": "3.1.1",
++      "resolved": "https://registry.npmjs.org/@types/d3-path/-/d3-path-3.1.1.tgz",
++      "integrity": "sha512-VMZBYyQvbGmWyWVea0EHs/BwLgxc+MKi1zLDCONksozI4YJMcTt8ZEuIR4Sb1MMTE8MMW49v0IwI5+b7RmfWlg==",
++      "license": "MIT"
++    },
++    "node_modules/@types/d3-scale": {
++      "version": "4.0.9",
++      "resolved": "https://registry.npmjs.org/@types/d3-scale/-/d3-scale-4.0.9.tgz",
++      "integrity": "sha512-dLmtwB8zkAeO/juAMfnV+sItKjlsw2lKdZVVy6LRr0cBmegxSABiLEpGVmSJJ8O08i4+sGR6qQtb6WtuwJdvVw==",
++      "license": "MIT",
++      "dependencies": {
++        "@types/d3-time": "*"
++      }
++    },
++    "node_modules/@types/d3-shape": {
++      "version": "3.2.0",
++      "resolved": "https://registry.npmjs.org/@types/d3-shape/-/d3-shape-3.2.0.tgz",
++      "integrity": "sha512-kVd74ta9eof3eJOvbNd1vGKS/XERRyQbT26Og63hIsvDO84cjD5gEOhsXf26w3FSoNlPVz84DOFcKv/oou+fMw==",
++      "license": "MIT",
++      "dependencies": {
++        "@types/d3-path": "*"
++      }
++    },
++    "node_modules/@types/d3-time": {
++      "version": "3.0.4",
++      "resolved": "https://registry.npmjs.org/@types/d3-time/-/d3-time-3.0.4.tgz",
++      "integrity": "sha512-yuzZug1nkAAaBlBBikKZTgzCeA+k1uy4ZFwWANOfKw5z5LRhV0gNA7gNkKm7HoK+HRN0wX3EkxGk0fpbWhmB7g==",
++      "license": "MIT"
++    },
++    "node_modules/@types/d3-timer": {
++      "version": "3.0.2",
++      "resolved": "https://registry.npmjs.org/@types/d3-timer/-/d3-timer-3.0.2.tgz",
++      "integrity": "sha512-Ps3T8E8dZDam6fUyNiMkekK3XUsaUEik+idO9/YjPtfj2qruF8tFBXS7XhtE4iIXBLxhmLjP3SXpLhVf21I9Lw==",
++      "license": "MIT"
++    },
++    "node_modules/@types/node": {
++      "version": "24.13.3",
++      "resolved": "https://registry.npmjs.org/@types/node/-/node-24.13.3.tgz",
++      "integrity": "sha512-Dh8vAsV36ig5wa9OX4pXvMc9D3Veibfw2wix0CUwYODLD8nkj9UsLjASr49nPg+2eKzxhBV+v7L8pXvT4e639Q==",
++      "devOptional": true,
++      "license": "MIT",
++      "dependencies": {
++        "undici-types": "~7.18.0"
++      }
++    },
++    "node_modules/@types/react": {
++      "version": "19.2.18",
++      "resolved": "https://registry.npmjs.org/@types/react/-/react-19.2.18.tgz",
++      "integrity": "sha512-AnzbBERsrLKtk2XSfTbYRLjQPdy116Sty4q+T+Bp3IC4l6jNBvreVPAHmpq9qhXQM7CXZPjLVmGMw9sy+hxQ3w==",
++      "devOptional": true,
++      "license": "MIT",
++      "dependencies": {
++        "csstype": "^3.2.2"
++      }
++    },
++    "node_modules/@types/react-dom": {
++      "version": "19.2.5",
++      "resolved": "https://registry.npmjs.org/@types/react-dom/-/react-dom-19.2.5.tgz",
++      "integrity": "sha512-fMPwH9v7r/pp43yUd2/Mbiex5KouJwwR3dzHkhLREUC6764VyDsqxhAxv6OFEYR1RhjOyD1naqba8ECDBe7ZQg==",
++      "dev": true,
++      "license": "MIT",
++      "peerDependencies": {
++        "@types/react": "^19.2.0"
++      }
++    },
++    "node_modules/@types/use-sync-external-store": {
++      "version": "0.0.6",
++      "resolved": "https://registry.npmjs.org/@types/use-sync-external-store/-/use-sync-external-store-0.0.6.tgz",
++      "integrity": "sha512-zFDAD+tlpf2r4asuHEj0XH6pY6i0g5NeAHPn+15wk3BV6JA69eERFXC1gyGThDkVa1zCyKr5jox1+2LbV/AMLg==",
++      "license": "MIT"
++    },
++    "node_modules/@vitejs/plugin-react": {
++      "version": "6.1.1",
++      "resolved": "https://registry.npmjs.org/@vitejs/plugin-react/-/plugin-react-6.1.1.tgz",
++      "integrity": "sha512-yxLaQV9gkhS8ezJqCM6+ndU7mDY6gqAg75NQ+0IjwEI8IYOmQCgkRwHKVSfWXW076DsqMo0Dk+0FK1U+M5RgFw==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "@rolldown/pluginutils": "^1.0.1"
++      },
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      },
++      "peerDependencies": {
++        "@rolldown/plugin-babel": "^0.1.7 || ^0.2.0",
++        "babel-plugin-react-compiler": "^1.0.0",
++        "oxc-transform-react": "^0.145.0",
++        "vite": "^8.0.0"
++      },
++      "peerDependenciesMeta": {
++        "@rolldown/plugin-babel": {
++          "optional": true
++        },
++        "babel-plugin-react-compiler": {
++          "optional": true
++        },
++        "oxc-transform-react": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/axe-core": {
++      "version": "4.13.0",
++      "resolved": "https://registry.npmjs.org/axe-core/-/axe-core-4.13.0.tgz",
++      "integrity": "sha512-UzGt8zg7Ny8djbYMhxl2zuEevVa7r2gJjYY5Lwr1xM7+XU2nd6CkIWFTVcCIbAP63vSz71NaVyyuSk9lHKcy0A==",
++      "dev": true,
++      "license": "MPL-2.0",
++      "engines": {
++        "node": ">=4"
++      }
++    },
++    "node_modules/clsx": {
++      "version": "2.1.1",
++      "resolved": "https://registry.npmjs.org/clsx/-/clsx-2.1.1.tgz",
++      "integrity": "sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=6"
++      }
++    },
++    "node_modules/csstype": {
++      "version": "3.2.3",
++      "resolved": "https://registry.npmjs.org/csstype/-/csstype-3.2.3.tgz",
++      "integrity": "sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==",
++      "devOptional": true,
++      "license": "MIT"
++    },
++    "node_modules/d3-array": {
++      "version": "3.2.4",
++      "resolved": "https://registry.npmjs.org/d3-array/-/d3-array-3.2.4.tgz",
++      "integrity": "sha512-tdQAmyA18i4J7wprpYq8ClcxZy3SC31QMeByyCFyRt7BVHdREQZ5lpzoe5mFEYZUWe+oq8HBvk9JjpibyEV4Jg==",
++      "license": "ISC",
++      "dependencies": {
++        "internmap": "1 - 2"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-color": {
++      "version": "3.1.0",
++      "resolved": "https://registry.npmjs.org/d3-color/-/d3-color-3.1.0.tgz",
++      "integrity": "sha512-zg/chbXyeBtMQ1LbD/WSoW2DpC3I0mpmPdW+ynRTj/x2DAWYrIY7qeZIHidozwV24m4iavr15lNwIwLxRmOxhA==",
++      "license": "ISC",
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-ease": {
++      "version": "3.0.1",
++      "resolved": "https://registry.npmjs.org/d3-ease/-/d3-ease-3.0.1.tgz",
++      "integrity": "sha512-wR/XK3D3XcLIZwpbvQwQ5fK+8Ykds1ip7A2Txe0yxncXSdq1L9skcG7blcedkOX+ZcgxGAmLX1FrRGbADwzi0w==",
++      "license": "BSD-3-Clause",
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-format": {
++      "version": "3.1.2",
++      "resolved": "https://registry.npmjs.org/d3-format/-/d3-format-3.1.2.tgz",
++      "integrity": "sha512-AJDdYOdnyRDV5b6ArilzCPPwc1ejkHcoyFarqlPqT7zRYjhavcT3uSrqcMvsgh2CgoPbK3RCwyHaVyxYcP2Arg==",
++      "license": "ISC",
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-interpolate": {
++      "version": "3.0.1",
++      "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-3.0.1.tgz",
++      "integrity": "sha512-3bYs1rOD33uo8aqJfKP3JWPAibgw8Zm2+L9vBKEHJ2Rg+viTR7o5Mmv5mZcieN+FRYaAOWX5SJATX6k1PWz72g==",
++      "license": "ISC",
++      "dependencies": {
++        "d3-color": "1 - 3"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-path": {
++      "version": "3.1.0",
++      "resolved": "https://registry.npmjs.org/d3-path/-/d3-path-3.1.0.tgz",
++      "integrity": "sha512-p3KP5HCf/bvjBSSKuXid6Zqijx7wIfNW+J/maPs+iwR35at5JCbLUT0LzF1cnjbCHWhqzQTIN2Jpe8pRebIEFQ==",
++      "license": "ISC",
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-scale": {
++      "version": "4.0.2",
++      "resolved": "https://registry.npmjs.org/d3-scale/-/d3-scale-4.0.2.tgz",
++      "integrity": "sha512-GZW464g1SH7ag3Y7hXjf8RoUuAFIqklOAq3MRl4OaWabTFJY9PN/E1YklhXLh+OQ3fM9yS2nOkCoS+WLZ6kvxQ==",
++      "license": "ISC",
++      "dependencies": {
++        "d3-array": "2.10.0 - 3",
++        "d3-format": "1 - 3",
++        "d3-interpolate": "1.2.0 - 3",
++        "d3-time": "2.1.1 - 3",
++        "d3-time-format": "2 - 4"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-shape": {
++      "version": "3.2.0",
++      "resolved": "https://registry.npmjs.org/d3-shape/-/d3-shape-3.2.0.tgz",
++      "integrity": "sha512-SaLBuwGm3MOViRq2ABk3eLoxwZELpH6zhl3FbAoJ7Vm1gofKx6El1Ib5z23NUEhF9AsGl7y+dzLe5Cw2AArGTA==",
++      "license": "ISC",
++      "dependencies": {
++        "d3-path": "^3.1.0"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-time": {
++      "version": "3.1.0",
++      "resolved": "https://registry.npmjs.org/d3-time/-/d3-time-3.1.0.tgz",
++      "integrity": "sha512-VqKjzBLejbSMT4IgbmVgDjpkYrNWUYJnbCGo874u7MMKIWsILRX+OpX/gTk8MqjpT1A/c6HY2dCA77ZN0lkQ2Q==",
++      "license": "ISC",
++      "dependencies": {
++        "d3-array": "2 - 3"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-time-format": {
++      "version": "4.1.0",
++      "resolved": "https://registry.npmjs.org/d3-time-format/-/d3-time-format-4.1.0.tgz",
++      "integrity": "sha512-dJxPBlzC7NugB2PDLwo9Q8JiTR3M3e4/XANkreKSUxF8vvXKqm1Yfq4Q5dl8budlunRVlUUaDUgFt7eA8D6NLg==",
++      "license": "ISC",
++      "dependencies": {
++        "d3-time": "1 - 3"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-timer": {
++      "version": "3.0.1",
++      "resolved": "https://registry.npmjs.org/d3-timer/-/d3-timer-3.0.1.tgz",
++      "integrity": "sha512-ndfJ/JxxMd3nw31uyKoY2naivF+r29V+Lc0svZxe1JvvIRmi8hUsrMvdOwgS1o6uBHmiz91geQ0ylPP0aj1VUA==",
++      "license": "ISC",
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/decimal.js-light": {
++      "version": "2.5.1",
++      "resolved": "https://registry.npmjs.org/decimal.js-light/-/decimal.js-light-2.5.1.tgz",
++      "integrity": "sha512-qIMFpTMZmny+MMIitAB6D7iVPEorVw6YQRWkvarTkT4tBeSLLiHzcwj6q0MmYSFCiVpiqPJTJEYIrpcPzVEIvg==",
++      "license": "MIT"
++    },
++    "node_modules/detect-libc": {
++      "version": "2.1.2",
++      "resolved": "https://registry.npmjs.org/detect-libc/-/detect-libc-2.1.2.tgz",
++      "integrity": "sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==",
++      "license": "Apache-2.0",
++      "engines": {
++        "node": ">=8"
++      }
++    },
++    "node_modules/enhanced-resolve": {
++      "version": "5.24.5",
++      "resolved": "https://registry.npmjs.org/enhanced-resolve/-/enhanced-resolve-5.24.5.tgz",
++      "integrity": "sha512-L1l8TNvomm6UVW5B253AGxQagSQr+vGwhMlrrfRS2qmhx46AMpMVJKQYLvWYbysTMY8VoicOvzHzoHMbyzB+4A==",
++      "license": "MIT",
++      "dependencies": {
++        "graceful-fs": "^4.2.4",
++        "tapable": "^2.3.3"
++      },
++      "engines": {
++        "node": ">=10.13.0"
++      }
++    },
++    "node_modules/es-toolkit": {
++      "version": "1.52.0",
++      "resolved": "https://registry.npmjs.org/es-toolkit/-/es-toolkit-1.52.0.tgz",
++      "integrity": "sha512-XTNEJQh1tY1ZJVcf6ayP/2n4ZPyaHlW2FWs7xvw5ddPuhUVjLD3olQVQS7kf58JbAB48iL0uL/jerTrjtV3lDA==",
++      "license": "MIT",
++      "workspaces": [
++        "docs",
++        "benchmarks",
++        "tests/types",
++        "tests/browser-compat"
++      ]
++    },
++    "node_modules/eventemitter3": {
++      "version": "5.0.4",
++      "resolved": "https://registry.npmjs.org/eventemitter3/-/eventemitter3-5.0.4.tgz",
++      "integrity": "sha512-mlsTRyGaPBjPedk6Bvw+aqbsXDtoAyAzm5MO7JgU+yVRyMQ5O8bD4Kcci7BS85f93veegeCPkL8R4GLClnjLFw==",
++      "license": "MIT"
++    },
++    "node_modules/fdir": {
++      "version": "6.5.0",
++      "resolved": "https://registry.npmjs.org/fdir/-/fdir-6.5.0.tgz",
++      "integrity": "sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=12.0.0"
++      },
++      "peerDependencies": {
++        "picomatch": "^3 || ^4"
++      },
++      "peerDependenciesMeta": {
++        "picomatch": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/fsevents": {
++      "version": "2.3.3",
++      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz",
++      "integrity": "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==",
++      "hasInstallScript": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^8.16.0 || ^10.6.0 || >=11.0.0"
++      }
++    },
++    "node_modules/graceful-fs": {
++      "version": "4.2.11",
++      "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz",
++      "integrity": "sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==",
++      "license": "ISC"
++    },
++    "node_modules/immer": {
++      "version": "11.1.18",
++      "resolved": "https://registry.npmjs.org/immer/-/immer-11.1.18.tgz",
++      "integrity": "sha512-EQyQtLiYW029lyoczMl/Hh4Xu7cDecSc58JRYpHyL4tIAu3eqd1yJzQX04d2BZHDkzFFvm6qJEJWOtfDSWAXbQ==",
++      "license": "MIT",
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/immer"
++      }
++    },
++    "node_modules/internmap": {
++      "version": "2.0.3",
++      "resolved": "https://registry.npmjs.org/internmap/-/internmap-2.0.3.tgz",
++      "integrity": "sha512-5Hh7Y1wQbvY5ooGgPbDaL5iYLAPzMTUrjMulskHLH6wnv/A+1q5rgEaiuqEjB+oxGXIVZs1FF+R/KPN3ZSQYYg==",
++      "license": "ISC",
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/jiti": {
++      "version": "2.7.0",
++      "resolved": "https://registry.npmjs.org/jiti/-/jiti-2.7.0.tgz",
++      "integrity": "sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ==",
++      "license": "MIT",
++      "bin": {
++        "jiti": "lib/jiti-cli.mjs"
++      }
++    },
++    "node_modules/lightningcss": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss/-/lightningcss-1.32.0.tgz",
++      "integrity": "sha512-NXYBzinNrblfraPGyrbPoD19C1h9lfI/1mzgWYvXUTe414Gz/X1FD2XBZSZM7rRTrMA8JL3OtAaGifrIKhQ5yQ==",
++      "license": "MPL-2.0",
++      "dependencies": {
++        "detect-libc": "^2.0.3"
++      },
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      },
++      "optionalDependencies": {
++        "lightningcss-android-arm64": "1.32.0",
++        "lightningcss-darwin-arm64": "1.32.0",
++        "lightningcss-darwin-x64": "1.32.0",
++        "lightningcss-freebsd-x64": "1.32.0",
++        "lightningcss-linux-arm-gnueabihf": "1.32.0",
++        "lightningcss-linux-arm64-gnu": "1.32.0",
++        "lightningcss-linux-arm64-musl": "1.32.0",
++        "lightningcss-linux-x64-gnu": "1.32.0",
++        "lightningcss-linux-x64-musl": "1.32.0",
++        "lightningcss-win32-arm64-msvc": "1.32.0",
++        "lightningcss-win32-x64-msvc": "1.32.0"
++      }
++    },
++    "node_modules/lightningcss-android-arm64": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-android-arm64/-/lightningcss-android-arm64-1.32.0.tgz",
++      "integrity": "sha512-YK7/ClTt4kAK0vo6w3X+Pnm0D2cf2vPHbhOXdoNti1Ga0al1P4TBZhwjATvjNwLEBCnKvjJc2jQgHXH0NEwlAg==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-darwin-arm64": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.32.0.tgz",
++      "integrity": "sha512-RzeG9Ju5bag2Bv1/lwlVJvBE3q6TtXskdZLLCyfg5pt+HLz9BqlICO7LZM7VHNTTn/5PRhHFBSjk5lc4cmscPQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-darwin-x64": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-darwin-x64/-/lightningcss-darwin-x64-1.32.0.tgz",
++      "integrity": "sha512-U+QsBp2m/s2wqpUYT/6wnlagdZbtZdndSmut/NJqlCcMLTWp5muCrID+K5UJ6jqD2BFshejCYXniPDbNh73V8w==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-freebsd-x64": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-freebsd-x64/-/lightningcss-freebsd-x64-1.32.0.tgz",
++      "integrity": "sha512-JCTigedEksZk3tHTTthnMdVfGf61Fky8Ji2E4YjUTEQX14xiy/lTzXnu1vwiZe3bYe0q+SpsSH/CTeDXK6WHig==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-arm-gnueabihf": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm-gnueabihf/-/lightningcss-linux-arm-gnueabihf-1.32.0.tgz",
++      "integrity": "sha512-x6rnnpRa2GL0zQOkt6rts3YDPzduLpWvwAF6EMhXFVZXD4tPrBkEFqzGowzCsIWsPjqSK+tyNEODUBXeeVHSkw==",
++      "cpu": [
++        "arm"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-arm64-gnu": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-gnu/-/lightningcss-linux-arm64-gnu-1.32.0.tgz",
++      "integrity": "sha512-0nnMyoyOLRJXfbMOilaSRcLH3Jw5z9HDNGfT/gwCPgaDjnx0i8w7vBzFLFR1f6CMLKF8gVbebmkUN3fa/kQJpQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-arm64-musl": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-musl/-/lightningcss-linux-arm64-musl-1.32.0.tgz",
++      "integrity": "sha512-UpQkoenr4UJEzgVIYpI80lDFvRmPVg6oqboNHfoH4CQIfNA+HOrZ7Mo7KZP02dC6LjghPQJeBsvXhJod/wnIBg==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-x64-gnu": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.32.0.tgz",
++      "integrity": "sha512-V7Qr52IhZmdKPVr+Vtw8o+WLsQJYCTd8loIfpDaMRWGUZfBOYEJeyJIkqGIDMZPwPx24pUMfwSxxI8phr/MbOA==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-linux-x64-musl": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-musl/-/lightningcss-linux-x64-musl-1.32.0.tgz",
++      "integrity": "sha512-bYcLp+Vb0awsiXg/80uCRezCYHNg1/l3mt0gzHnWV9XP1W5sKa5/TCdGWaR/zBM2PeF/HbsQv/j2URNOiVuxWg==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-win32-arm64-msvc": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-win32-arm64-msvc/-/lightningcss-win32-arm64-msvc-1.32.0.tgz",
++      "integrity": "sha512-8SbC8BR40pS6baCM8sbtYDSwEVQd4JlFTOlaD3gWGHfThTcABnNDBda6eTZeqbofalIJhFx0qKzgHJmcPTnGdw==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/lightningcss-win32-x64-msvc": {
++      "version": "1.32.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.32.0.tgz",
++      "integrity": "sha512-Amq9B/SoZYdDi1kFrojnoqPLxYhQ4Wo5XiL8EVJrVsB8ARoC1PWW6VGtT0WKCemjy8aC+louJnjS7U18x3b06Q==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/magic-string": {
++      "version": "0.30.21",
++      "resolved": "https://registry.npmjs.org/magic-string/-/magic-string-0.30.21.tgz",
++      "integrity": "sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==",
++      "license": "MIT",
++      "dependencies": {
++        "@jridgewell/sourcemap-codec": "^1.5.5"
++      }
++    },
++    "node_modules/nanoid": {
++      "version": "3.3.18",
++      "resolved": "https://registry.npmjs.org/nanoid/-/nanoid-3.3.18.tgz",
++      "integrity": "sha512-DTg4MJbGMWkfi6VZFdNt2/caMbQy4Ou+Op/hJQvGEWcnVfoA1QA+xzRKAzw9jD6+GVOOeYr/mIcuDSdug6F6+w==",
++      "funding": [
++        {
++          "type": "github",
++          "url": "https://github.com/sponsors/ai"
++        }
++      ],
++      "license": "MIT",
++      "bin": {
++        "nanoid": "bin/nanoid.cjs"
++      },
++      "engines": {
++        "node": "^10 || ^12 || ^13.7 || ^14 || >=15.0.1"
++      }
++    },
++    "node_modules/oxlint": {
++      "version": "1.80.0",
++      "resolved": "https://registry.npmjs.org/oxlint/-/oxlint-1.80.0.tgz",
++      "integrity": "sha512-5nTiSps4qdbCWLbxzuO00alHkEO2exR9YMN/ig6QXWrLsYSG0KaObOAM+l6oU2LcKPWoSAGYbkZIGEu1ViiWKA==",
++      "dev": true,
++      "license": "MIT",
++      "bin": {
++        "oxlint": "bin/oxlint"
++      },
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/Boshen"
++      },
++      "optionalDependencies": {
++        "@oxlint/binding-android-arm-eabi": "1.80.0",
++        "@oxlint/binding-android-arm64": "1.80.0",
++        "@oxlint/binding-darwin-arm64": "1.80.0",
++        "@oxlint/binding-darwin-x64": "1.80.0",
++        "@oxlint/binding-freebsd-x64": "1.80.0",
++        "@oxlint/binding-linux-arm-gnueabihf": "1.80.0",
++        "@oxlint/binding-linux-arm-musleabihf": "1.80.0",
++        "@oxlint/binding-linux-arm64-gnu": "1.80.0",
++        "@oxlint/binding-linux-arm64-musl": "1.80.0",
++        "@oxlint/binding-linux-ppc64-gnu": "1.80.0",
++        "@oxlint/binding-linux-riscv64-gnu": "1.80.0",
++        "@oxlint/binding-linux-riscv64-musl": "1.80.0",
++        "@oxlint/binding-linux-s390x-gnu": "1.80.0",
++        "@oxlint/binding-linux-x64-gnu": "1.80.0",
++        "@oxlint/binding-linux-x64-musl": "1.80.0",
++        "@oxlint/binding-openharmony-arm64": "1.80.0",
++        "@oxlint/binding-win32-arm64-msvc": "1.80.0",
++        "@oxlint/binding-win32-ia32-msvc": "1.80.0",
++        "@oxlint/binding-win32-x64-msvc": "1.80.0"
++      },
++      "peerDependencies": {
++        "oxlint-tsgolint": ">=7.0.2001",
++        "vite-plus": "*"
++      },
++      "peerDependenciesMeta": {
++        "oxlint-tsgolint": {
++          "optional": true
++        },
++        "vite-plus": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/picocolors": {
++      "version": "1.1.1",
++      "resolved": "https://registry.npmjs.org/picocolors/-/picocolors-1.1.1.tgz",
++      "integrity": "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==",
++      "license": "ISC"
++    },
++    "node_modules/picomatch": {
++      "version": "4.0.7",
++      "resolved": "https://registry.npmjs.org/picomatch/-/picomatch-4.0.7.tgz",
++      "integrity": "sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=12"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/jonschlinkert"
++      }
++    },
++    "node_modules/playwright": {
++      "version": "1.62.1",
++      "resolved": "https://registry.npmjs.org/playwright/-/playwright-1.62.1.tgz",
++      "integrity": "sha512-0M+L3LAD8/nm554LOla9Ayx0j0tmFZ0FBcoQ7F1VuVHpM/XpiC8RcDzBQB8W5+hA8L22THxELzeF+2WcUzvcLg==",
++      "dev": true,
++      "license": "Apache-2.0",
++      "dependencies": {
++        "playwright-core": "1.62.1"
++      },
++      "bin": {
++        "playwright": "cli.js"
++      },
++      "engines": {
++        "node": ">=20"
++      },
++      "optionalDependencies": {
++        "fsevents": "2.3.2"
++      }
++    },
++    "node_modules/playwright-core": {
++      "version": "1.62.1",
++      "resolved": "https://registry.npmjs.org/playwright-core/-/playwright-core-1.62.1.tgz",
++      "integrity": "sha512-wPYSwEBJY9GHraISXqyqtx0na0LpO3XEX7jNDhntbex7tzUS7kLnZsOlFruFJB4Hi/rhDMjXGqHewDZ68nYZVw==",
++      "dev": true,
++      "license": "Apache-2.0",
++      "bin": {
++        "playwright-core": "cli.js"
++      },
++      "engines": {
++        "node": ">=20"
++      }
++    },
++    "node_modules/playwright/node_modules/fsevents": {
++      "version": "2.3.2",
++      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.2.tgz",
++      "integrity": "sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==",
++      "dev": true,
++      "hasInstallScript": true,
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": "^8.16.0 || ^10.6.0 || >=11.0.0"
++      }
++    },
++    "node_modules/postcss": {
++      "version": "8.5.26",
++      "resolved": "https://registry.npmjs.org/postcss/-/postcss-8.5.26.tgz",
++      "integrity": "sha512-u82N74LFzG8ca+dD8puPnplTXoGH4fTPpVGuIbt36G3qvNlkvfD0lEAZSxaly3KX8TS/L1A1gsCEmvKmBcVbkQ==",
++      "funding": [
++        {
++          "type": "opencollective",
++          "url": "https://opencollective.com/postcss/"
++        },
++        {
++          "type": "tidelift",
++          "url": "https://tidelift.com/funding/github/npm/postcss"
++        },
++        {
++          "type": "github",
++          "url": "https://github.com/sponsors/ai"
++        }
++      ],
++      "license": "MIT",
++      "dependencies": {
++        "nanoid": "^3.3.17",
++        "picocolors": "^1.1.1",
++        "source-map-js": "^1.2.1"
++      },
++      "engines": {
++        "node": "^10 || ^12 || >=14"
++      }
++    },
++    "node_modules/react": {
++      "version": "19.2.8",
++      "resolved": "https://registry.npmjs.org/react/-/react-19.2.8.tgz",
++      "integrity": "sha512-PWaYA1L/q9u2u7xYQi+Y3L3Yfnie7XyLeaJICV1MGD6LprsBxcAqGjYyr0eY3p+QdsA+x/Irkt4Qif8D63+Sbw==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=0.10.0"
++      }
++    },
++    "node_modules/react-dom": {
++      "version": "19.2.8",
++      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-19.2.8.tgz",
++      "integrity": "sha512-rVprimfGBG3DR+Tq0IQG2DT5PxKth1WIGDmj5yPmlzr4YBe7uyE+Du4oVqTDXZSHGGGXRtTJEGSSePyQCMBglQ==",
++      "license": "MIT",
++      "dependencies": {
++        "scheduler": "^0.27.0"
++      },
++      "peerDependencies": {
++        "react": "^19.2.8"
++      }
++    },
++    "node_modules/react-is": {
++      "version": "19.2.8",
++      "resolved": "https://registry.npmjs.org/react-is/-/react-is-19.2.8.tgz",
++      "integrity": "sha512-s5un28nYxKJw5gvUHyW5PCC28CvBqLu9r3cWgzHT4Vo/5fqqkFcdRYsGcKf50WMPpjjFZS5d76fn3YCo2njKwQ==",
++      "license": "MIT",
++      "peer": true
++    },
++    "node_modules/react-redux": {
++      "version": "9.3.0",
++      "resolved": "https://registry.npmjs.org/react-redux/-/react-redux-9.3.0.tgz",
++      "integrity": "sha512-KQopgqFo/p/fgmAs5qz6p5RWaNAzq40WAu7fJIXnQpYxFPbJYtsJPWvGeF2rOBaY/kEuV77AVsX8TsQzKm+A/g==",
++      "license": "MIT",
++      "dependencies": {
++        "@types/use-sync-external-store": "^0.0.6",
++        "use-sync-external-store": "^1.4.0"
++      },
++      "peerDependencies": {
++        "@types/react": "^18.2.25 || ^19",
++        "react": "^18.0 || ^19",
++        "redux": "^5.0.0"
++      },
++      "peerDependenciesMeta": {
++        "@types/react": {
++          "optional": true
++        },
++        "redux": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/recharts": {
++      "version": "3.10.1",
++      "resolved": "https://registry.npmjs.org/recharts/-/recharts-3.10.1.tgz",
++      "integrity": "sha512-QXFrvt6IVcw7eeZCoyXTwkIJAX3Dv1nyVhMicXJ47GsGDDpcN8z6o644DibE9XjpBTThtsomLKnTV6lc+cVFUA==",
++      "license": "MIT",
++      "workspaces": [
++        "www"
++      ],
++      "dependencies": {
++        "@reduxjs/toolkit": "^1.9.0 || 2.x.x",
++        "clsx": "^2.1.1",
++        "decimal.js-light": "^2.5.1",
++        "es-toolkit": "^1.39.3",
++        "eventemitter3": "^5.0.1",
++        "immer": "^11.1.8",
++        "react-redux": "8.x.x || 9.x.x",
++        "reselect": "5.2.0",
++        "tiny-invariant": "^1.3.3",
++        "use-sync-external-store": "^1.2.2",
++        "victory-vendor": "^37.0.2"
++      },
++      "engines": {
++        "node": ">=18"
++      },
++      "peerDependencies": {
++        "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
++        "react-dom": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
++        "react-is": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
++      }
++    },
++    "node_modules/redux": {
++      "version": "5.0.1",
++      "resolved": "https://registry.npmjs.org/redux/-/redux-5.0.1.tgz",
++      "integrity": "sha512-M9/ELqF6fy8FwmkpnF0S3YKOqMyoWJ4+CS5Efg2ct3oY9daQvd/Pc71FpGZsVsbl3Cpb+IIcjBDUnnyBdQbq4w==",
++      "license": "MIT"
++    },
++    "node_modules/redux-thunk": {
++      "version": "3.1.0",
++      "resolved": "https://registry.npmjs.org/redux-thunk/-/redux-thunk-3.1.0.tgz",
++      "integrity": "sha512-NW2r5T6ksUKXCabzhL9z+h206HQw/NJkcLm1GPImRQ8IzfXwRGqjVhKJGauHirT0DAuyy6hjdnMZaRoAcy0Klw==",
++      "license": "MIT",
++      "peerDependencies": {
++        "redux": "^5.0.0"
++      }
++    },
++    "node_modules/reselect": {
++      "version": "5.2.0",
++      "resolved": "https://registry.npmjs.org/reselect/-/reselect-5.2.0.tgz",
++      "integrity": "sha512-AgZ3UOZm3YndfrJ4OYjgrT7bmCm/1iqkjvEfH/oYjzh6PD2qw4QuT3jjnXIrpdt4MTpMXclMT3lXbmRY+XRakw==",
++      "license": "MIT"
++    },
++    "node_modules/rolldown": {
++      "version": "1.2.6",
++      "resolved": "https://registry.npmjs.org/rolldown/-/rolldown-1.2.6.tgz",
++      "integrity": "sha512-vMM4q3aixf46GiF1Kok8jDPFsEpXgFWGjUHXNkNHNm+Y2adXAG2dbX91jkti3i0ZRsOlcmbuzAz1poObSHCmUA==",
++      "license": "MIT",
++      "dependencies": {
++        "@oxc-project/types": "=0.147.0",
++        "@rolldown/pluginutils": "^1.0.0"
++      },
++      "bin": {
++        "rolldown": "bin/cli.mjs"
++      },
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      },
++      "optionalDependencies": {
++        "@rolldown/binding-android-arm-eabi": "1.2.6",
++        "@rolldown/binding-android-arm64": "1.2.6",
++        "@rolldown/binding-darwin-arm64": "1.2.6",
++        "@rolldown/binding-darwin-x64": "1.2.6",
++        "@rolldown/binding-freebsd-x64": "1.2.6",
++        "@rolldown/binding-linux-arm-gnueabihf": "1.2.6",
++        "@rolldown/binding-linux-arm64-gnu": "1.2.6",
++        "@rolldown/binding-linux-arm64-musl": "1.2.6",
++        "@rolldown/binding-linux-ppc64-gnu": "1.2.6",
++        "@rolldown/binding-linux-s390x-gnu": "1.2.6",
++        "@rolldown/binding-linux-x64-gnu": "1.2.6",
++        "@rolldown/binding-linux-x64-musl": "1.2.6",
++        "@rolldown/binding-openharmony-arm64": "1.2.6",
++        "@rolldown/binding-win32-arm64-msvc": "1.2.6",
++        "@rolldown/binding-win32-x64-msvc": "1.2.6"
++      }
++    },
++    "node_modules/scheduler": {
++      "version": "0.27.0",
++      "resolved": "https://registry.npmjs.org/scheduler/-/scheduler-0.27.0.tgz",
++      "integrity": "sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==",
++      "license": "MIT"
++    },
++    "node_modules/source-map-js": {
++      "version": "1.2.1",
++      "resolved": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.1.tgz",
++      "integrity": "sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==",
++      "license": "BSD-3-Clause",
++      "engines": {
++        "node": ">=0.10.0"
++      }
++    },
++    "node_modules/tailwindcss": {
++      "version": "4.3.3",
++      "resolved": "https://registry.npmjs.org/tailwindcss/-/tailwindcss-4.3.3.tgz",
++      "integrity": "sha512-gOhV3P7ufE62QDGg1zVaTgCR+EtPv92k2nIhVcVKcLmxT1sUBsQGhnZj175j+MqRt4zLF7ic+sCYjfhxMxj7YQ==",
++      "license": "MIT"
++    },
++    "node_modules/tapable": {
++      "version": "2.3.3",
++      "resolved": "https://registry.npmjs.org/tapable/-/tapable-2.3.3.tgz",
++      "integrity": "sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==",
++      "license": "MIT",
++      "engines": {
++        "node": ">=6"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/webpack"
++      }
++    },
++    "node_modules/tiny-invariant": {
++      "version": "1.3.3",
++      "resolved": "https://registry.npmjs.org/tiny-invariant/-/tiny-invariant-1.3.3.tgz",
++      "integrity": "sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==",
++      "license": "MIT"
++    },
++    "node_modules/tinyglobby": {
++      "version": "0.2.17",
++      "resolved": "https://registry.npmjs.org/tinyglobby/-/tinyglobby-0.2.17.tgz",
++      "integrity": "sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g==",
++      "license": "MIT",
++      "dependencies": {
++        "fdir": "^6.5.0",
++        "picomatch": "^4.0.4"
++      },
++      "engines": {
++        "node": ">=12.0.0"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/SuperchupuDev"
++      }
++    },
++    "node_modules/typescript": {
++      "version": "6.0.3",
++      "resolved": "https://registry.npmjs.org/typescript/-/typescript-6.0.3.tgz",
++      "integrity": "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==",
++      "dev": true,
++      "license": "Apache-2.0",
++      "bin": {
++        "tsc": "bin/tsc",
++        "tsserver": "bin/tsserver"
++      },
++      "engines": {
++        "node": ">=14.17"
++      }
++    },
++    "node_modules/undici-types": {
++      "version": "7.18.2",
++      "resolved": "https://registry.npmjs.org/undici-types/-/undici-types-7.18.2.tgz",
++      "integrity": "sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==",
++      "devOptional": true,
++      "license": "MIT"
++    },
++    "node_modules/use-sync-external-store": {
++      "version": "1.6.0",
++      "resolved": "https://registry.npmjs.org/use-sync-external-store/-/use-sync-external-store-1.6.0.tgz",
++      "integrity": "sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==",
++      "license": "MIT",
++      "peerDependencies": {
++        "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
++      }
++    },
++    "node_modules/victory-vendor": {
++      "version": "37.3.6",
++      "resolved": "https://registry.npmjs.org/victory-vendor/-/victory-vendor-37.3.6.tgz",
++      "integrity": "sha512-SbPDPdDBYp+5MJHhBCAyI7wKM3d5ivekigc2Dk2s7pgbZ9wIgIBYGVw4zGHBml/qTFbexrofXW6Gu4noGxrOwQ==",
++      "license": "MIT AND ISC",
++      "dependencies": {
++        "@types/d3-array": "^3.0.3",
++        "@types/d3-ease": "^3.0.0",
++        "@types/d3-interpolate": "^3.0.1",
++        "@types/d3-scale": "^4.0.2",
++        "@types/d3-shape": "^3.1.0",
++        "@types/d3-time": "^3.0.0",
++        "@types/d3-timer": "^3.0.0",
++        "d3-array": "^3.1.6",
++        "d3-ease": "^3.0.1",
++        "d3-interpolate": "^3.0.1",
++        "d3-scale": "^4.0.2",
++        "d3-shape": "^3.1.0",
++        "d3-time": "^3.0.0",
++        "d3-timer": "^3.0.1"
++      }
++    },
++    "node_modules/vite": {
++      "version": "8.2.2",
++      "resolved": "https://registry.npmjs.org/vite/-/vite-8.2.2.tgz",
++      "integrity": "sha512-cFKLV/PRgAUlIRm5WjMjJ86jrftzpqcgH+Us+DS8mI3CDNiH30Whrz8uHL3+MOLPAgqbMBAqWdAHAphOAM+z/Q==",
++      "license": "MIT",
++      "dependencies": {
++        "lightningcss": "^1.33.0",
++        "picomatch": "^4.0.5",
++        "postcss": "^8.5.26",
++        "rolldown": "~1.2.4",
++        "tinyglobby": "^0.2.17"
++      },
++      "bin": {
++        "vite": "bin/vite.js"
++      },
++      "engines": {
++        "node": "^20.19.0 || >=22.12.0"
++      },
++      "funding": {
++        "url": "https://github.com/vitejs/vite?sponsor=1"
++      },
++      "optionalDependencies": {
++        "fsevents": "~2.3.3"
++      },
++      "peerDependencies": {
++        "@types/node": "^20.19.0 || >=22.12.0",
++        "@vitejs/devtools": "^0.4.0 || ^0.5.0",
++        "esbuild": "^0.27.0 || ^0.28.0",
++        "jiti": ">=1.21.0",
++        "less": "^4.0.0",
++        "sass": "^1.70.0",
++        "sass-embedded": "^1.70.0",
++        "stylus": ">=0.54.8",
++        "sugarss": "^5.0.0",
++        "terser": "^5.16.0",
++        "tsx": "^4.8.1",
++        "yaml": "^2.4.2"
++      },
++      "peerDependenciesMeta": {
++        "@types/node": {
++          "optional": true
++        },
++        "@vitejs/devtools": {
++          "optional": true
++        },
++        "esbuild": {
++          "optional": true
++        },
++        "jiti": {
++          "optional": true
++        },
++        "less": {
++          "optional": true
++        },
++        "sass": {
++          "optional": true
++        },
++        "sass-embedded": {
++          "optional": true
++        },
++        "stylus": {
++          "optional": true
++        },
++        "sugarss": {
++          "optional": true
++        },
++        "terser": {
++          "optional": true
++        },
++        "tsx": {
++          "optional": true
++        },
++        "yaml": {
++          "optional": true
++        }
++      }
++    },
++    "node_modules/vite/node_modules/lightningcss": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss/-/lightningcss-1.33.0.tgz",
++      "integrity": "sha512-WkUDrojuJs0xkgGf2udWxa3yGBRxPtxUkB79i6aCZLRgc7PM8fZe9TosfPDcvEpQZbuFASnHYmRLBLUbmLOIIA==",
++      "license": "MPL-2.0",
++      "dependencies": {
++        "detect-libc": "^2.0.3"
++      },
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      },
++      "optionalDependencies": {
++        "lightningcss-android-arm64": "1.33.0",
++        "lightningcss-darwin-arm64": "1.33.0",
++        "lightningcss-darwin-x64": "1.33.0",
++        "lightningcss-freebsd-x64": "1.33.0",
++        "lightningcss-linux-arm-gnueabihf": "1.33.0",
++        "lightningcss-linux-arm64-gnu": "1.33.0",
++        "lightningcss-linux-arm64-musl": "1.33.0",
++        "lightningcss-linux-x64-gnu": "1.33.0",
++        "lightningcss-linux-x64-musl": "1.33.0",
++        "lightningcss-win32-arm64-msvc": "1.33.0",
++        "lightningcss-win32-x64-msvc": "1.33.0"
++      }
++    },
++    "node_modules/vite/node_modules/lightningcss-android-arm64": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-android-arm64/-/lightningcss-android-arm64-1.33.0.tgz",
++      "integrity": "sha512-gEpRTalKdosp4Bb8qWtc2iOgE5SeIHlpS1up9bFq2wAyYhl1UdTObYiHe98zEM9SQvSoqQZ1IQD0JNpg3Ml5pg==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/vite/node_modules/lightningcss-darwin-arm64": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-darwin-arm64/-/lightningcss-darwin-arm64-1.33.0.tgz",
++      "integrity": "sha512-Sciaz8eenNTKn9b3t7+xr0ipTp9YxKQY4npwQ3mrRuL0BAVHBLyZxofhaKBAVtzmtRZ/zTyo0/to4B1uWG/Djg==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/vite/node_modules/lightningcss-darwin-x64": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-darwin-x64/-/lightningcss-darwin-x64-1.33.0.tgz",
++      "integrity": "sha512-Z5UPAxzrjlWNNyGy6i65cJzzvgJ5D3T6wMvs+gWpY9d7qRhANrxqAp6LhxIgZhWEw18RfJTGcRxjuLIBr+m8XQ==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/vite/node_modules/lightningcss-freebsd-x64": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-freebsd-x64/-/lightningcss-freebsd-x64-1.33.0.tgz",
++      "integrity": "sha512-QQM/Ti/hQajJwCY+RiWuCZ9sdtI/XQk7nDK5vC8kkdwixezOlDgvDx7+RT+QjK6FcFT4MpsuoBnHIo/O3StRRg==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "freebsd"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/vite/node_modules/lightningcss-linux-arm-gnueabihf": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm-gnueabihf/-/lightningcss-linux-arm-gnueabihf-1.33.0.tgz",
++      "integrity": "sha512-N7FVBe6iS24MlM6R/4RBTxGhQheZGs7tiQ9U32UtF75NzP5Q7xWPRqLBCKxlRQRk3rY1jCIPLzx7WzOhuUIRLQ==",
++      "cpu": [
++        "arm"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/vite/node_modules/lightningcss-linux-arm64-gnu": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-gnu/-/lightningcss-linux-arm64-gnu-1.33.0.tgz",
++      "integrity": "sha512-j2v/itmy4HlNxlc6voKXYgBqNi0Ng2LShg4z7GufpEgs05P+2suBVyi9I6YHq5uoVFx9ETin3eCEhLVyXGQnKg==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/vite/node_modules/lightningcss-linux-arm64-musl": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-arm64-musl/-/lightningcss-linux-arm64-musl-1.33.0.tgz",
++      "integrity": "sha512-yiO5ROMuYQgXbC60yjZU5CYSFZGKXL0HFATXt9mHJn1+zW55oCtMI9NfcVhYLMFDL7gV7oBPon/EmMMGg2OvtQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/vite/node_modules/lightningcss-linux-x64-gnu": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.33.0.tgz",
++      "integrity": "sha512-ar+Ju7LmcN0Jo4FpL4hpFybwNG9/3A/Br5KW2n2jyODg3MEZXaDYADdemoNS+BDNfMgKvylJLj4S5tyRActuAg==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/vite/node_modules/lightningcss-linux-x64-musl": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-linux-x64-musl/-/lightningcss-linux-x64-musl-1.33.0.tgz",
++      "integrity": "sha512-RYiYbkokw0trfKqqzfF55lginwEPrD3OJDfTuJzFs1MK6iFnDenaz1fqLLtX4ITG3OktJQXOeTaw1awrBAlZPw==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/vite/node_modules/lightningcss-win32-arm64-msvc": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-win32-arm64-msvc/-/lightningcss-win32-arm64-msvc-1.33.0.tgz",
++      "integrity": "sha512-1K+MPfLSFVpphzpdbfkhlWk6wBrTObBzS2T6db10PNOZgR9GoVsAWzwNyuhUYYbTp23j+4RrncfujZ4uAzXvwA==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    },
++    "node_modules/vite/node_modules/lightningcss-win32-x64-msvc": {
++      "version": "1.33.0",
++      "resolved": "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.33.0.tgz",
++      "integrity": "sha512-OlEICDx/Xl0FqSp4bry8zFnCvGpig3Gl4gCquvYwHuqJKEC1+n9NgDniFvqHGmMv1ZkqDJrDqKKSykTDX+ehuA==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MPL-2.0",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "engines": {
++        "node": ">= 12.0.0"
++      },
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/parcel"
++      }
++    }
++  }
++}
+diff --git a/package.json b/package.json
+new file mode 100644
+index 0000000..36aa32f
+--- /dev/null
++++ b/package.json
+@@ -0,0 +1,31 @@
++{
++  "name": "api-traffic-dashboard",
++  "private": true,
++  "version": "0.0.0",
++  "type": "module",
++  "scripts": {
++    "dev": "vite",
++    "build": "tsc -b && vite build",
++    "lint": "oxlint",
++    "preview": "vite preview"
++  },
++  "dependencies": {
++    "@tailwindcss/vite": "^4.3.3",
++    "clsx": "^2.1.1",
++    "react": "^19.2.8",
++    "react-dom": "^19.2.8",
++    "recharts": "^3.10.1",
++    "tailwindcss": "^4.3.3"
++  },
++  "devDependencies": {
++    "@types/node": "^24.13.3",
++    "@types/react": "^19.2.18",
++    "@types/react-dom": "^19.2.4",
++    "@vitejs/plugin-react": "^6.1.0",
++    "axe-core": "^4.13.0",
++    "oxlint": "^1.79.0",
++    "playwright": "^1.62.1",
++    "typescript": "~6.0.2",
++    "vite": "^8.2.2"
++  }
++}
+diff --git a/public/favicon.svg b/public/favicon.svg
+new file mode 100644
+index 0000000..6893eb1
+--- /dev/null
++++ b/public/favicon.svg
+@@ -0,0 +1 @@
++<svg xmlns="http://www.w3.org/2000/svg" width="48" height="46" fill="none" viewBox="0 0 48 46"><path fill="#863bff" d="M25.946 44.938c-.664.845-2.021.375-2.021-.698V33.937a2.26 2.26 0 0 0-2.262-2.262H10.287c-.92 0-1.456-1.04-.92-1.788l7.48-10.471c1.07-1.497 0-3.578-1.842-3.578H1.237c-.92 0-1.456-1.04-.92-1.788L10.013.474c.214-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.471c-1.07 1.498 0 3.579 1.842 3.579h11.377c.943 0 1.473 1.088.89 1.83L25.947 44.94z" style="fill:#863bff;fill:color(display-p3 .5252 .23 1);fill-opacity:1"/><mask id="a" width="48" height="46" x="0" y="0" maskUnits="userSpaceOnUse" style="mask-type:alpha"><path fill="#000" d="M25.842 44.938c-.664.844-2.021.375-2.021-.698V33.937a2.26 2.26 0 0 0-2.262-2.262H10.183c-.92 0-1.456-1.04-.92-1.788l7.48-10.471c1.07-1.498 0-3.579-1.842-3.579H1.133c-.92 0-1.456-1.04-.92-1.787L9.91.473c.214-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.471c-1.07 1.498 0 3.578 1.842 3.578h11.377c.943 0 1.473 1.088.89 1.832L25.843 44.94z" style="fill:#000;fill-opacity:1"/></mask><g mask="url(#a)"><g filter="url(#b)"><ellipse cx="5.508" cy="14.704" fill="#ede6ff" rx="5.508" ry="14.704" style="fill:#ede6ff;fill:color(display-p3 .9275 .9033 1);fill-opacity:1" transform="matrix(.00324 1 1 -.00324 -4.47 31.516)"/></g><g filter="url(#c)"><ellipse cx="10.399" cy="29.851" fill="#ede6ff" rx="10.399" ry="29.851" style="fill:#ede6ff;fill:color(display-p3 .9275 .9033 1);fill-opacity:1" transform="matrix(.00324 1 1 -.00324 -39.328 7.883)"/></g><g filter="url(#d)"><ellipse cx="5.508" cy="30.487" fill="#7e14ff" rx="5.508" ry="30.487" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.814 -25.913 -14.639)scale(1 -1)"/></g><g filter="url(#e)"><ellipse cx="5.508" cy="30.599" fill="#7e14ff" rx="5.508" ry="30.599" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.814 -32.644 -3.334)scale(1 -1)"/></g><g filter="url(#f)"><ellipse cx="5.508" cy="30.599" fill="#7e14ff" rx="5.508" ry="30.599" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="matrix(.00324 1 1 -.00324 -34.34 30.47)"/></g><g filter="url(#g)"><ellipse cx="14.072" cy="22.078" fill="#ede6ff" rx="14.072" ry="22.078" style="fill:#ede6ff;fill:color(display-p3 .9275 .9033 1);fill-opacity:1" transform="rotate(93.35 24.506 48.493)scale(-1 1)"/></g><g filter="url(#h)"><ellipse cx="3.47" cy="21.501" fill="#7e14ff" rx="3.47" ry="21.501" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.009 28.708 47.59)scale(-1 1)"/></g><g filter="url(#i)"><ellipse cx="3.47" cy="21.501" fill="#7e14ff" rx="3.47" ry="21.501" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(89.009 28.708 47.59)scale(-1 1)"/></g><g filter="url(#j)"><ellipse cx=".387" cy="8.972" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(39.51 .387 8.972)"/></g><g filter="url(#k)"><ellipse cx="47.523" cy="-6.092" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 47.523 -6.092)"/></g><g filter="url(#l)"><ellipse cx="41.412" cy="6.333" fill="#47bfff" rx="5.971" ry="9.665" style="fill:#47bfff;fill:color(display-p3 .2799 .748 1);fill-opacity:1" transform="rotate(37.892 41.412 6.333)"/></g><g filter="url(#m)"><ellipse cx="-1.879" cy="38.332" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 -1.88 38.332)"/></g><g filter="url(#n)"><ellipse cx="-1.879" cy="38.332" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 -1.88 38.332)"/></g><g filter="url(#o)"><ellipse cx="35.651" cy="29.907" fill="#7e14ff" rx="4.407" ry="29.108" style="fill:#7e14ff;fill:color(display-p3 .4922 .0767 1);fill-opacity:1" transform="rotate(37.892 35.651 29.907)"/></g><g filter="url(#p)"><ellipse cx="38.418" cy="32.4" fill="#47bfff" rx="5.971" ry="15.297" style="fill:#47bfff;fill:color(display-p3 .2799 .748 1);fill-opacity:1" transform="rotate(37.892 38.418 32.4)"/></g></g><defs><filter id="b" width="60.045" height="41.654" x="-19.77" y="16.149" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="7.659"/></filter><filter id="c" width="90.34" height="51.437" x="-54.613" y="-7.533" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="7.659"/></filter><filter id="d" width="79.355" height="29.4" x="-49.64" y="2.03" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="e" width="79.579" height="29.4" x="-45.045" y="20.029" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="f" width="79.579" height="29.4" x="-43.513" y="21.178" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="g" width="74.749" height="58.852" x="15.756" y="-17.901" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="7.659"/></filter><filter id="h" width="61.377" height="25.362" x="23.548" y="2.284" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="i" width="61.377" height="25.362" x="23.548" y="2.284" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="j" width="56.045" height="63.649" x="-27.636" y="-22.853" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="k" width="54.814" height="64.646" x="20.116" y="-38.415" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="l" width="33.541" height="35.313" x="24.641" y="-11.323" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="m" width="54.814" height="64.646" x="-29.286" y="6.009" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="n" width="54.814" height="64.646" x="-29.286" y="6.009" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="o" width="54.814" height="64.646" x="8.244" y="-2.416" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter><filter id="p" width="39.409" height="43.623" x="18.713" y="10.588" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/><feGaussianBlur result="effect1_foregroundBlur_2002_17158" stdDeviation="4.596"/></filter></defs></svg>
+\ No newline at end of file
+diff --git a/public/icons.svg b/public/icons.svg
+new file mode 100644
+index 0000000..e952219
+--- /dev/null
++++ b/public/icons.svg
+@@ -0,0 +1,24 @@
++<svg xmlns="http://www.w3.org/2000/svg">
++  <symbol id="bluesky-icon" viewBox="0 0 16 17">
++    <g clip-path="url(#bluesky-clip)"><path fill="#08060d" d="M7.75 7.735c-.693-1.348-2.58-3.86-4.334-5.097-1.68-1.187-2.32-.981-2.74-.79C.188 2.065.1 2.812.1 3.251s.241 3.602.398 4.13c.52 1.744 2.367 2.333 4.07 2.145-2.495.37-4.71 1.278-1.805 4.512 3.196 3.309 4.38-.71 4.987-2.746.608 2.036 1.307 5.91 4.93 2.746 2.72-2.746.747-4.143-1.747-4.512 1.702.189 3.55-.4 4.07-2.145.156-.528.397-3.691.397-4.13s-.088-1.186-.575-1.406c-.42-.19-1.06-.395-2.741.79-1.755 1.24-3.64 3.752-4.334 5.099"/></g>
++    <defs><clipPath id="bluesky-clip"><path fill="#fff" d="M.1.85h15.3v15.3H.1z"/></clipPath></defs>
++  </symbol>
++  <symbol id="discord-icon" viewBox="0 0 20 19">
++    <path fill="#08060d" d="M16.224 3.768a14.5 14.5 0 0 0-3.67-1.153c-.158.286-.343.67-.47.976a13.5 13.5 0 0 0-4.067 0c-.128-.306-.317-.69-.476-.976A14.4 14.4 0 0 0 3.868 3.77C1.546 7.28.916 10.703 1.231 14.077a14.7 14.7 0 0 0 4.5 2.306q.545-.748.965-1.587a9.5 9.5 0 0 1-1.518-.74q.191-.14.372-.293c2.927 1.369 6.107 1.369 8.999 0q.183.152.372.294-.723.437-1.52.74.418.838.963 1.588a14.6 14.6 0 0 0 4.504-2.308c.37-3.911-.63-7.302-2.644-10.309m-9.13 8.234c-.878 0-1.599-.82-1.599-1.82 0-.998.705-1.82 1.6-1.82.894 0 1.614.82 1.599 1.82.001 1-.705 1.82-1.6 1.82m5.91 0c-.878 0-1.599-.82-1.599-1.82 0-.998.705-1.82 1.6-1.82.893 0 1.614.82 1.599 1.82 0 1-.706 1.82-1.6 1.82"/>
++  </symbol>
++  <symbol id="documentation-icon" viewBox="0 0 21 20">
++    <path fill="none" stroke="#aa3bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.35" d="m15.5 13.333 1.533 1.322c.645.555.967.833.967 1.178s-.322.623-.967 1.179L15.5 18.333m-3.333-5-1.534 1.322c-.644.555-.966.833-.966 1.178s.322.623.966 1.179l1.534 1.321"/>
++    <path fill="none" stroke="#aa3bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.35" d="M17.167 10.836v-4.32c0-1.41 0-2.117-.224-2.68-.359-.906-1.118-1.621-2.08-1.96-.599-.21-1.349-.21-2.848-.21-2.623 0-3.935 0-4.983.369-1.684.591-3.013 1.842-3.641 3.428C3 6.449 3 7.684 3 10.154v2.122c0 2.558 0 3.838.706 4.726q.306.383.713.671c.76.536 1.79.64 3.581.66"/>
++    <path fill="none" stroke="#aa3bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.35" d="M3 10a2.78 2.78 0 0 1 2.778-2.778c.555 0 1.209.097 1.748-.047.48-.129.854-.503.982-.982.145-.54.048-1.194.048-1.749a2.78 2.78 0 0 1 2.777-2.777"/>
++  </symbol>
++  <symbol id="github-icon" viewBox="0 0 19 19">
++    <path fill="#08060d" fill-rule="evenodd" d="M9.356 1.85C5.05 1.85 1.57 5.356 1.57 9.694a7.84 7.84 0 0 0 5.324 7.44c.387.079.528-.168.528-.376 0-.182-.013-.805-.013-1.454-2.165.467-2.616-.935-2.616-.935-.349-.91-.864-1.143-.864-1.143-.71-.48.051-.48.051-.48.787.051 1.2.805 1.2.805.695 1.194 1.817.857 2.268.649.064-.507.27-.857.49-1.052-1.728-.182-3.545-.857-3.545-3.87 0-.857.31-1.558.8-2.104-.078-.195-.349-1 .077-2.078 0 0 .657-.208 2.14.805a7.5 7.5 0 0 1 1.946-.26c.657 0 1.328.092 1.946.26 1.483-1.013 2.14-.805 2.14-.805.426 1.078.155 1.883.078 2.078.502.546.799 1.247.799 2.104 0 3.013-1.818 3.675-3.558 3.87.284.247.528.714.528 1.454 0 1.052-.012 1.896-.012 2.156 0 .208.142.455.528.377a7.84 7.84 0 0 0 5.324-7.441c.013-4.338-3.48-7.844-7.773-7.844" clip-rule="evenodd"/>
++  </symbol>
++  <symbol id="social-icon" viewBox="0 0 20 20">
++    <path fill="none" stroke="#aa3bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.35" d="M12.5 6.667a4.167 4.167 0 1 0-8.334 0 4.167 4.167 0 0 0 8.334 0"/>
++    <path fill="none" stroke="#aa3bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.35" d="M2.5 16.667a5.833 5.833 0 0 1 8.75-5.053m3.837.474.513 1.035c.07.144.257.282.414.309l.93.155c.596.1.736.536.307.965l-.723.73a.64.64 0 0 0-.152.531l.207.903c.164.715-.213.991-.84.618l-.872-.52a.63.63 0 0 0-.577 0l-.872.52c-.624.373-1.003.094-.84-.618l.207-.903a.64.64 0 0 0-.152-.532l-.723-.729c-.426-.43-.289-.864.306-.964l.93-.156a.64.64 0 0 0 .412-.31l.513-1.034c.28-.562.735-.562 1.012 0"/>
++  </symbol>
++  <symbol id="x-icon" viewBox="0 0 19 19">
++    <path fill="#08060d" fill-rule="evenodd" d="M1.893 1.98c.052.072 1.245 1.769 2.653 3.77l2.892 4.114c.183.261.333.48.333.486s-.068.089-.152.183l-.522.593-.765.867-3.597 4.087c-.375.426-.734.834-.798.905a1 1 0 0 0-.118.148c0 .01.236.017.664.017h.663l.729-.83c.4-.457.796-.906.879-.999a692 692 0 0 0 1.794-2.038c.034-.037.301-.34.594-.675l.551-.624.345-.392a7 7 0 0 1 .34-.374c.006 0 .93 1.306 2.052 2.903l2.084 2.965.045.063h2.275c1.87 0 2.273-.003 2.266-.021-.008-.02-1.098-1.572-3.894-5.547-2.013-2.862-2.28-3.246-2.273-3.266.008-.019.282-.332 2.085-2.38l2-2.274 1.567-1.782c.022-.028-.016-.03-.65-.03h-.674l-.3.342a871 871 0 0 1-1.782 2.025c-.067.075-.405.458-.75.852a100 100 0 0 1-.803.91c-.148.172-.299.344-.99 1.127-.304.343-.32.358-.345.327-.015-.019-.904-1.282-1.976-2.808L6.365 1.85H1.8zm1.782.91 8.078 11.294c.772 1.08 1.413 1.973 1.425 1.984.016.017.241.02 1.05.017l1.03-.004-2.694-3.766L7.796 5.75 5.722 2.852l-1.039-.004-1.039-.004z" clip-rule="evenodd"/>
++  </symbol>
++</svg>
+diff --git a/src/App.tsx b/src/App.tsx
+new file mode 100644
+index 0000000..90c06c0
+--- /dev/null
++++ b/src/App.tsx
+@@ -0,0 +1,116 @@
++import { useEffect, useMemo, useState } from 'react'
++import { useTrafficStream, setStreamLive } from './hooks/useTrafficStream'
++import { buildEndpointRows, downsample, sliceRange, TIME_RANGES } from './lib/metrics'
++import { TimeRangeControl } from './components/TimeRangeControl'
++import { LiveIndicator } from './components/LiveIndicator'
++import { MetricStrip } from './components/MetricStrip'
++import { IncidentBanner } from './components/IncidentBanner'
++import { ThroughputChart } from './components/ThroughputChart'
++import { ErrorRateChart } from './components/ErrorRateChart'
++import { LatencyChart } from './components/LatencyChart'
++import { EndpointsTable } from './components/EndpointsTable'
++import type { TimeRangeKey } from './types'
++
++function useTheme() {
++  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
++  useEffect(() => {
++    document.documentElement.dataset.theme = theme
++  }, [theme])
++  return { theme, toggle: () => setTheme((t) => (t === 'dark' ? 'light' : 'dark')) }
++}
++
++export default function App() {
++  const snapshot = useTrafficStream()
++  const [range, setRange] = useState<TimeRangeKey>('15m')
++  const { theme, toggle } = useTheme()
++
++  const rangeMs = TIME_RANGES.find((r) => r.key === range)?.ms ?? TIME_RANGES[1].ms
++  const scoped = useMemo(() => sliceRange(snapshot.ticks, rangeMs), [snapshot.ticks, rangeMs])
++  const chartData = useMemo(() => downsample(scoped, 100), [scoped])
++
++  const latest = snapshot.ticks[snapshot.ticks.length - 1]
++  const compareWindow = 30 // ticks (~60s) to compare current vs prior for deltas
++  const recent = snapshot.ticks.slice(-compareWindow)
++  const prior = snapshot.ticks.slice(-compareWindow * 2, -compareWindow)
++  const avg = (arr: typeof recent, key: 'rps' | 'errorRatePct') =>
++    arr.length ? arr.reduce((sum, t) => sum + t[key], 0) / arr.length : 0
++  const rpsDelta = prior.length ? ((avg(recent, 'rps') - avg(prior, 'rps')) / Math.max(1e-6, avg(prior, 'rps'))) * 100 : 0
++  const errorDelta = prior.length
++    ? ((avg(recent, 'errorRatePct') - avg(prior, 'errorRatePct')) / Math.max(1e-6, avg(prior, 'errorRatePct'))) * 100
++    : 0
++
++  const now = Date.now()
++  const incidentSeverityByEndpoint = new Map(
++    snapshot.incidents.filter((inc) => inc.endsAt > now).map((inc) => [inc.endpointId, inc.severity] as const),
++  )
++  const rows = useMemo(
++    () => buildEndpointRows(snapshot.ticks, snapshot.endpoints, incidentSeverityByEndpoint),
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++    [snapshot.ticks, snapshot.endpoints],
++  )
++  const openIncidents = rows.filter((r) => r.status !== 'healthy').length
++
++  return (
++    <div className="mx-auto flex min-h-screen max-w-[1400px] flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8">
++      <header className="flex flex-wrap items-center justify-between gap-3">
++        <div className="flex items-center gap-2.5">
++          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
++            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
++              <path d="M3 12h4l2-7 4 14 2-7h6" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" />
++            </svg>
++          </div>
++          <div>
++            <h1 className="text-sm font-semibold leading-tight text-foreground">Ingress</h1>
++            <p className="text-[11px] leading-tight text-muted-foreground">API traffic analytics</p>
++          </div>
++        </div>
++        <div className="flex flex-wrap items-center gap-2.5">
++          <LiveIndicator live={snapshot.live} onToggle={() => setStreamLive(!snapshot.live)} />
++          <TimeRangeControl value={range} onChange={setRange} />
++          <button
++            type="button"
++            onClick={toggle}
++            className="rounded-md border border-border bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
++            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
++          >
++            {theme === 'dark' ? 'Dark' : 'Light'}
++          </button>
++        </div>
++      </header>
++
++      <IncidentBanner incidents={snapshot.incidents} endpoints={snapshot.endpoints} now={now} />
++
++      <MetricStrip
++        rps={latest?.rps ?? 0}
++        errorRatePct={latest?.errorRatePct ?? 0}
++        p95={latest?.p95 ?? 0}
++        p99={latest?.p99 ?? 0}
++        activeEndpoints={snapshot.endpoints.length}
++        openIncidents={openIncidents}
++        rpsDelta={rpsDelta}
++        errorDelta={errorDelta}
++      />
++
++      <div className="grid flex-1 grid-cols-1 gap-4 lg:grid-cols-2">
++        <div className="h-72 rounded-md border border-border bg-surface p-4">
++          <ThroughputChart data={chartData} />
++        </div>
++        <div className="h-72 rounded-md border border-border bg-surface p-4">
++          <ErrorRateChart data={chartData} />
++        </div>
++      </div>
++
++      <div className="h-72 rounded-md border border-border bg-surface p-4">
++        <LatencyChart data={chartData} />
++      </div>
++
++      <div className="rounded-md border border-border bg-surface p-4">
++        <EndpointsTable rows={rows} />
++      </div>
++
++      <footer className="pb-2 pt-1 text-center text-[11px] text-muted-foreground">
++        Simulated traffic for demonstration · updates every {2}s
++      </footer>
++    </div>
++  )
++}
+diff --git a/src/components/ChartTooltip.tsx b/src/components/ChartTooltip.tsx
+new file mode 100644
+index 0000000..e6f1f6b
+--- /dev/null
++++ b/src/components/ChartTooltip.tsx
+@@ -0,0 +1,36 @@
++import { formatClockTime } from '../lib/metrics'
++
++export interface TooltipRow {
++  label: string
++  value: string
++  color: string
++}
++
++export function ChartTooltip({
++  active,
++  timestamp,
++  rows,
++}: {
++  active?: boolean
++  timestamp?: number
++  rows: TooltipRow[]
++}) {
++  if (!active || timestamp === undefined) return null
++
++  return (
++    <div className="min-w-[10rem] rounded-md border border-border bg-surface px-3 py-2 text-xs shadow-lg">
++      <div className="mb-1.5 text-muted-foreground tabular-nums">{formatClockTime(timestamp)}</div>
++      <div className="flex flex-col gap-1">
++        {rows.map((row) => (
++          <div key={row.label} className="flex items-center justify-between gap-4">
++            <span className="flex items-center gap-1.5 text-muted-foreground">
++              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: row.color }} aria-hidden="true" />
++              {row.label}
++            </span>
++            <span className="font-medium tabular-nums text-foreground">{row.value}</span>
++          </div>
++        ))}
++      </div>
++    </div>
++  )
++}
+diff --git a/src/components/EndpointsTable.tsx b/src/components/EndpointsTable.tsx
+new file mode 100644
+index 0000000..54015b8
+--- /dev/null
++++ b/src/components/EndpointsTable.tsx
+@@ -0,0 +1,134 @@
++import { useMemo, useState } from 'react'
++import clsx from 'clsx'
++import { StatusBadge } from './StatusBadge'
++import { formatMs, formatPct, formatRps } from '../lib/metrics'
++import type { EndpointRow } from '../types'
++
++type SortKey = 'path' | 'rps' | 'errorRatePct' | 'p95' | 'p99' | 'status'
++type SortDir = 'asc' | 'desc'
++
++const STATUS_RANK = { critical: 0, warning: 1, healthy: 2 }
++
++const COLUMNS: { key: SortKey; label: string; align: 'left' | 'right' }[] = [
++  { key: 'path', label: 'Endpoint', align: 'left' },
++  { key: 'rps', label: 'req/s', align: 'right' },
++  { key: 'errorRatePct', label: 'Error rate', align: 'right' },
++  { key: 'p95', label: 'p95', align: 'right' },
++  { key: 'p99', label: 'p99', align: 'right' },
++  { key: 'status', label: 'Status', align: 'left' },
++]
++
++const METHOD_COLOR: Record<string, string> = {
++  GET: 'text-status-info',
++  POST: 'text-status-success',
++  PUT: 'text-accent-foreground',
++  PATCH: 'text-status-warning',
++  DELETE: 'text-status-error',
++}
++
++function Sparkline({ values }: { values: number[] }) {
++  if (values.length < 2) return <div className="h-4 w-14" />
++  const max = Math.max(...values, 1)
++  const points = values
++    .map((v, i) => `${(i / (values.length - 1)) * 100},${16 - (v / max) * 16}`)
++    .join(' ')
++  return (
++    <svg viewBox="0 0 100 16" className="h-4 w-14 overflow-visible" preserveAspectRatio="none" aria-hidden="true">
++      <polyline points={points} fill="none" stroke="var(--color-muted-foreground)" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
++    </svg>
++  )
++}
++
++export function EndpointsTable({ rows }: { rows: EndpointRow[] }) {
++  const [sortKey, setSortKey] = useState<SortKey>('rps')
++  const [sortDir, setSortDir] = useState<SortDir>('desc')
++
++  const sorted = useMemo(() => {
++    const copy = [...rows]
++    copy.sort((a, b) => {
++      let diff = 0
++      if (sortKey === 'path') diff = a.endpoint.path.localeCompare(b.endpoint.path)
++      else if (sortKey === 'status') diff = STATUS_RANK[a.status] - STATUS_RANK[b.status]
++      else diff = a[sortKey] - b[sortKey]
++      return sortDir === 'asc' ? diff : -diff
++    })
++    return copy
++  }, [rows, sortKey, sortDir])
++
++  function handleSort(key: SortKey) {
++    if (key === sortKey) {
++      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
++    } else {
++      setSortKey(key)
++      setSortDir(key === 'path' ? 'asc' : 'desc')
++    }
++  }
++
++  return (
++    <div className="flex flex-col">
++      <div className="mb-3">
++        <h2 className="text-sm font-semibold text-foreground">Active endpoints</h2>
++        <p className="text-xs text-muted-foreground">Rolling 30s window · sorted by {COLUMNS.find((c) => c.key === sortKey)?.label.toLowerCase()}</p>
++      </div>
++      <div className="overflow-x-auto rounded-md border border-border">
++        <table className="w-full border-collapse text-sm">
++          <thead>
++            <tr className="border-b border-border bg-muted/50">
++              {COLUMNS.map((col) => (
++                <th key={col.key} scope="col" className={clsx('px-3 py-0 font-medium text-muted-foreground', col.align === 'right' && 'text-right')}>
++                  <button
++                    type="button"
++                    onClick={() => handleSort(col.key)}
++                    className={clsx(
++                      'inline-flex items-center gap-1 px-1 py-2.5 text-[11px] font-medium uppercase tracking-wide hover:text-foreground',
++                      col.align === 'right' && 'flex-row-reverse',
++                    )}
++                  >
++                    {col.label}
++                    {sortKey === col.key && <span aria-hidden="true">{sortDir === 'asc' ? '▲' : '▼'}</span>}
++                  </button>
++                </th>
++              ))}
++              <th scope="col" className="px-3 py-2 text-right text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
++                Trend
++              </th>
++            </tr>
++          </thead>
++          <tbody>
++            {sorted.map((row) => (
++              <tr key={row.endpoint.id} className="border-b border-border last:border-b-0 hover:bg-muted/40">
++                <td className="px-3 py-2">
++                  <div className="flex items-center gap-2">
++                    <span className={clsx('w-14 shrink-0 font-mono text-[11px] font-semibold', METHOD_COLOR[row.endpoint.method])}>
++                      {row.endpoint.method}
++                    </span>
++                    <span className="truncate font-mono text-[12.5px] text-foreground">{row.endpoint.path}</span>
++                  </div>
++                </td>
++                <td className="px-3 py-2 text-right tabular-nums text-foreground">{formatRps(row.rps)}</td>
++                <td
++                  className={clsx(
++                    'px-3 py-2 text-right tabular-nums',
++                    row.errorRatePct >= 15 ? 'text-status-error' : row.errorRatePct >= 5 ? 'text-status-warning' : 'text-foreground',
++                  )}
++                >
++                  {formatPct(row.errorRatePct)}
++                </td>
++                <td className="px-3 py-2 text-right tabular-nums text-foreground">{formatMs(row.p95)}</td>
++                <td className="px-3 py-2 text-right tabular-nums text-foreground">{formatMs(row.p99)}</td>
++                <td className="px-3 py-2">
++                  <StatusBadge status={row.status} />
++                </td>
++                <td className="px-3 py-2 text-right">
++                  <div className="flex justify-end">
++                    <Sparkline values={row.trend} />
++                  </div>
++                </td>
++              </tr>
++            ))}
++          </tbody>
++        </table>
++      </div>
++    </div>
++  )
++}
+diff --git a/src/components/ErrorRateChart.tsx b/src/components/ErrorRateChart.tsx
+new file mode 100644
+index 0000000..2a16c9b
+--- /dev/null
++++ b/src/components/ErrorRateChart.tsx
+@@ -0,0 +1,68 @@
++import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
++import { ChartTooltip } from './ChartTooltip'
++import { formatClockTime, formatPct } from '../lib/metrics'
++import type { TrafficTick } from '../types'
++
++const SLA_THRESHOLD_PCT = 5
++
++export function ErrorRateChart({ data }: { data: TrafficTick[] }) {
++  return (
++    <div className="flex h-full flex-col">
++      <div className="mb-3 flex items-start justify-between">
++        <div>
++          <h2 className="text-sm font-semibold text-foreground">Error rate</h2>
++          <p className="text-xs text-muted-foreground">Share of requests returning 4xx/5xx</p>
++        </div>
++        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
++          <span className="h-0 w-3 border-t border-dashed border-status-warning" aria-hidden="true" />
++          {SLA_THRESHOLD_PCT}% SLA threshold
++        </div>
++      </div>
++      <div className="min-h-0 flex-1">
++        <ResponsiveContainer width="100%" height="100%">
++          <LineChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
++            <CartesianGrid stroke="var(--color-border)" vertical={false} />
++            <XAxis
++              dataKey="t"
++              tickFormatter={formatClockTime}
++              tick={{ fill: 'var(--color-muted-foreground)', fontSize: 11 }}
++              axisLine={{ stroke: 'var(--color-border)' }}
++              tickLine={false}
++              minTickGap={40}
++            />
++            <YAxis
++              tickFormatter={(v: number) => `${v.toFixed(1)}%`}
++              tick={{ fill: 'var(--color-muted-foreground)', fontSize: 11 }}
++              axisLine={false}
++              tickLine={false}
++              width={40}
++            />
++            <ReferenceLine y={SLA_THRESHOLD_PCT} stroke="var(--color-status-warning)" strokeDasharray="4 4" strokeWidth={1.5} />
++            <Tooltip
++              cursor={{ stroke: 'var(--color-border)' }}
++              content={({ active, payload, label }) => (
++                <ChartTooltip
++                  active={active}
++                  timestamp={label as number}
++                  rows={
++                    payload && payload.length
++                      ? [{ label: 'error rate', value: formatPct(payload[0].value as number), color: 'var(--color-status-error)' }]
++                      : []
++                  }
++                />
++              )}
++            />
++            <Line
++              type="monotone"
++              dataKey="errorRatePct"
++              stroke="var(--color-status-error)"
++              strokeWidth={2}
++              dot={false}
++              isAnimationActive={false}
++            />
++          </LineChart>
++        </ResponsiveContainer>
++      </div>
++    </div>
++  )
++}
+diff --git a/src/components/IncidentBanner.tsx b/src/components/IncidentBanner.tsx
+new file mode 100644
+index 0000000..8784c20
+--- /dev/null
++++ b/src/components/IncidentBanner.tsx
+@@ -0,0 +1,35 @@
++import clsx from 'clsx'
++import type { EndpointDef, Incident } from '../types'
++
++export function IncidentBanner({ incidents, endpoints, now }: { incidents: Incident[]; endpoints: EndpointDef[]; now: number }) {
++  const active = incidents.filter((inc) => inc.endsAt > now)
++  if (active.length === 0) return null
++
++  return (
++    <div className="flex flex-col gap-1.5">
++      {active.map((incident) => {
++        const endpoint = endpoints.find((e) => e.id === incident.endpointId)
++        const critical = incident.severity === 'critical'
++        return (
++          <div
++            key={incident.id}
++            role="alert"
++            className={clsx(
++              'flex items-center gap-2 rounded-md border px-3 py-2 text-xs',
++              critical ? 'border-status-error/30 bg-status-error/10 text-status-error' : 'border-status-warning/30 bg-status-warning/10 text-status-warning',
++            )}
++          >
++            <span className={clsx('h-1.5 w-1.5 shrink-0 rounded-full', critical ? 'bg-status-error' : 'bg-status-warning')} aria-hidden="true" />
++            <span className="font-medium">{critical ? 'Critical' : 'Elevated errors'}</span>
++            <span className="font-mono">
++              {endpoint?.method} {endpoint?.path}
++            </span>
++            <span className="text-muted-foreground">
++              {critical ? 'error and latency spike detected' : 'error rate above baseline'}
++            </span>
++          </div>
++        )
++      })}
++    </div>
++  )
++}
+diff --git a/src/components/LatencyChart.tsx b/src/components/LatencyChart.tsx
+new file mode 100644
+index 0000000..3320d78
+--- /dev/null
++++ b/src/components/LatencyChart.tsx
+@@ -0,0 +1,78 @@
++import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
++import { ChartTooltip } from './ChartTooltip'
++import { formatClockTime, formatMs } from '../lib/metrics'
++import type { TrafficTick } from '../types'
++
++const SERIES = [
++  { key: 'p50', label: 'p50', color: 'var(--chart-1)' },
++  { key: 'p95', label: 'p95', color: 'var(--chart-4)' },
++  { key: 'p99', label: 'p99', color: 'var(--chart-8)' },
++] as const
++
++export function LatencyChart({ data }: { data: TrafficTick[] }) {
++  return (
++    <div className="flex h-full flex-col">
++      <div className="mb-3 flex items-start justify-between">
++        <div>
++          <h2 className="text-sm font-semibold text-foreground">Latency percentiles</h2>
++          <p className="text-xs text-muted-foreground">Response time distribution, weighted across active endpoints</p>
++        </div>
++        <ul className="flex items-center gap-3">
++          {SERIES.map((s) => (
++            <li key={s.key} className="flex items-center gap-1.5 text-xs text-muted-foreground">
++              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: s.color }} aria-hidden="true" />
++              {s.label}
++            </li>
++          ))}
++        </ul>
++      </div>
++      <div className="min-h-0 flex-1">
++        <ResponsiveContainer width="100%" height="100%">
++          <LineChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
++            <CartesianGrid stroke="var(--color-border)" vertical={false} />
++            <XAxis
++              dataKey="t"
++              tickFormatter={formatClockTime}
++              tick={{ fill: 'var(--color-muted-foreground)', fontSize: 11 }}
++              axisLine={{ stroke: 'var(--color-border)' }}
++              tickLine={false}
++              minTickGap={40}
++            />
++            <YAxis
++              tickFormatter={(v: number) => formatMs(v)}
++              tick={{ fill: 'var(--color-muted-foreground)', fontSize: 11 }}
++              axisLine={false}
++              tickLine={false}
++              width={52}
++            />
++            <Tooltip
++              cursor={{ stroke: 'var(--color-border)' }}
++              content={({ active, payload, label }) => (
++                <ChartTooltip
++                  active={active}
++                  timestamp={label as number}
++                  rows={SERIES.map((s) => ({
++                    label: s.label,
++                    value: formatMs((payload?.find((p) => p.dataKey === s.key)?.value as number) ?? 0),
++                    color: s.color,
++                  }))}
++                />
++              )}
++            />
++            {SERIES.map((s) => (
++              <Line
++                key={s.key}
++                type="monotone"
++                dataKey={s.key}
++                stroke={s.color}
++                strokeWidth={2}
++                dot={false}
++                isAnimationActive={false}
++              />
++            ))}
++          </LineChart>
++        </ResponsiveContainer>
++      </div>
++    </div>
++  )
++}
+diff --git a/src/components/LiveIndicator.tsx b/src/components/LiveIndicator.tsx
+new file mode 100644
+index 0000000..24ecdf8
+--- /dev/null
++++ b/src/components/LiveIndicator.tsx
+@@ -0,0 +1,25 @@
++import clsx from 'clsx'
++
++export function LiveIndicator({ live, onToggle }: { live: boolean; onToggle: () => void }) {
++  return (
++    <button
++      type="button"
++      onClick={onToggle}
++      className={clsx(
++        'flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium transition-colors',
++        live
++          ? 'border-status-success/30 bg-status-success/10 text-status-success'
++          : 'border-border bg-muted text-muted-foreground',
++      )}
++      aria-pressed={live}
++    >
++      <span className="relative flex h-1.5 w-1.5">
++        {live && (
++          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-status-success opacity-75 motion-reduce:animate-none" />
++        )}
++        <span className={clsx('relative inline-flex h-1.5 w-1.5 rounded-full', live ? 'bg-status-success' : 'bg-muted-foreground')} />
++      </span>
++      {live ? 'Live' : 'Paused'}
++    </button>
++  )
++}
+diff --git a/src/components/MetricStrip.tsx b/src/components/MetricStrip.tsx
+new file mode 100644
+index 0000000..e231628
+--- /dev/null
++++ b/src/components/MetricStrip.tsx
+@@ -0,0 +1,73 @@
++import clsx from 'clsx'
++import { formatMs, formatPct, formatRps } from '../lib/metrics'
++
++interface Metric {
++  label: string
++  value: string
++  delta?: number
++  deltaLabel?: string
++  tone?: 'neutral' | 'good' | 'bad'
++}
++
++function Delta({ delta, tone }: { delta: number; tone: 'neutral' | 'good' | 'bad' }) {
++  if (!Number.isFinite(delta) || Math.abs(delta) < 0.05) {
++    return <span className="text-xs text-muted-foreground">flat</span>
++  }
++  const up = delta > 0
++  const color = tone === 'neutral' ? 'text-muted-foreground' : tone === 'good' ? 'text-status-success' : 'text-status-error'
++  return (
++    <span className={clsx('text-xs tabular-nums', color)}>
++      {up ? '↑' : '↓'} {Math.abs(delta).toFixed(1)}%
++    </span>
++  )
++}
++
++export function MetricStrip({
++  rps,
++  errorRatePct,
++  p95,
++  p99,
++  activeEndpoints,
++  openIncidents,
++  rpsDelta,
++  errorDelta,
++}: {
++  rps: number
++  errorRatePct: number
++  p95: number
++  p99: number
++  activeEndpoints: number
++  openIncidents: number
++  rpsDelta: number
++  errorDelta: number
++}) {
++  const metrics: Metric[] = [
++    { label: 'Throughput', value: `${formatRps(rps)} req/s`, delta: rpsDelta, tone: 'neutral' },
++    { label: 'Error rate', value: formatPct(errorRatePct), delta: errorDelta, tone: 'bad' },
++    { label: 'p95 latency', value: formatMs(p95) },
++    { label: 'p99 latency', value: formatMs(p99) },
++    { label: 'Active endpoints', value: String(activeEndpoints) },
++    { label: 'Open incidents', value: String(openIncidents), tone: openIncidents > 0 ? 'bad' : 'neutral' },
++  ]
++
++  return (
++    <div className="flex flex-wrap divide-x divide-border rounded-md border border-border bg-surface">
++      {metrics.map((metric) => (
++        <div key={metric.label} className="flex min-w-[9.5rem] flex-1 flex-col gap-1 px-4 py-3">
++          <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{metric.label}</span>
++          <div className="flex items-baseline gap-2">
++            <span
++              className={clsx(
++                'text-xl font-semibold tabular-nums',
++                metric.label === 'Open incidents' && metric.tone === 'bad' ? 'text-status-error' : 'text-foreground',
++              )}
++            >
++              {metric.value}
++            </span>
++            {metric.delta !== undefined && <Delta delta={metric.delta} tone={metric.tone ?? 'neutral'} />}
++          </div>
++        </div>
++      ))}
++    </div>
++  )
++}
+diff --git a/src/components/StatusBadge.tsx b/src/components/StatusBadge.tsx
+new file mode 100644
+index 0000000..dc86ac2
+--- /dev/null
++++ b/src/components/StatusBadge.tsx
+@@ -0,0 +1,18 @@
++import clsx from 'clsx'
++import type { EndpointStatus } from '../types'
++
++const STATUS_CONFIG: Record<EndpointStatus, { label: string; dot: string; text: string }> = {
++  healthy: { label: 'Healthy', dot: 'bg-status-success', text: 'text-status-success' },
++  warning: { label: 'Degraded', dot: 'bg-status-warning', text: 'text-status-warning' },
++  critical: { label: 'Critical', dot: 'bg-status-error', text: 'text-status-error' },
++}
++
++export function StatusBadge({ status }: { status: EndpointStatus }) {
++  const config = STATUS_CONFIG[status]
++  return (
++    <span className={clsx('inline-flex items-center gap-1.5 text-xs font-medium', config.text)}>
++      <span className={clsx('h-1.5 w-1.5 rounded-full', config.dot)} aria-hidden="true" />
++      {config.label}
++    </span>
++  )
++}
+diff --git a/src/components/ThroughputChart.tsx b/src/components/ThroughputChart.tsx
+new file mode 100644
+index 0000000..6254e24
+--- /dev/null
++++ b/src/components/ThroughputChart.tsx
+@@ -0,0 +1,65 @@
++import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
++import { ChartTooltip } from './ChartTooltip'
++import { formatClockTime, formatRps } from '../lib/metrics'
++import type { TrafficTick } from '../types'
++
++export function ThroughputChart({ data }: { data: TrafficTick[] }) {
++  return (
++    <div className="flex h-full flex-col">
++      <div className="mb-3">
++        <h2 className="text-sm font-semibold text-foreground">Throughput</h2>
++        <p className="text-xs text-muted-foreground">Requests per second across all endpoints</p>
++      </div>
++      <div className="min-h-0 flex-1">
++        <ResponsiveContainer width="100%" height="100%">
++          <AreaChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
++            <defs>
++              <linearGradient id="throughputFill" x1="0" y1="0" x2="0" y2="1">
++                <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.28} />
++                <stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0.02} />
++              </linearGradient>
++            </defs>
++            <CartesianGrid stroke="var(--color-border)" vertical={false} />
++            <XAxis
++              dataKey="t"
++              tickFormatter={formatClockTime}
++              tick={{ fill: 'var(--color-muted-foreground)', fontSize: 11 }}
++              axisLine={{ stroke: 'var(--color-border)' }}
++              tickLine={false}
++              minTickGap={40}
++            />
++            <YAxis
++              tickFormatter={(v: number) => formatRps(v)}
++              tick={{ fill: 'var(--color-muted-foreground)', fontSize: 11 }}
++              axisLine={false}
++              tickLine={false}
++              width={44}
++            />
++            <Tooltip
++              cursor={{ stroke: 'var(--color-border)' }}
++              content={({ active, payload, label }) => (
++                <ChartTooltip
++                  active={active}
++                  timestamp={label as number}
++                  rows={
++                    payload && payload.length
++                      ? [{ label: 'req/s', value: formatRps(payload[0].value as number), color: 'var(--color-primary)' }]
++                      : []
++                  }
++                />
++              )}
++            />
++            <Area
++              type="monotone"
++              dataKey="rps"
++              stroke="var(--color-primary)"
++              strokeWidth={2}
++              fill="url(#throughputFill)"
++              isAnimationActive={false}
++            />
++          </AreaChart>
++        </ResponsiveContainer>
++      </div>
++    </div>
++  )
++}
+diff --git a/src/components/TimeRangeControl.tsx b/src/components/TimeRangeControl.tsx
+new file mode 100644
+index 0000000..49332dc
+--- /dev/null
++++ b/src/components/TimeRangeControl.tsx
+@@ -0,0 +1,33 @@
++import clsx from 'clsx'
++import { TIME_RANGES } from '../lib/metrics'
++import type { TimeRangeKey } from '../types'
++
++export function TimeRangeControl({
++  value,
++  onChange,
++}: {
++  value: TimeRangeKey
++  onChange: (key: TimeRangeKey) => void
++}) {
++  return (
++    <div role="radiogroup" aria-label="Time range" className="flex items-center rounded-md border border-border bg-muted p-0.5">
++      {TIME_RANGES.map((range) => (
++        <button
++          key={range.key}
++          type="button"
++          role="radio"
++          aria-checked={value === range.key}
++          onClick={() => onChange(range.key)}
++          className={clsx(
++            'rounded-[4px] px-2.5 py-1 text-xs font-medium tabular-nums transition-colors',
++            value === range.key
++              ? 'bg-surface text-foreground shadow-sm'
++              : 'text-muted-foreground hover:text-foreground',
++          )}
++        >
++          {range.label}
++        </button>
++      ))}
++    </div>
++  )
++}
+diff --git a/src/hooks/useTrafficStream.ts b/src/hooks/useTrafficStream.ts
+new file mode 100644
+index 0000000..167b8fa
+--- /dev/null
++++ b/src/hooks/useTrafficStream.ts
+@@ -0,0 +1,11 @@
++import { useSyncExternalStore } from 'react'
++import { trafficEngine } from '../lib/trafficEngine'
++import type { EngineSnapshot } from '../types'
++
++export function useTrafficStream(): EngineSnapshot {
++  return useSyncExternalStore(trafficEngine.subscribe, trafficEngine.getSnapshot)
++}
++
++export function setStreamLive(live: boolean): void {
++  trafficEngine.setLive(live)
++}
+diff --git a/src/index.css b/src/index.css
+new file mode 100644
+index 0000000..c039862
+--- /dev/null
++++ b/src/index.css
+@@ -0,0 +1,120 @@
++@import "tailwindcss";
++
++@theme {
++  --radius: 0.3rem;
++  --radius-sm: calc(var(--radius) - 0.1rem);
++  --radius-md: var(--radius);
++  --radius-lg: calc(var(--radius) + 0.15rem);
++
++  --color-background: var(--background);
++  --color-foreground: var(--foreground);
++  --color-surface: var(--surface);
++  --color-surface-foreground: var(--surface-foreground);
++  --color-primary: var(--primary);
++  --color-primary-foreground: var(--primary-foreground);
++  --color-muted: var(--muted);
++  --color-muted-foreground: var(--muted-foreground);
++  --color-accent: var(--accent);
++  --color-accent-foreground: var(--accent-foreground);
++  --color-border: var(--border);
++  --color-ring: var(--ring);
++  --color-status-success: var(--status-success);
++  --color-status-warning: var(--status-warning);
++  --color-status-error: var(--status-error);
++  --color-status-info: var(--status-info);
++
++  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
++  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
++}
++
++:root {
++  color-scheme: light;
++  --background: oklch(0.985 0.002 250);
++  --foreground: oklch(0.18 0.012 250);
++  --surface: oklch(1 0 0);
++  --surface-foreground: oklch(0.18 0.012 250);
++  --primary: oklch(0.52 0.15 227);
++  --primary-foreground: oklch(0.99 0 0);
++  --muted: oklch(0.955 0.004 250);
++  --muted-foreground: oklch(0.46 0.012 250);
++  --accent: oklch(0.93 0.02 227);
++  --accent-foreground: oklch(0.32 0.06 227);
++  --border: oklch(0.9 0.006 250);
++  --ring: oklch(0.52 0.15 227);
++  --status-success: oklch(0.5 0.14 150);
++  --status-warning: oklch(0.45 0.14 75);
++  --status-error: oklch(0.55 0.21 25);
++  --status-info: oklch(0.55 0.12 255);
++
++  --chart-1: #2a78d6;
++  --chart-2: #eb6834;
++  --chart-3: #1baf7a;
++  --chart-4: #eda100;
++  --chart-8: #e34948;
++}
++
++:root[data-theme='dark'],
++:root:not([data-theme='light']) {
++  color-scheme: dark;
++  --background: oklch(0.16 0.01 250);
++  --foreground: oklch(0.94 0.004 250);
++  --surface: oklch(0.205 0.011 250);
++  --surface-foreground: oklch(0.94 0.004 250);
++  --primary: oklch(0.72 0.14 227);
++  --primary-foreground: oklch(0.14 0.015 250);
++  --muted: oklch(0.245 0.012 250);
++  --muted-foreground: oklch(0.65 0.014 250);
++  --accent: oklch(0.28 0.03 227);
++  --accent-foreground: oklch(0.88 0.03 227);
++  --border: oklch(1 0 0 / 10%);
++  --ring: oklch(0.72 0.14 227);
++  --status-success: oklch(0.7 0.15 150);
++  --status-warning: oklch(0.8 0.15 85);
++  --status-error: oklch(0.66 0.2 25);
++  --status-info: oklch(0.7 0.11 255);
++
++  --chart-1: #3987e5;
++  --chart-2: #d95926;
++  --chart-3: #199e70;
++  --chart-4: #c98500;
++  --chart-8: #e66767;
++}
++
++@layer base {
++  * {
++    border-color: var(--color-border);
++    outline-color: var(--color-ring);
++  }
++
++  html,
++  body,
++  #root {
++    height: 100%;
++  }
++
++  body {
++    background-color: var(--color-background);
++    color: var(--color-foreground);
++    font-family: var(--font-sans);
++  }
++
++  :focus-visible {
++    outline: 2px solid var(--color-ring);
++    outline-offset: 2px;
++  }
++
++  .tabular-nums {
++    font-variant-numeric: tabular-nums;
++  }
++
++  @media (prefers-reduced-motion: reduce) {
++    *,
++    *::before,
++    *::after {
++      animation-duration: 0.01ms !important;
++      animation-iteration-count: 1 !important;
++      transition-duration: 0.01ms !important;
++      scroll-behavior: auto !important;
++    }
++  }
++}
+diff --git a/src/lib/endpoints.ts b/src/lib/endpoints.ts
+new file mode 100644
+index 0000000..ab3343e
+--- /dev/null
++++ b/src/lib/endpoints.ts
+@@ -0,0 +1,18 @@
++import type { EndpointDef } from '../types'
++
++export const ENDPOINTS: EndpointDef[] = [
++  { id: 'auth-login', method: 'POST', path: '/api/v2/auth/login', service: 'auth', baseRps: 42, baseErrorRate: 0.012, baseLatencyP50: 88 },
++  { id: 'auth-refresh', method: 'POST', path: '/api/v2/auth/refresh', service: 'auth', baseRps: 65, baseErrorRate: 0.004, baseLatencyP50: 34 },
++  { id: 'users-get', method: 'GET', path: '/api/v2/users/{id}', service: 'users', baseRps: 118, baseErrorRate: 0.006, baseLatencyP50: 41 },
++  { id: 'users-patch', method: 'PATCH', path: '/api/v2/users/{id}', service: 'users', baseRps: 19, baseErrorRate: 0.015, baseLatencyP50: 76 },
++  { id: 'orders-list', method: 'GET', path: '/api/v2/orders', service: 'orders', baseRps: 96, baseErrorRate: 0.009, baseLatencyP50: 112 },
++  { id: 'orders-create', method: 'POST', path: '/api/v2/orders', service: 'orders', baseRps: 31, baseErrorRate: 0.021, baseLatencyP50: 165 },
++  { id: 'products-list', method: 'GET', path: '/api/v2/products', service: 'catalog', baseRps: 154, baseErrorRate: 0.003, baseLatencyP50: 52 },
++  { id: 'search-query', method: 'GET', path: '/api/v2/search', service: 'catalog', baseRps: 87, baseErrorRate: 0.018, baseLatencyP50: 143 },
++  { id: 'payments-charge', method: 'POST', path: '/api/v2/payments/charge', service: 'payments', baseRps: 24, baseErrorRate: 0.014, baseLatencyP50: 210 },
++  { id: 'payments-refund', method: 'POST', path: '/api/v2/payments/refund', service: 'payments', baseRps: 6, baseErrorRate: 0.02, baseLatencyP50: 198 },
++  { id: 'webhooks-stripe', method: 'POST', path: '/api/v2/webhooks/stripe', service: 'payments', baseRps: 12, baseErrorRate: 0.008, baseLatencyP50: 59 },
++  { id: 'notifications-list', method: 'GET', path: '/api/v2/notifications', service: 'notifications', baseRps: 73, baseErrorRate: 0.005, baseLatencyP50: 38 },
++  { id: 'sessions-delete', method: 'DELETE', path: '/api/v2/sessions/{id}', service: 'auth', baseRps: 15, baseErrorRate: 0.007, baseLatencyP50: 29 },
++  { id: 'analytics-export', method: 'GET', path: '/api/v2/analytics/export', service: 'analytics', baseRps: 4, baseErrorRate: 0.025, baseLatencyP50: 420 },
++]
+diff --git a/src/lib/metrics.ts b/src/lib/metrics.ts
+new file mode 100644
+index 0000000..dfb644a
+--- /dev/null
++++ b/src/lib/metrics.ts
+@@ -0,0 +1,115 @@
++import type { EndpointDef, EndpointRow, EndpointStatus, TimeRangeKey, TrafficTick } from '../types'
++import { TICK_MS } from './trafficEngine'
++
++export const TIME_RANGES: { key: TimeRangeKey; label: string; ms: number }[] = [
++  { key: '5m', label: '5m', ms: 5 * 60 * 1000 },
++  { key: '15m', label: '15m', ms: 15 * 60 * 1000 },
++  { key: '1h', label: '1h', ms: 60 * 60 * 1000 },
++  { key: '6h', label: '6h', ms: 6 * 60 * 60 * 1000 },
++]
++
++export function sliceRange(ticks: TrafficTick[], rangeMs: number): TrafficTick[] {
++  const count = Math.ceil(rangeMs / TICK_MS)
++  return ticks.slice(-count)
++}
++
++/** Groups ticks into ~targetPoints bins so charts stay legible across wide ranges. */
++export function downsample(ticks: TrafficTick[], targetPoints = 90): TrafficTick[] {
++  if (ticks.length <= targetPoints) return ticks
++  const binSize = Math.ceil(ticks.length / targetPoints)
++  const result: TrafficTick[] = []
++
++  for (let i = 0; i < ticks.length; i += binSize) {
++    const bin = ticks.slice(i, i + binSize)
++    const requests = bin.reduce((sum, t) => sum + t.requests, 0)
++    const errors = bin.reduce((sum, t) => sum + t.errors, 0)
++    result.push({
++      t: bin[bin.length - 1].t,
++      requests,
++      errors,
++      rps: average(bin.map((t) => t.rps)),
++      errorRatePct: average(bin.map((t) => t.errorRatePct)),
++      p50: average(bin.map((t) => t.p50)),
++      p95: average(bin.map((t) => t.p95)),
++      p99: average(bin.map((t) => t.p99)),
++      perEndpoint: {},
++    })
++  }
++  return result
++}
++
++function average(values: number[]): number {
++  if (values.length === 0) return 0
++  return values.reduce((a, b) => a + b, 0) / values.length
++}
++
++const ROLLING_WINDOW_TICKS = 15 // ~30s
++
++export function buildEndpointRows(
++  ticks: TrafficTick[],
++  endpoints: EndpointDef[],
++  incidentSeverityByEndpoint: Map<string, EndpointStatus>,
++): EndpointRow[] {
++  const window = ticks.slice(-ROLLING_WINDOW_TICKS)
++  const windowSeconds = (window.length * TICK_MS) / 1000
++
++  return endpoints.map((endpoint) => {
++    let requests = 0
++    let errors = 0
++    let p95Sum = 0
++    let p99Sum = 0
++    const trend: number[] = []
++
++    for (const tick of window) {
++      const t = tick.perEndpoint[endpoint.id]
++      if (!t) continue
++      requests += t.requests
++      errors += t.errors
++      p95Sum += t.p95 * t.requests
++      p99Sum += t.p99 * t.requests
++      trend.push(t.requests)
++    }
++
++    const safeRequests = Math.max(1, requests)
++    const errorRatePct = (errors / safeRequests) * 100
++    const p95 = requests > 0 ? Math.round(p95Sum / safeRequests) : 0
++    const p99 = requests > 0 ? Math.round(p99Sum / safeRequests) : 0
++    const rps = windowSeconds > 0 ? requests / windowSeconds : 0
++
++    let status: EndpointStatus = 'healthy'
++    if (errorRatePct >= 15) {
++      status = 'critical'
++    } else if (errorRatePct >= 5) {
++      status = 'warning'
++    }
++    const incidentStatus = incidentSeverityByEndpoint.get(endpoint.id)
++    if (incidentStatus === 'critical' || (incidentStatus === 'warning' && status === 'healthy')) {
++      status = incidentStatus
++    }
++
++    return { endpoint, rps, errorRatePct, p95, p99, requests, status, trend }
++  })
++}
++
++export function formatNumber(value: number): string {
++  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`
++  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`
++  return Math.round(value).toString()
++}
++
++export function formatRps(value: number): string {
++  return value >= 1000 ? formatNumber(value) : value.toFixed(1)
++}
++
++export function formatMs(value: number): string {
++  if (value >= 1000) return `${(value / 1000).toFixed(2)}s`
++  return `${Math.round(value)}ms`
++}
++
++export function formatPct(value: number): string {
++  return `${value.toFixed(2)}%`
++}
++
++export function formatClockTime(t: number): string {
++  return new Date(t).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' })
++}
+diff --git a/src/lib/trafficEngine.ts b/src/lib/trafficEngine.ts
+new file mode 100644
+index 0000000..5a27049
+--- /dev/null
++++ b/src/lib/trafficEngine.ts
+@@ -0,0 +1,200 @@
++import { ENDPOINTS } from './endpoints'
++import type { EndpointDef, EndpointTick, EngineSnapshot, Incident, TrafficTick } from '../types'
++
++export const TICK_MS = 2000
++const HISTORY_TICKS = 1800 // 1 hour of history at 2s resolution
++
++interface EndpointRuntimeState {
++  rpsFactor: number
++  latencyFactor: number
++}
++
++function clamp(value: number, min: number, max: number): number {
++  return Math.min(max, Math.max(min, value))
++}
++
++function smoothedRandomWalk(prev: number, min: number, max: number, drift = 0.35): number {
++  const next = prev + (Math.random() - 0.5) * drift
++  return clamp(next, min, max)
++}
++
++function poissonish(mean: number): number {
++  // Fast approximation adequate for mock traffic volumes; avoids a real
++  // Poisson sampler while still producing integer counts with natural jitter.
++  if (mean <= 0) return 0
++  const gaussian = Math.sqrt(mean) * (Math.random() + Math.random() + Math.random() - 1.5)
++  return Math.max(0, Math.round(mean + gaussian))
++}
++
++function createRuntimeState(): Record<string, EndpointRuntimeState> {
++  const state: Record<string, EndpointRuntimeState> = {}
++  for (const ep of ENDPOINTS) {
++    state[ep.id] = { rpsFactor: 1, latencyFactor: 1 }
++  }
++  return state
++}
++
++function generateEndpointTick(
++  ep: EndpointDef,
++  state: EndpointRuntimeState,
++  activeIncident: Incident | undefined,
++  tickSeconds: number,
++): EndpointTick {
++  state.rpsFactor = smoothedRandomWalk(state.rpsFactor, 0.55, 1.6)
++  state.latencyFactor = smoothedRandomWalk(state.latencyFactor, 0.85, 1.25, 0.12)
++
++  const incidentLatencyMultiplier = activeIncident ? (activeIncident.severity === 'critical' ? 4.2 : 2.1) : 1
++  const incidentErrorAdd = activeIncident ? (activeIncident.severity === 'critical' ? 0.45 : 0.16) : 0
++
++  const requests = poissonish(ep.baseRps * tickSeconds * state.rpsFactor)
++  const effectiveErrorRate = clamp(ep.baseErrorRate + incidentErrorAdd + (Math.random() - 0.5) * 0.006, 0, 0.98)
++  const errors = Math.min(requests, poissonish(requests * effectiveErrorRate))
++
++  const p50 = ep.baseLatencyP50 * state.latencyFactor
++  const p95 = p50 * (2.1 + Math.random() * 0.4) * incidentLatencyMultiplier
++  const p99 = p95 * (1.45 + Math.random() * 0.3) * (incidentLatencyMultiplier > 1 ? 1.15 : 1)
++
++  return {
++    requests,
++    errors,
++    p50: Math.round(p50),
++    p95: Math.round(p95),
++    p99: Math.round(p99),
++  }
++}
++
++function aggregateTick(t: number, perEndpoint: Record<string, EndpointTick>, tickSeconds: number): TrafficTick {
++  let requests = 0
++  let errors = 0
++  let p50Weighted = 0
++  let p95Weighted = 0
++  let p99Weighted = 0
++
++  for (const ep of ENDPOINTS) {
++    const tick = perEndpoint[ep.id]
++    requests += tick.requests
++    errors += tick.errors
++    p50Weighted += tick.p50 * tick.requests
++    p95Weighted += tick.p95 * tick.requests
++    p99Weighted += tick.p99 * tick.requests
++  }
++
++  const safeRequests = Math.max(1, requests)
++
++  return {
++    t,
++    requests,
++    errors,
++    rps: requests / tickSeconds,
++    errorRatePct: (errors / safeRequests) * 100,
++    p50: Math.round(p50Weighted / safeRequests),
++    p95: Math.round(p95Weighted / safeRequests),
++    p99: Math.round(p99Weighted / safeRequests),
++    perEndpoint,
++  }
++}
++
++function maybeStartIncident(now: number, active: Incident[]): Incident | null {
++  if (active.length >= 2) return null
++  if (Math.random() > 0.006) return null
++
++  const candidates = ENDPOINTS.filter((ep) => !active.some((inc) => inc.endpointId === ep.id))
++  if (candidates.length === 0) return null
++
++  const ep = candidates[Math.floor(Math.random() * candidates.length)]
++  const severity = Math.random() < 0.35 ? 'critical' : 'warning'
++  const durationTicks = 8 + Math.floor(Math.random() * 12) // 16s - 40s
++  return {
++    id: `${ep.id}-${now}`,
++    endpointId: ep.id,
++    severity,
++    startedAt: now,
++    endsAt: now + durationTicks * TICK_MS,
++  }
++}
++
++type Listener = () => void
++
++function createEngine() {
++  const runtimeState = createRuntimeState()
++  let ticks: TrafficTick[] = []
++  const incidentHistory: Incident[] = []
++  let live = true
++  const listeners = new Set<Listener>()
++
++  let snapshot: EngineSnapshot = { ticks: [], incidents: [], endpoints: ENDPOINTS, live }
++
++  function activeIncidentsAt(now: number): Incident[] {
++    return incidentHistory.filter((inc) => inc.startedAt <= now && inc.endsAt > now)
++  }
++
++  function runTick(simTime: number) {
++    const active = activeIncidentsAt(simTime)
++    const started = maybeStartIncident(simTime, active)
++    if (started) {
++      incidentHistory.push(started)
++      active.push(started)
++    }
++
++    const tickSeconds = TICK_MS / 1000
++    const perEndpoint: Record<string, EndpointTick> = {}
++    for (const ep of ENDPOINTS) {
++      const incident = active.find((inc) => inc.endpointId === ep.id)
++      perEndpoint[ep.id] = generateEndpointTick(ep, runtimeState[ep.id], incident, tickSeconds)
++    }
++
++    const tick = aggregateTick(simTime, perEndpoint, tickSeconds)
++    ticks.push(tick)
++    if (ticks.length > HISTORY_TICKS) {
++      ticks = ticks.slice(ticks.length - HISTORY_TICKS)
++    }
++  }
++
++  function seedHistory() {
++    const now = Date.now()
++    const start = now - HISTORY_TICKS * TICK_MS
++    for (let i = 0; i < HISTORY_TICKS; i++) {
++      runTick(start + i * TICK_MS)
++    }
++  }
++
++  function publish() {
++    const now = ticks.length > 0 ? ticks[ticks.length - 1].t : Date.now()
++    snapshot = {
++      ticks,
++      incidents: incidentHistory.filter((inc) => inc.endsAt > now - 5 * 60 * 1000),
++      endpoints: ENDPOINTS,
++      live,
++    }
++    for (const listener of listeners) listener()
++  }
++
++  seedHistory()
++  publish()
++
++  const interval = setInterval(() => {
++    if (!live) return
++    runTick(Date.now())
++    publish()
++  }, TICK_MS)
++
++  if (typeof window !== 'undefined') {
++    window.addEventListener('beforeunload', () => clearInterval(interval))
++  }
++
++  return {
++    subscribe(listener: Listener) {
++      listeners.add(listener)
++      return () => listeners.delete(listener)
++    },
++    getSnapshot(): EngineSnapshot {
++      return snapshot
++    },
++    setLive(next: boolean) {
++      live = next
++      publish()
++    },
++  }
++}
++
++export const trafficEngine = createEngine()
+diff --git a/src/main.tsx b/src/main.tsx
+new file mode 100644
+index 0000000..fab1219
+--- /dev/null
++++ b/src/main.tsx
+@@ -0,0 +1,10 @@
++import { StrictMode } from 'react'
++import { createRoot } from 'react-dom/client'
++import App from './App'
++import './index.css'
++
++createRoot(document.getElementById('root')!).render(
++  <StrictMode>
++    <App />
++  </StrictMode>,
++)
+diff --git a/src/types.ts b/src/types.ts
+new file mode 100644
+index 0000000..d3d5430
+--- /dev/null
++++ b/src/types.ts
+@@ -0,0 +1,67 @@
++export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
++
++export type Severity = 'warning' | 'critical'
++
++export interface EndpointDef {
++  id: string
++  method: HttpMethod
++  path: string
++  service: string
++  /** baseline requests/sec under normal conditions */
++  baseRps: number
++  /** baseline error rate as a fraction (0-1) under normal conditions */
++  baseErrorRate: number
++  /** baseline p50 latency in ms under normal conditions */
++  baseLatencyP50: number
++}
++
++export interface EndpointTick {
++  requests: number
++  errors: number
++  p50: number
++  p95: number
++  p99: number
++}
++
++export interface TrafficTick {
++  /** epoch ms this bucket ended at */
++  t: number
++  requests: number
++  errors: number
++  rps: number
++  errorRatePct: number
++  p50: number
++  p95: number
++  p99: number
++  perEndpoint: Record<string, EndpointTick>
++}
++
++export interface Incident {
++  id: string
++  endpointId: string
++  severity: Severity
++  startedAt: number
++  endsAt: number
++}
++
++export interface EngineSnapshot {
++  ticks: TrafficTick[]
++  incidents: Incident[]
++  endpoints: EndpointDef[]
++  live: boolean
++}
++
++export type EndpointStatus = 'healthy' | 'warning' | 'critical'
++
++export interface EndpointRow {
++  endpoint: EndpointDef
++  rps: number
++  errorRatePct: number
++  p95: number
++  p99: number
++  requests: number
++  status: EndpointStatus
++  trend: number[]
++}
++
++export type TimeRangeKey = '5m' | '15m' | '1h' | '6h'
+diff --git a/tsconfig.app.json b/tsconfig.app.json
+new file mode 100644
+index 0000000..6830b6f
+--- /dev/null
++++ b/tsconfig.app.json
+@@ -0,0 +1,26 @@
++{
++  "compilerOptions": {
++    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
++    "target": "es2023",
++    "lib": ["ES2023", "DOM"],
++    "module": "esnext",
++    "types": ["vite/client"],
++    "allowArbitraryExtensions": true,
++    "skipLibCheck": true,
++
++    /* Bundler mode */
++    "moduleResolution": "bundler",
++    "allowImportingTsExtensions": true,
++    "verbatimModuleSyntax": true,
++    "moduleDetection": "force",
++    "noEmit": true,
++    "jsx": "react-jsx",
++
++    /* Linting */
++    "noUnusedLocals": true,
++    "noUnusedParameters": true,
++    "erasableSyntaxOnly": true,
++    "noFallthroughCasesInSwitch": true
++  },
++  "include": ["src"]
++}
+diff --git a/tsconfig.json b/tsconfig.json
+new file mode 100644
+index 0000000..1ffef60
+--- /dev/null
++++ b/tsconfig.json
+@@ -0,0 +1,7 @@
++{
++  "files": [],
++  "references": [
++    { "path": "./tsconfig.app.json" },
++    { "path": "./tsconfig.node.json" }
++  ]
++}
+diff --git a/tsconfig.node.json b/tsconfig.node.json
+new file mode 100644
+index 0000000..8455dcb
+--- /dev/null
++++ b/tsconfig.node.json
+@@ -0,0 +1,23 @@
++{
++  "compilerOptions": {
++    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
++    "target": "es2023",
++    "lib": ["ES2023"],
++    "types": ["node"],
++    "skipLibCheck": true,
++
++    /* Bundler mode */
++    "module": "nodenext",
++    "allowImportingTsExtensions": true,
++    "verbatimModuleSyntax": true,
++    "moduleDetection": "force",
++    "noEmit": true,
++
++    /* Linting */
++    "noUnusedLocals": true,
++    "noUnusedParameters": true,
++    "erasableSyntaxOnly": true,
++    "noFallthroughCasesInSwitch": true
++  },
++  "include": ["vite.config.ts"]
++}
+diff --git a/vite.config.ts b/vite.config.ts
+new file mode 100644
+index 0000000..9f9b446
+--- /dev/null
++++ b/vite.config.ts
+@@ -0,0 +1,8 @@
++import tailwindcss from '@tailwindcss/vite'
++import react from '@vitejs/plugin-react'
++import { defineConfig } from 'vite'
++
++// https://vite.dev/config/
++export default defineConfig({
++  plugins: [react(), tailwindcss()],
++})
+diff --git a/worker-report.md b/worker-report.md
+new file mode 100644
+index 0000000..9875234
+--- /dev/null
++++ b/worker-report.md
+@@ -0,0 +1,113 @@
++# Worker Report — Ingress (API Traffic Analytics Dashboard)
++
++## What I built
++
++A greenfield React + TypeScript + Vite app called **Ingress**: a real-time API
++traffic monitoring dashboard with:
++
++- **Metric strip** — throughput, error rate, p95/p99 latency, active endpoint
++  count, and open-incident count, shown as one divided inline bar (not a row of
++  KPI cards), with trend deltas vs. the prior ~1-minute window.
++- **Throughput chart** — total requests/sec over time (area chart).
++- **Error rate chart** — overall error-rate % over time, with a dashed 5% SLA
++  threshold reference line.
++- **Latency percentile chart** — p50/p95/p99 as three lines, weighted across
++  active endpoints, colored as a cool→hot intensity ramp (blue → amber → red).
++- **Active endpoints table** — 14 representative endpoints (auth, users,
++  orders, catalog, payments, notifications, analytics), sortable by any
++  column, each row showing live req/s, error rate, p95/p99, a status badge,
++  and a small real-data sparkline.
++- **Incident banner** — surfaces active anomalies by endpoint name/method
++  rather than relying on the user to eyeball a chart deviation.
++- A **time-range control** (5m/15m/1h/6h) and a **live/pause toggle**, both
++  wired to real behavior (pausing genuinely stops the stream; ranges reslice
++  and downsample real history, they don't just relabel the same window).
++- A **light/dark theme toggle** on top of a full dual-mode OKLCH token system.
++
++## Why these choices
++
++I ran this through the `ui-design-engineer` skill's workflow rather than
++defaulting to a generic "3 KPI cards + 2 charts" layout:
++
++- **Archetype: Precision Technical.** The audience is an on-call engineer
++  watching for deviation, not exploring data — that's a monitoring task, and
++  the archetype's guidance (dense, high-contrast, border-based surfaces,
++  color reserved for status, dark-first) fit directly.
++- **Metric strip over KPI cards.** The dashboard-architecture reference is
++  explicit that 3+ individually-boxed metric cards fragment attention and
++  waste space on decoration; a single divided strip reads as "one summary."
++- **Anomaly surfacing, not just passive charts.** The error-rate chart has an
++  explicit SLA threshold line, and a dedicated incident banner names the
++  affected endpoint — the reference material calls out that passive charts
++  alone are a weak monitoring tool for time-sensitive state.
++- **Chart series colors are the dataviz skill's validated palette**, not the
++  charting library's defaults or hand-picked hex — I ran the categorical
++  palette through that skill's reasoning (fixed order, distinct from status
++  colors, colorblind-safety already validated) rather than eyeballing colors.
++- **No component library.** The UI is ~10 small bespoke components with no
++  dialogs/popovers/comboboxes — pulling in shadcn/Radix/MUI here would be
++  dependency weight with nothing to justify it.
++- **Recharts** for charting: standard line/area charts, no need for bespoke
++  D3 visuals or huge datasets, and it's the skill's stated default for this
++  situation.
++
++## Data source (important tradeoff)
++
++There is no backend in this repo, so `src/lib/trafficEngine.ts` is an
++in-browser simulation: 14 endpoint definitions with baseline RPS/error-rate/
++latency, a smoothed random walk for natural jitter, and a small chance per
++tick of a randomized "incident" (elevated errors + a latency multiplier) on
++one endpoint for 16–40 seconds. It seeds a full hour of history synchronously
++on load (so switching to the "1h" range doesn't show an empty chart that has
++to fill up live) and then ticks forward every 2 real seconds via
++`setInterval`, exposed to React through `useSyncExternalStore`. Every chart,
++metric, and table row reads from this same stream — nothing is hardcoded or
++faked independently, so the "never fake a sparkline" rule holds even though
++the underlying traffic itself is synthetic. Swapping this for a real backend
++(WebSocket/SSE/polling a metrics API) means replacing the engine's internal
++tick loop while keeping the same `EngineSnapshot` shape — the UI layer
++doesn't know or care that the data is simulated.
++
++## QA performed
++
++- `tsc -b` and `oxlint` are clean.
++- Installed Playwright + axe-core as devDependencies (Chromium binary only,
++  no system deps available in this sandbox) and ran the skill's
++  `visual-qa.js` at 375/768/1440/1920px, plus a scripted scenario that
++  toggles into light mode. Final pass: **0 structural defects, 0 axe-core
++  violations, 0 undersized-hit-target findings** at every viewport in both
++  themes.
++- Two real issues turned up and were fixed, not just noted:
++  1. Light-mode `--status-warning` failed axe's automated contrast check on
++     the endpoint table's "Degraded" badge text — darkened it
++     (`oklch(0.62 0.15 75)` → `oklch(0.45 0.14 75)`).
++  2. The endpoint table's sortable column headers had a ~16×21px click
++     target — padded them to clear the 24px minimum.
++  3. (Design-consistency bug, not caught by tooling) the "Open incidents" KPI
++     was originally counting only formally-tracked incident objects, while
++     the table's per-row status badge could independently read "Degraded"
++     from a noisy rolling error rate — the two numbers could disagree on
++     screen. Unified both to derive from the same per-row status computation.
++- `scripts/audit-hardcoded-colors.js` flags the 10 raw-hex `--chart-*` token
++  definitions in `src/index.css` — these are intentional (the dataviz skill's
++  pre-validated colorblind-safe palette, used verbatim rather than
++  re-derived in OKLCH) and are recorded as a reviewed exception in
++  `DESIGN.md` §19 rather than silently dismissed.
++- `scripts/check-ui-dependencies.js` and `scripts/validate-design-tokens.js`
++  both pass clean.
++- Did not run a manual WCAG audit against `checklists/accessibility-audit.md`
++  beyond the automated axe pass — flagged as open in `DESIGN.md` §17 rather
++  than claimed as done.
++
++## Known gaps / things I'd do next
++
++- No drill-down: clicking a table row or chart point doesn't do anything yet.
++  Flagged in `DESIGN.md` §20 rather than building fake interactivity.
++- The production bundle is ~583KB minified (mostly Recharts) — fine for this
++  scope, but worth code-splitting if this dashboard grows more routes/views.
++- Mobile gets a working single-column layout and a horizontally-scrollable
++  table, but per the Precision Technical archetype this is deliberately a
++  desktop-first operator tool, not mobile-optimized.
++
++See `DESIGN.md` for the full token system, archetype reasoning, and decision
++log.

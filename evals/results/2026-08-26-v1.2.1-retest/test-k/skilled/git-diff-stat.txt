@@ -1,0 +1,7 @@
+ src/App.tsx               |   2 +
+ src/components/Layout.tsx |   2 +
+ src/data.ts               |  11 ++++-
+ src/pages/Team.tsx        | 105 ++++++++++++++++++++++++++++++++++++++++++++++
+ src/types.ts              |   8 ++++
+ worker-report.md          |  81 +++++++++++++++++++++++++++++++++++
+ 6 files changed, 208 insertions(+), 1 deletion(-)

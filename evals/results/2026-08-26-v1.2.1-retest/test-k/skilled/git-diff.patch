@@ -1,0 +1,277 @@
+diff --git a/src/App.tsx b/src/App.tsx
+index 90747d5..a53f6b6 100644
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
+ import { Layout } from "./components/Layout";
+ import { Overview } from "./pages/Overview";
+ import { Projects } from "./pages/Projects";
++import { Team } from "./pages/Team";
+ 
+ export default function App() {
+   return (
+@@ -9,6 +10,7 @@ export default function App() {
+       <Routes>
+         <Route path="/" element={<Overview />} />
+         <Route path="/projects" element={<Projects />} />
++        <Route path="/team" element={<Team />} />
+       </Routes>
+     </Layout>
+   );
+diff --git a/src/components/Layout.tsx b/src/components/Layout.tsx
+index ffff99a..8da0ffc 100644
+--- a/src/components/Layout.tsx
++++ b/src/components/Layout.tsx
+@@ -3,6 +3,7 @@ import {
+   IconLayoutDashboard,
+   IconFolders,
+   IconCompass,
++  IconUsers,
+ } from "@tabler/icons-react";
+ import { Link, useLocation } from "react-router-dom";
+ import type { ReactNode } from "react";
+@@ -10,6 +11,7 @@ import type { ReactNode } from "react";
+ const links = [
+   { to: "/", label: "Overview", icon: IconLayoutDashboard },
+   { to: "/projects", label: "Projects", icon: IconFolders },
++  { to: "/team", label: "Team", icon: IconUsers },
+ ];
+ 
+ export function Layout({ children }: { children: ReactNode }) {
+diff --git a/src/data.ts b/src/data.ts
+index 17da4e1..451763d 100644
+--- a/src/data.ts
++++ b/src/data.ts
+@@ -1,4 +1,4 @@
+-import type { ActivityItem, Project } from "./types";
++import type { ActivityItem, Project, TeamMember } from "./types";
+ 
+ export const projects: Project[] = [
+   {
+@@ -99,3 +99,12 @@ export const activity: ActivityItem[] = [
+     timestamp: "yesterday",
+   },
+ ];
++
++export const team: TeamMember[] = [
++  { id: "t1", name: "Nadia Osei", initials: "NO", role: "Studio Lead", capacity: 3 },
++  { id: "t2", name: "Marcus Ito", initials: "MI", role: "Engineering Lead", capacity: 2 },
++  { id: "t3", name: "Priya Chandran", initials: "PC", role: "Product Designer", capacity: 2 },
++  { id: "t4", name: "Dev Patel", initials: "DP", role: "Delivery Manager", capacity: 2 },
++  { id: "t5", name: "Elena Cruz", initials: "EC", role: "Visual Designer", capacity: 3 },
++  { id: "t6", name: "Tom Reyes", initials: "TR", role: "QA Lead", capacity: 3 },
++];
+diff --git a/src/pages/Team.tsx b/src/pages/Team.tsx
+new file mode 100644
+index 0000000..e1a4657
+--- /dev/null
++++ b/src/pages/Team.tsx
+@@ -0,0 +1,105 @@
++import { Avatar, Card, Group, Progress, SimpleGrid, Stack, Text, Title } from "@mantine/core";
++import { IconUsers, IconChecklist, IconAlertTriangle, IconBeach } from "@tabler/icons-react";
++import { StatCard } from "../components/StatCard";
++import { StatusBadge } from "../components/StatusBadge";
++import { projects, team } from "../data";
++
++function loadColor(active: number, capacity: number) {
++  if (active === 0) return "slate";
++  if (active > capacity) return "red";
++  if (active === capacity) return "yellow";
++  return "teal";
++}
++
++export function Team() {
++  const roster = team.map((member) => {
++    const assigned = projects.filter((p) => p.lead.name === member.name);
++    const active = assigned.filter((p) => p.status !== "done");
++    const avgProgress = active.length
++      ? Math.round(active.reduce((sum, p) => sum + p.progress, 0) / active.length)
++      : 0;
++    return { member, assigned, active, avgProgress };
++  });
++
++  const overCapacity = roster.filter((r) => r.active.length > r.member.capacity).length;
++  const onBench = roster.filter((r) => r.active.length === 0).length;
++  const avgUtilization = Math.round(
++    (roster.reduce((sum, r) => sum + r.active.length / r.member.capacity, 0) / roster.length) * 100,
++  );
++
++  return (
++    <Stack gap="xl">
++      <div>
++        <Title order={1}>Team</Title>
++        <Text c="dimmed" size="sm" mt={4}>
++          Staffing and workload across the studio.
++        </Text>
++      </div>
++
++      <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }}>
++        <StatCard label="Team members" value={String(team.length)} icon={IconUsers} />
++        <StatCard label="Avg. utilization" value={`${avgUtilization}%`} icon={IconChecklist} />
++        <StatCard
++          label="Over capacity"
++          value={String(overCapacity)}
++          delta={overCapacity > 0 ? `${overCapacity} need rebalancing` : undefined}
++          deltaPositive={false}
++          icon={IconAlertTriangle}
++        />
++        <StatCard label="On the bench" value={String(onBench)} icon={IconBeach} />
++      </SimpleGrid>
++
++      <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
++        {roster.map(({ member, assigned, active, avgProgress }) => (
++          <Card key={member.id} padding="lg">
++            <Group gap="sm" align="flex-start" wrap="nowrap">
++              <Avatar size="md" radius="xl" color="meridian">
++                {member.initials}
++              </Avatar>
++              <div style={{ flex: 1, minWidth: 0 }}>
++                <Text size="sm" fw={600}>
++                  {member.name}
++                </Text>
++                <Text size="xs" c="dimmed">
++                  {member.role}
++                </Text>
++              </div>
++            </Group>
++
++            <Group justify="space-between" mt="md" mb={4}>
++              <Text size="xs" c="dimmed">
++                {active.length} of {member.capacity} project{member.capacity === 1 ? "" : "s"}
++              </Text>
++              {active.length > 0 && (
++                <Text size="xs" c="dimmed">
++                  {avgProgress}% avg
++                </Text>
++              )}
++            </Group>
++            <Progress
++              value={(active.length / member.capacity) * 100}
++              size="sm"
++              color={loadColor(active.length, member.capacity)}
++            />
++
++            <Stack gap={6} mt="md">
++              {assigned.length === 0 && (
++                <Text size="xs" c="dimmed">
++                  No projects assigned.
++                </Text>
++              )}
++              {assigned.map((p) => (
++                <Group key={p.id} justify="space-between" wrap="nowrap">
++                  <Text size="xs" truncate style={{ flex: 1 }}>
++                    {p.name}
++                  </Text>
++                  <StatusBadge status={p.status} />
++                </Group>
++              ))}
++            </Stack>
++          </Card>
++        ))}
++      </SimpleGrid>
++    </Stack>
++  );
++}
+diff --git a/src/types.ts b/src/types.ts
+index d1fad4b..49730ac 100644
+--- a/src/types.ts
++++ b/src/types.ts
+@@ -18,3 +18,11 @@ export interface ActivityItem {
+   target: string;
+   timestamp: string;
+ }
++
++export interface TeamMember {
++  id: string;
++  name: string;
++  initials: string;
++  role: string;
++  capacity: number;
++}
+diff --git a/worker-report.md b/worker-report.md
+new file mode 100644
+index 0000000..5f629c5
+--- /dev/null
++++ b/worker-report.md
+@@ -0,0 +1,81 @@
++# Worker Report — Team page
++
++## What I explored first
++
++Meridian is a Vite + React 19 + TypeScript + Mantine v9 studio project-management
++app with two existing pages:
++
++- **Overview** (`src/pages/Overview.tsx`) — stat cards, a recent-activity feed, and
++  an at-risk-projects list.
++- **Projects** (`src/pages/Projects.tsx`) — a dense table of every project with
++  status, progress, lead avatar, and due date.
++
++The design system lives in `src/theme.ts` (no DESIGN.md, per the README): an
++indigo `meridian` primary color, Fraunces/Inter type pairing, `md` default
++radius, bordered `Card`s, and light-variant `Badge`/`ThemeIcon`. `src/data.ts`
++holds all mock data (`projects`, `activity`) typed in `src/types.ts`, consumed
++directly by page components — no API layer, no state management, no tests in
++the repo.
++
++## What I built
++
++A **Team** page (`src/pages/Team.tsx`) at `/team`, added as a third nav item
++(`IconUsers`) alongside Overview and Projects in `src/components/Layout.tsx`.
++
++Rationale: Overview answers "what's happening," Projects answers "what's the
++work," and neither answers "who's doing it and are they overloaded" — a core
++question for a studio lead running multiple client engagements. It's a
++distinct feature, not a variant of an existing page.
++
++The page shows:
++- Four top-line `StatCard`s (team size, average utilization, members over
++  capacity, members on the bench) — matching Overview's stat-row pattern.
++- A card grid (one card per team member) showing avatar/name/role, a
++  utilization bar (active projects vs. that person's capacity, color-coded
++  teal/yellow/red/slate), and the list of their assigned projects with
++  `StatusBadge`.
++
++## Data model changes
++
++- `types.ts`: added a `TeamMember` interface (`id`, `name`, `initials`, `role`,
++  `capacity`).
++- `data.ts`: added a `team` array. Names/initials match the existing project
++  leads (Nadia Osei, Marcus Ito, Priya Chandran, Dev Patel) so the roster is
++  consistent with `projects.ts`, plus two additional roles (Visual Designer,
++  QA Lead) with no current lead assignments — this makes the "on the bench" /
++  utilization stats non-trivial instead of everyone always being at exactly
++  their capacity.
++
++Workload numbers (active project count, average progress, utilization %) are
++derived at render time from the existing `projects` array by matching
++`project.lead.name === member.name`, rather than stored redundantly — keeps
++the two datasets from drifting out of sync.
++
++## Reused vs. new
++
++Reused as-is: `StatCard`, `StatusBadge`, `Card`/`Avatar`/`Progress`/`Badge`
++theme defaults, the `meridian` avatar color convention, and the
++title+dimmed-subtitle page header pattern from Overview/Projects. No new
++dependencies were introduced — `@mantine/dates` and `@mantine/notifications`
++were already installed but unused, and neither was needed for this feature.
++
++## Verification
++
++- `npx tsc -b` — clean.
++- `npx oxlint` — clean.
++- `npm run build` — succeeds (build output removed after verification).
++- Manually reviewed the rendered component logic; could not take a live
++  screenshot in this sandbox because the Claude-in-Chrome browser extension
++  wasn't connected in this environment. Verified via type-checking, linting,
++  and a successful production build instead.
++
++## Tradeoffs / notes for follow-up
++
++- `capacity` is a static number per member rather than derived from anything
++  (e.g. seniority, hours). It's a reasonable placeholder for a seed dataset
++  but a real implementation would likely want this configurable.
++- The two bench members (Elena Cruz, Tom Reyes) have no projects in
++  `data.ts`. They exist purely to make the utilization/bench stats
++  meaningful — if the seed data model is extended later, consider giving
++  them non-lead project assignments (e.g. a `contributors` field on
++  `Project`) rather than only tracking `lead`.

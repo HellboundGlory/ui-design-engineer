@@ -1,0 +1,667 @@
+{
+  "mode": "multi-state",
+  "url": "http://localhost:5183/account",
+  "generatedAt": "2026-08-26T13:47:19.865Z",
+  "readiness": {
+    "waitUntil": "load",
+    "waitForSelector": null,
+    "settleMs": 300
+  },
+  "axe": {
+    "version": "4.13.0",
+    "tags": [
+      "wcag2a",
+      "wcag2aa",
+      "wcag21a",
+      "wcag21aa",
+      "wcag22aa"
+    ],
+    "disclaimer": "Automated axe-core scan covering a documented subset of WCAG 2.x A/AA rules (see `tags`). This is NOT a full WCAG 2.2 AA conformance test \u2014 axe-core's own documentation estimates automated tools catch roughly 30-40% of real accessibility issues. Zero violations means zero AUTOMATED violations found, not full conformance. Complete checklists/accessibility-audit.md for keyboard, focus order, and manual structural review."
+  },
+  "requested": {
+    "routes": [
+      "/account",
+      "/api-keys",
+      "/billing",
+      "/team"
+    ],
+    "scenario": null,
+    "combineRoutesAndScenario": false
+  },
+  "states": [
+    {
+      "name": "account",
+      "route": "/account",
+      "scenarioState": null,
+      "targetUrl": "http://localhost:5183/account",
+      "status": "hard-failure",
+      "reachError": null,
+      "viewports": [
+        {
+          "viewport": "375x812",
+          "navigationError": null,
+          "screenshot": "375x812.png",
+          "overflow": {
+            "scrollWidth": 375,
+            "clientWidth": 375,
+            "hasHorizontalOverflow": false
+          },
+          "structural": {
+            "status": "ok",
+            "brokenImages": [],
+            "missingAlt": [],
+            "zeroSizeVisibleInteractive": [],
+            "undersizedInteractiveTargets": [
+              {
+                "selector": "a.sr-only.focus:not-sr-only",
+                "text": "Skip to content",
+                "width": 1,
+                "height": 1
+              },
+              {
+                "selector": "input.sr-only",
+                "text": "",
+                "width": 1,
+                "height": 1
+              },
+              {
+                "selector": "select",
+                "text": "Pacific Time (US & Canada)Mountain Time (US & Canada)Central",
+                "width": 1,
+                "height": 1
+              },
+              {
+                "selector": "select",
+                "text": "English (US)English (UK)Espa\u00f1olFran\u00e7aisDeutsch\u65e5\u672c\u8a9e",
+                "width": 1,
+                "height": 1
+              }
+            ],
+            "focusObscured": [
+              {
+                "selector": "select",
+                "coveredBy": "label.text-sm.font-medium"
+              },
+              {
+                "selector": "select",
+                "coveredBy": "label.text-sm.font-medium"
+              }
+            ],
+            "focusableSampleSize": 23,
+            "focusableTotalCount": 23
+          },
+          "axeViolations": [],
+          "consoleErrors": [],
+          "pageErrors": []
+        },
+        {
+          "viewport": "768x1024",
+          "navigationError": null,
+          "screenshot": "768x1024.png",
+          "overflow": {
+            "scrollWidth": 768,
+            "clientWidth": 768,
+            "hasHorizontalOverflow": false
+          },
+          "structural": {
+            "status": "ok",
+            "brokenImages": [],
+            "missingAlt": [],
+            "zeroSizeVisibleInteractive": [],
+            "undersizedInteractiveTargets": [
+              {
+                "selector": "a.sr-only.focus:not-sr-only",
+                "text": "Skip to content",
+                "width": 1,
+                "height": 1
+              },
+              {
+                "selector": "input.sr-only",
+                "text": "",
+                "width": 1,
+                "height": 1
+              },
+              {
+                "selector": "select",
+                "text": "Pacific Time (US & Canada)Mountain Time (US & Canada)Central",
+                "width": 1,
+                "height": 1
+              },
+              {
+                "selector": "select",
+                "text": "English (US)English (UK)Espa\u00f1olFran\u00e7aisDeutsch\u65e5\u672c\u8a9e",
+                "width": 1,
+                "height": 1
+              }
+            ],
+            "focusObscured": [
+              {
+                "selector": "select",
+                "coveredBy": "label.text-sm.font-medium"
+              },
+              {
+                "selector": "select",
+                "coveredBy": "label.text-sm.font-medium"
+              }
+            ],
+            "focusableSampleSize": 23,
+            "focusableTotalCount": 23
+          },
+          "axeViolations": [],
+          "consoleErrors": [],
+          "pageErrors": []
+        },
+        {
+          "viewport": "1440x900",
+          "navigationError": null,
+          "screenshot": "1440x900.png",
+          "overflow": {
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "hasHorizontalOverflow": false
+          },
+          "structural": {
+            "status": "ok",
+            "brokenImages": [],
+            "missingAlt": [],
+            "zeroSizeVisibleInteractive": [],
+            "undersizedInteractiveTargets": [
+              {
+                "selector": "a.sr-only.focus:not-sr-only",
+                "text": "Skip to content",
+                "width": 1,
+                "height": 1
+              },
+              {
+                "selector": "input.sr-only",
+                "text": "",
+                "width": 1,
+                "height": 1
+              },
+              {
+                "selector": "select",
+                "text": "Pacific Time (US & Canada)Mountain Time (US & Canada)Central",
+                "width": 1,
+                "height": 1
+              },
+              {
+                "selector": "select",
+                "text": "English (US)English (UK)Espa\u00f1olFran\u00e7aisDeutsch\u65e5\u672c\u8a9e",
+                "width": 1,
+                "height": 1
+              }
+            ],
+            "focusObscured": [
+              {
+                "selector": "select",
+                "coveredBy": "label.text-sm.font-medium"
+              },
+              {
+                "selector": "select",
+                "coveredBy": "label.text-sm.font-medium"
+              }
+            ],
+            "focusableSampleSize": 23,
+            "focusableTotalCount": 23
+          },
+          "axeViolations": [],
+          "consoleErrors": [],
+          "pageErrors": []
+        },
+        {
+          "viewport": "1920x1080",
+          "navigationError": null,
+          "screenshot": "1920x1080.png",
+          "overflow": {
+            "scrollWidth": 1920,
+            "clientWidth": 1920,
+            "hasHorizontalOverflow": false
+          },
+          "structural": {
+            "status": "ok",
+            "brokenImages": [],
+            "missingAlt": [],
+            "zeroSizeVisibleInteractive": [],
+            "undersizedInteractiveTargets": [
+              {
+                "selector": "a.sr-only.focus:not-sr-only",
+                "text": "Skip to content",
+                "width": 1,
+                "height": 1
+              },
+              {
+                "selector": "input.sr-only",
+                "text": "",
+                "width": 1,
+                "height": 1
+              },
+              {
+                "selector": "select",
+                "text": "Pacific Time (US & Canada)Mountain Time (US & Canada)Central",
+                "width": 1,
+                "height": 1
+              },
+              {
+                "selector": "select",
+                "text": "English (US)English (UK)Espa\u00f1olFran\u00e7aisDeutsch\u65e5\u672c\u8a9e",
+                "width": 1,
+                "height": 1
+              }
+            ],
+            "focusObscured": [
+              {
+                "selector": "select",
+                "coveredBy": "label.text-sm.font-medium"
+              },
+              {
+                "selector": "select",
+                "coveredBy": "label.text-sm.font-medium"
+              }
+            ],
+            "focusableSampleSize": 23,
+            "focusableTotalCount": 23
+          },
+          "axeViolations": [],
+          "consoleErrors": [],
+          "pageErrors": []
+        }
+      ]
+    },
+    {
+      "name": "api-keys",
+      "route": "/api-keys",
+      "scenarioState": null,
+      "targetUrl": "http://localhost:5183/api-keys",
+      "status": "review",
+      "reachError": null,
+      "viewports": [
+        {
+          "viewport": "375x812",
+          "navigationError": null,
+          "screenshot": "375x812.png",
+          "overflow": {
+            "scrollWidth": 375,
+            "clientWidth": 375,
+            "hasHorizontalOverflow": false
+          },
+          "structural": {
+            "status": "ok",
+            "brokenImages": [],
+            "missingAlt": [],
+            "zeroSizeVisibleInteractive": [],
+            "undersizedInteractiveTargets": [
+              {
+                "selector": "a.sr-only.focus:not-sr-only",
+                "text": "Skip to content",
+                "width": 1,
+                "height": 1
+              }
+            ],
+            "focusObscured": [],
+            "focusableSampleSize": 11,
+            "focusableTotalCount": 11
+          },
+          "axeViolations": [],
+          "consoleErrors": [],
+          "pageErrors": []
+        },
+        {
+          "viewport": "768x1024",
+          "navigationError": null,
+          "screenshot": "768x1024.png",
+          "overflow": {
+            "scrollWidth": 768,
+            "clientWidth": 768,
+            "hasHorizontalOverflow": false
+          },
+          "structural": {
+            "status": "ok",
+            "brokenImages": [],
+            "missingAlt": [],
+            "zeroSizeVisibleInteractive": [],
+            "undersizedInteractiveTargets": [
+              {
+                "selector": "a.sr-only.focus:not-sr-only",
+                "text": "Skip to content",
+                "width": 1,
+                "height": 1
+              }
+            ],
+            "focusObscured": [],
+            "focusableSampleSize": 11,
+            "focusableTotalCount": 11
+          },
+          "axeViolations": [],
+          "consoleErrors": [],
+          "pageErrors": []
+        },
+        {
+          "viewport": "1440x900",
+          "navigationError": null,
+          "screenshot": "1440x900.png",
+          "overflow": {
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "hasHorizontalOverflow": false
+          },
+          "structural": {
+            "status": "ok",
+            "brokenImages": [],
+            "missingAlt": [],
+            "zeroSizeVisibleInteractive": [],
+            "undersizedInteractiveTargets": [
+              {
+                "selector": "a.sr-only.focus:not-sr-only",
+                "text": "Skip to content",
+                "width": 1,
+                "height": 1
+              }
+            ],
+            "focusObscured": [],
+            "focusableSampleSize": 11,
+            "focusableTotalCount": 11
+          },
+          "axeViolations": [],
+          "consoleErrors": [],
+          "pageErrors": []
+        },
+        {
+          "viewport": "1920x1080",
+          "navigationError": null,
+          "screenshot": "1920x1080.png",
+          "overflow": {
+            "scrollWidth": 1920,
+            "clientWidth": 1920,
+            "hasHorizontalOverflow": false
+          },
+          "structural": {
+            "status": "ok",
+            "brokenImages": [],
+            "missingAlt": [],
+            "zeroSizeVisibleInteractive": [],
+            "undersizedInteractiveTargets": [
+              {
+                "selector": "a.sr-only.focus:not-sr-only",
+                "text": "Skip to content",
+                "width": 1,
+                "height": 1
+              }
+            ],
+            "focusObscured": [],
+            "focusableSampleSize": 11,
+            "focusableTotalCount": 11
+          },
+          "axeViolations": [],
+          "consoleErrors": [],
+          "pageErrors": []
+        }
+      ]
+    },
+    {
+      "name": "billing",
+      "route": "/billing",
+      "scenarioState": null,
+      "targetUrl": "http://localhost:5183/billing",
+      "status": "review",
+      "reachError": null,
+      "viewports": [
+        {
+          "viewport": "375x812",
+          "navigationError": null,
+          "screenshot": "375x812.png",
+          "overflow": {
+            "scrollWidth": 375,
+            "clientWidth": 375,
+            "hasHorizontalOverflow": false
+          },
+          "structural": {
+            "status": "ok",
+            "brokenImages": [],
+            "missingAlt": [],
+            "zeroSizeVisibleInteractive": [],
+            "undersizedInteractiveTargets": [
+              {
+                "selector": "a.sr-only.focus:not-sr-only",
+                "text": "Skip to content",
+                "width": 1,
+                "height": 1
+              }
+            ],
+            "focusObscured": [],
+            "focusableSampleSize": 16,
+            "focusableTotalCount": 16
+          },
+          "axeViolations": [],
+          "consoleErrors": [],
+          "pageErrors": []
+        },
+        {
+          "viewport": "768x1024",
+          "navigationError": null,
+          "screenshot": "768x1024.png",
+          "overflow": {
+            "scrollWidth": 768,
+            "clientWidth": 768,
+            "hasHorizontalOverflow": false
+          },
+          "structural": {
+            "status": "ok",
+            "brokenImages": [],
+            "missingAlt": [],
+            "zeroSizeVisibleInteractive": [],
+            "undersizedInteractiveTargets": [
+              {
+                "selector": "a.sr-only.focus:not-sr-only",
+                "text": "Skip to content",
+                "width": 1,
+                "height": 1
+              }
+            ],
+            "focusObscured": [],
+            "focusableSampleSize": 16,
+            "focusableTotalCount": 16
+          },
+          "axeViolations": [],
+          "consoleErrors": [],
+          "pageErrors": []
+        },
+        {
+          "viewport": "1440x900",
+          "navigationError": null,
+          "screenshot": "1440x900.png",
+          "overflow": {
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "hasHorizontalOverflow": false
+          },
+          "structural": {
+            "status": "ok",
+            "brokenImages": [],
+            "missingAlt": [],
+            "zeroSizeVisibleInteractive": [],
+            "undersizedInteractiveTargets": [
+              {
+                "selector": "a.sr-only.focus:not-sr-only",
+                "text": "Skip to content",
+                "width": 1,
+                "height": 1
+              }
+            ],
+            "focusObscured": [],
+            "focusableSampleSize": 16,
+            "focusableTotalCount": 16
+          },
+          "axeViolations": [],
+          "consoleErrors": [],
+          "pageErrors": []
+        },
+        {
+          "viewport": "1920x1080",
+          "navigationError": null,
+          "screenshot": "1920x1080.png",
+          "overflow": {
+            "scrollWidth": 1920,
+            "clientWidth": 1920,
+            "hasHorizontalOverflow": false
+          },
+          "structural": {
+            "status": "ok",
+            "brokenImages": [],
+            "missingAlt": [],
+            "zeroSizeVisibleInteractive": [],
+            "undersizedInteractiveTargets": [
+              {
+                "selector": "a.sr-only.focus:not-sr-only",
+                "text": "Skip to content",
+                "width": 1,
+                "height": 1
+              }
+            ],
+            "focusObscured": [],
+            "focusableSampleSize": 16,
+            "focusableTotalCount": 16
+          },
+          "axeViolations": [],
+          "consoleErrors": [],
+          "pageErrors": []
+        }
+      ]
+    },
+    {
+      "name": "team",
+      "route": "/team",
+      "scenarioState": null,
+      "targetUrl": "http://localhost:5183/team",
+      "status": "review",
+      "reachError": null,
+      "viewports": [
+        {
+          "viewport": "375x812",
+          "navigationError": null,
+          "screenshot": "375x812.png",
+          "overflow": {
+            "scrollWidth": 375,
+            "clientWidth": 375,
+            "hasHorizontalOverflow": false
+          },
+          "structural": {
+            "status": "ok",
+            "brokenImages": [],
+            "missingAlt": [],
+            "zeroSizeVisibleInteractive": [],
+            "undersizedInteractiveTargets": [
+              {
+                "selector": "a.sr-only.focus:not-sr-only",
+                "text": "Skip to content",
+                "width": 1,
+                "height": 1
+              }
+            ],
+            "focusObscured": [],
+            "focusableSampleSize": 18,
+            "focusableTotalCount": 18
+          },
+          "axeViolations": [],
+          "consoleErrors": [],
+          "pageErrors": []
+        },
+        {
+          "viewport": "768x1024",
+          "navigationError": null,
+          "screenshot": "768x1024.png",
+          "overflow": {
+            "scrollWidth": 768,
+            "clientWidth": 768,
+            "hasHorizontalOverflow": false
+          },
+          "structural": {
+            "status": "ok",
+            "brokenImages": [],
+            "missingAlt": [],
+            "zeroSizeVisibleInteractive": [],
+            "undersizedInteractiveTargets": [
+              {
+                "selector": "a.sr-only.focus:not-sr-only",
+                "text": "Skip to content",
+                "width": 1,
+                "height": 1
+              }
+            ],
+            "focusObscured": [],
+            "focusableSampleSize": 18,
+            "focusableTotalCount": 18
+          },
+          "axeViolations": [],
+          "consoleErrors": [],
+          "pageErrors": []
+        },
+        {
+          "viewport": "1440x900",
+          "navigationError": null,
+          "screenshot": "1440x900.png",
+          "overflow": {
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "hasHorizontalOverflow": false
+          },
+          "structural": {
+            "status": "ok",
+            "brokenImages": [],
+            "missingAlt": [],
+            "zeroSizeVisibleInteractive": [],
+            "undersizedInteractiveTargets": [
+              {
+                "selector": "a.sr-only.focus:not-sr-only",
+                "text": "Skip to content",
+                "width": 1,
+                "height": 1
+              }
+            ],
+            "focusObscured": [],
+            "focusableSampleSize": 18,
+            "focusableTotalCount": 18
+          },
+          "axeViolations": [],
+          "consoleErrors": [],
+          "pageErrors": []
+        },
+        {
+          "viewport": "1920x1080",
+          "navigationError": null,
+          "screenshot": "1920x1080.png",
+          "overflow": {
+            "scrollWidth": 1920,
+            "clientWidth": 1920,
+            "hasHorizontalOverflow": false
+          },
+          "structural": {
+            "status": "ok",
+            "brokenImages": [],
+            "missingAlt": [],
+            "zeroSizeVisibleInteractive": [],
+            "undersizedInteractiveTargets": [
+              {
+                "selector": "a.sr-only.focus:not-sr-only",
+                "text": "Skip to content",
+                "width": 1,
+                "height": 1
+              }
+            ],
+            "focusObscured": [],
+            "focusableSampleSize": 18,
+            "focusableTotalCount": 18
+          },
+          "axeViolations": [],
+          "consoleErrors": [],
+          "pageErrors": []
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "statesRequested": 4,
+    "statesReached": 4,
+    "anyIncomplete": false,
+    "anyHardFailure": true
+  }
+}
